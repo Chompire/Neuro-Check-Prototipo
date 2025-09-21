@@ -1,7 +1,7 @@
 import flet as ft
 
 def main(page: ft.Page):
-    page.title = "Mi primera app con Flet"
+    page.title = "NeuroCheck"
     page.vertical_alignment = "center"
 
     txt_nombre = ft.TextField(label="Escribe tu nombre")
