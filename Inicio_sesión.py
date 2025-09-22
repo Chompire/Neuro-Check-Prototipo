@@ -2,7 +2,7 @@ import flet as ft
 from Interfaz_profesor import mostrar_menu_principal
 
 
-user_is = "admin"
+rut_is = "194934688"
 contra_is = "1234"
 
 def main(page: ft.Page):
@@ -14,14 +14,14 @@ def main(page: ft.Page):
     usuario = ft.TextField(label="Usuario", width=300)
     password = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, width=300)
     mensaje = ft.Text("", color="black")
-    logo = ft.Image(src="/Nuevo logo.png",
+    logo = ft.Image(src="/NEURO CHECK ICON.png",
         width=120,
         height=120,
         fit=ft.ImageFit.COVER
     )
     fondo = ft.Container(bgcolor="red", expand=True)
     def login_click(e):
-        if usuario.value == user_is and password.value == contra_is:
+        if usuario.value == rut_is and password.value == contra_is:
             mostrar_menu_principal(page, usuario.value)
             page.update()
         else:
