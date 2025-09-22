@@ -28,7 +28,7 @@ def main(page: ft.Page):
             mensaje.value = "Usuario o contraseña incorrectos."
             page.update()
 
-    boton_login = ft.ElevatedButton("Entrar", on_click=login_click)
+    boton_login = ft.ElevatedButton("Entrar", on_click=login_click) 
 
     contenido = ft.Container(
         content=ft.Column(
