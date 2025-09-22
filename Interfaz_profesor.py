@@ -4,7 +4,7 @@ def mostrar_menu_principal(page: ft.Page, nombre_usuario):
     page.clean()
 
     def buttonclick(e):
-        registro_alumno(page)
+        registro_alumno(page, nombre_usuario)
         page.update()
     page.add(
         ft.Container(
@@ -21,15 +21,47 @@ def mostrar_menu_principal(page: ft.Page, nombre_usuario):
         )
         
     )
-def registro_alumno(page:ft.Page):
+def registro_alumno(page:ft.Page, nombre_usuario):
     page.clean()
+    menubar = ft.MenuBar(
+        expand=True,
+        controls=[
+            ft.SubmenuButton(
+                content=ft.Text("Curso"),
+                controls=[
+                    ft.MenuItemButton(
+                        content=ft.Text("Blue"),
+                        leading=ft.Icon(ft.Icons.COLORIZE),
+                        style=ft.ButtonStyle(
+                            bgcolor={ft.ControlState.HOVERED: ft.Colors.BLUE}
+                        ),
+                    ),
+                    ft.MenuItemButton(
+                        content=ft.Text("Green"),
+                        leading=ft.Icon(ft.Icons.COLORIZE),
+                        style=ft.ButtonStyle(
+                            bgcolor={ft.ControlState.HOVERED: ft.Colors.GREEN}
+                        ),
+                    ),
+                    ft.MenuItemButton(
+                        content=ft.Text("Red"),
+                        leading=ft.Icon(ft.Icons.COLORIZE),
+                        style=ft.ButtonStyle(
+                            bgcolor={ft.ControlState.HOVERED: ft.Colors.RED}
+                        ),
+                    ),
+                ],
+            ),
+        ],
+    )
     def back(e):
-        mostrar_menu_principal(page)
+        mostrar_menu_principal(page, nombre_usuario)
         page.update()
     page.add(
         ft.Container(
-            ft.Column(
-                [ft.Text("Ingresa los datos del alumno."), ft.ElevatedButton("Volver", on_click= back)]
+            ft.Column(                
+                [
+                 ft.Text("Ingresa los datos del alumno."), ft.ElevatedButton("Volver", on_click= back), menubar,]
             )
             
         )
