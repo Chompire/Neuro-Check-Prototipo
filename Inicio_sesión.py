@@ -17,9 +17,9 @@ def main(page: ft.Page):
     logo = ft.Image(src="/NEURO CHECK ICON.png",
         width=120,
         height=120,
-        fit=ft.ImageFit.COVER
+        fit=ft.ImageFit.CONTAIN
     )
-    fondo = ft.Container(bgcolor="red", expand=True)
+    fondo = ft.Container(ft.Image(src="/fondo.png", width= 1920, height= 1080,fit=ft.ImageFit.CONTAIN), expand=True)
     def login_click(e):
         if usuario.value == rut_is and password.value == contra_is:
             mostrar_menu_principal(page, usuario.value)
