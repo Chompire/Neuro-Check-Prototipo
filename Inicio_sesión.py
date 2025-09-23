@@ -6,12 +6,13 @@ rut_is = "194934688"
 contra_is = "1234"
 
 def main(page: ft.Page):
+    page.clean()
     page.title = "Inicio de Sesión"
     page.window_width = 400
     page.window_height = 300
 
     titulo = ft.Text("Iniciar Sesión", size=20, weight="bold")
-    usuario = ft.TextField(label="Usuario", width=300)
+    usuario = ft.TextField(label="Usuario", width=300, max_length=9)
     password = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, width=300)
     mensaje = ft.Text("", color="black")
     logo = ft.Image(src="/NEURO CHECK ICON.png",
@@ -22,13 +23,13 @@ def main(page: ft.Page):
     fondo = ft.Container(ft.Image(src="/fondo.png", width= 1920, height= 1080,fit=ft.ImageFit.CONTAIN), expand=True)
     def login_click(e):
         if usuario.value == rut_is and password.value == contra_is:
-            mostrar_menu_principal(page, usuario.value)
+            mostrar_menu_principal(page, cerrar_main=main)
             page.update()
         else:
             mensaje.value = "Usuario o contraseña incorrectos."
             page.update()
 
-    boton_login = ft.ElevatedButton("Entrar", on_click=login_click) 
+    boton_login = ft.ElevatedButton("Entrar", on_click=login_click,width=100,height= 30)
 
     contenido = ft.Container(
         content=ft.Column(
