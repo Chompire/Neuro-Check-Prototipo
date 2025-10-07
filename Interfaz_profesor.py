@@ -1,4 +1,5 @@
 import flet as ft
+welcome = ft.Text("¡Bienvenido!"+ usuario.value, size=18)
 def mostrar_menu_principal(page: ft.Page, cerrar_main):    
     page.clean()
     content_container = ft.Container(expand=True)
@@ -13,7 +14,7 @@ def mostrar_menu_principal(page: ft.Page, cerrar_main):
     def mostrar_bienvenida():
         content_container.content = ft.Column(
             [
-                ft.Text("¡Bienvenido!", size=18),
+                welcome,
             ],
             alignment="center",
             horizontal_alignment="center",
@@ -64,7 +65,7 @@ def mostrar_menu_principal(page: ft.Page, cerrar_main):
 
 def registro_alumno(page:ft.Page, content_container: ft.Container):
     def back(e):
-        content_container.content = ft.Text("¡Bienvenido!", size=18)
+        content_container.content = welcome
         page.update()
     año = ["",
         ft.MenuItemButton(
