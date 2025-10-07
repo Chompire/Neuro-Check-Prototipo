@@ -1,5 +1,6 @@
 import flet as ft
-welcome = ft.Text("¡Bienvenido!"+ usuario.value, size=18)
+
+welcome = ft.Text("¡Bienvenido!", size=18)
 def mostrar_menu_principal(page: ft.Page, cerrar_main):    
     page.clean()
     content_container = ft.Container(expand=True)
