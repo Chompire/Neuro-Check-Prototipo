@@ -13,14 +13,14 @@ def main(page: ft.Page):
 
 
     titulo = ft.Text("Iniciar Sesión", size=20, weight=ft.FontWeight.BOLD)
-    usuario = ft.TextField(label="RUT", width=300, max_length=10)
+    usuario = ft.TextField(label="RUT", width=300)
 
 
     password = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, width=300)
 
 
     mensaje = ft.Text("", color="black")
-    logo = ft.Image(src="/neuro_check_icon.png",
+    logo = ft.Image(src="/NEURO CHECK ICON.png",
         width=120,
         height=120,
         fit=ft.ImageFit.CONTAIN
@@ -34,7 +34,7 @@ def main(page: ft.Page):
             res_is = cursor.fetchone()
             print(res_is)
             if  res_is:
-                mostrar_menu_principal(page)
+                mostrar_menu_principal(page, res_is[0])
                 page.update()
             else:
                 mensaje.value = "Usuario o contraseña incorrectos."
@@ -46,8 +46,10 @@ def main(page: ft.Page):
     boton_login = ft.ElevatedButton("Entrar", on_click=login_click,width=100,height= 30)
 
     contenido = ft.Container(
+        alignment=ft.alignment.center,
+        expand=True,
         content=ft.Column(
-            [
+            controls=[
                 logo,
                 titulo,
                 usuario,
@@ -55,17 +57,15 @@ def main(page: ft.Page):
                 boton_login,
                 mensaje,
             ],
-
-            alignment=ft.MainAxisAlignment.CENTER,  
+            alignment=ft.MainAxisAlignment.CENTER,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=10,
         ),
-        alignment=ft.alignment.center,
-        expand=True,
-    ) 
+    )
+
     page.add(
         ft.Stack(
-            [
+            controls=[
                 fondo,
                 contenido,
             ],

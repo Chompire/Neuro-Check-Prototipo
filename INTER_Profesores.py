@@ -24,7 +24,8 @@ def mostrar_menu_principal(page: Page):
         elif page.route == "/perfil_docente":
             nombre_ruta = "Perfil docente"
 
-        sql_name = "SELECT pro_nombre_1 FROM Profesores WHERE pro_rut = '19493468-8' AND pro_password = '1234'"
+        sql_name = "SELECT pro_nombre_1 FROM Profesores WHERE pro_rut = '27.543.891-K' AND pro_password = '1234'"
+        sql_info = "SELECT * FROM Profesores WHERE pro_rut = '27.543.891-K' AND pro_password = '1234'"
         barra = AppBar(
             title=TextButton(
                 content=Text("Neuro Check", size=25, weight=FontWeight.BOLD, color="white"),
@@ -115,53 +116,77 @@ def mostrar_menu_principal(page: Page):
                     ]
                 )
             )
-            if page.route == "/perfil_docente":
-                page.views.append(
-                    View(
-                        "/perfil_docente",
-                        bgcolor="#d1d1d1",
-                        controls=[
-                            barra,
-                            Column(
-                                controls=[
-                                    Row(
-                                        controls=[
-                                            DataTable(
-                                                columns=[
-                                                    ft.DataColumn(ft.Text("First name")),
-                                                    ft.DataColumn(ft.Text("Last name")),
-                                                    ft.DataColumn(ft.Text("Age"), numeric=True),
-                                                ],
-                                                rows=[
-                                                    ft.DataRow(cells=[
-                                                        ft.DataCell(ft.Text("John")),
-                                                        ft.DataCell(ft.Text("Smith")),
-                                                        ft.DataCell(ft.Text("43")),
-                                                    ]),
-                                                    ft.DataRow(cells=[
-                                                        ft.DataCell(ft.Text("Jack")),
-                                                        ft.DataCell(ft.Text("Brown")),
-                                                        ft.DataCell(ft.Text("19")),
-                                                    ]),
-                                                    ft.DataRow(cells=[
-                                                        ft.DataCell(ft.Text("Alice")),
-                                                        ft.DataCell(ft.Text("Wong")),
-                                                        ft.DataCell(ft.Text("25")),
-                                                    ]),
-                                                ],
-                                            )
-                                        ],
-                                        alignment=MainAxisAlignment.CENTER
-                                    )
-                                ]
-                            )
-                        ]
-                    )
-                )
         except pyodbc.Error as ex:
             sqlstate = ex.args[0]
             print(f"Error de conexión: {sqlstate}")
-
+        finally:
+            try:
+                cnxn.close()
+            except:
+                pass
+            if page.route == "/perfil_docente":
+                try:
+                    cnxn = pyodbc.connect(CONNECTION_STRING)
+                    cursor = cnxn.cursor()
+                    cursor.execute(sql_info)
+                    doc_info_tuple = cursor.fetchone()
+                    doc_info = list(doc_info_tuple)
+                    print(doc_info)
+                    page.views.append(
+                        View(
+                            "/perfil_docente",
+                            bgcolor="#d1d1d1",
+                            controls=[
+                                barra,
+                                Column(
+                                    controls=[
+                                        Row(
+                                            controls=[
+                                                DataTable(
+                                                    columns=[
+                                                        ft.DataColumn(ft.Text("Nombres", text_align=ft.TextAlign.CENTER)),
+                                                        ft.DataColumn(ft.Text("Apellidos", text_align=ft.TextAlign.CENTER)),
+                                                        ft.DataColumn(ft.Text("Año de nacimiento", text_align=ft.TextAlign.CENTER), numeric=True),
+                                                        ft.DataColumn(ft.Text("RUT", text_align=ft.TextAlign.CENTER)),
+                                                        ft.DataColumn(ft.Text("Cargo", text_align=ft.TextAlign.CENTER)),
+                                                        ft.DataColumn(ft.Text("Curso designado", text_align=ft.TextAlign.CENTER)),
+                                                    ],
+                                                    rows=[
+                                                        ft.DataRow(cells=[
+                                                            ft.DataCell(ft.Text(f"{doc_info[1]} {doc_info[2]} {doc_info[3]}", text_align=ft.TextAlign.CENTER)),
+                                                            ft.DataCell(ft.Text(f"{doc_info[4]} {doc_info[5]}", text_align=ft.TextAlign.CENTER)),
+                                                            ft.DataCell(ft.Text(f"{doc_info[6]}", text_align=ft.TextAlign.CENTER)),
+                                                            ft.DataCell(ft.Text(f"{doc_info[7]}", text_align=ft.TextAlign.CENTER)),
+                                                            ft.DataCell(ft.Text("Profesor Docente" if doc_info[8] == False else "Profesional PIE", text_align=ft.TextAlign.CENTER)),
+                                                            ft.DataCell(ft.Text(f"{doc_info[10]}", text_align=ft.TextAlign.CENTER)),
+                                                        ]),
+                                                    ],
+                                                    data_text_style=TextStyle(color="black"),
+                                                    heading_text_style=ft.TextStyle(color="black"),
+                                                    border=ft.Border(
+                                                        left=ft.BorderSide(1, ft.Colors.BLACK),
+                                                        top=ft.BorderSide(1, ft.Colors.BLACK),
+                                                        right=ft.BorderSide(1, ft.Colors.BLACK),
+                                                        bottom=ft.BorderSide(1, ft.Colors.BLACK)
+                                                    )
+                                                )
+                                            ],
+                                            alignment=MainAxisAlignment.CENTER
+                                        )
+                                    ]
+                                )
+                            ]
+                        )
+                    )
+                except pyodbc.Error as ex:
+                    sqlstate = ex.args[0]
+                    print(f"Error de conexión: {sqlstate}")
+                finally:
+                    try:
+                        cnxn.close()
+                    except:
+                        pass
+        
         page.update()
 
     def view_pop(e):
@@ -174,11 +199,3 @@ def mostrar_menu_principal(page: Page):
     page.on_view_pop = view_pop
 
     page.go(page.route)
-
-    def perfil_docente(page: Page):
-        page.clean()
-        local_ruta = "Perfil docente"
-        page.add(Text(local_ruta, size=20, weight=FontWeight.BOLD))
-        page.update()
-
-app(target=mostrar_menu_principal, port=5000, view=AppView.WEB_BROWSER)
