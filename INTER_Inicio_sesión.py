@@ -1,28 +1,26 @@
 import flet as ft
 import pyodbc
-from Interfaz_profesor import mostrar_menu_principal
+from INTER_Profesores import mostrar_menu_principal
 from DB import CONNECTION_STRING
 def main(page: ft.Page):
     page.clean()
     page.title = "Inicio de Sesión"
-    page.window_width = 400
-    page.window_height = 300
+    page.window.width = 400
+    page.window.height = 300
+    page.bgcolor= "#d1d1d1"
 
-    sql_verify = "SELECT pro_nameID FROM Profesores WHERE pro_nombre_1 = ? AND pro_rut = ?"
- 
+    sql_verify = "SELECT pro_nameID FROM Profesores WHERE pro_rut = ? AND pro_password = ?"
 
-    titulo = ft.Text("Iniciar Sesión", size=20, weight="bold")
-    usuario = ft.TextField(label="Usuario", width=300, max_length=10)
-    
 
-    
+    titulo = ft.Text("Iniciar Sesión", size=20, weight=ft.FontWeight.BOLD)
+    usuario = ft.TextField(label="RUT", width=300, max_length=10)
 
-    
+
     password = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, width=300)
 
 
     mensaje = ft.Text("", color="black")
-    logo = ft.Image(src="/NEURO CHECK ICON.png",
+    logo = ft.Image(src="/neuro_check_icon.png",
         width=120,
         height=120,
         fit=ft.ImageFit.CONTAIN
@@ -57,9 +55,9 @@ def main(page: ft.Page):
                 boton_login,
                 mensaje,
             ],
-            
-            alignment="center",  
-            horizontal_alignment="center",
+
+            alignment=ft.MainAxisAlignment.CENTER,  
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             spacing=10,
         ),
         alignment=ft.alignment.center,
@@ -75,4 +73,4 @@ def main(page: ft.Page):
         )
     )
 
-ft.app(target=main, view=ft.WEB_BROWSER)
+ft.app(target=main, port=5000, view=ft.AppView.WEB_BROWSER, assets_dir="assets")
