@@ -34,7 +34,7 @@ def main(page: ft.Page):
             res_is = cursor.fetchone()
             print(res_is)
             if  res_is:
-                mostrar_menu_principal(page, cerrar_main=main)
+                mostrar_menu_principal(page)
                 page.update()
             else:
                 mensaje.value = "Usuario o contraseña incorrectos."
