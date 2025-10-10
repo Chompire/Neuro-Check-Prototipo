@@ -2,12 +2,26 @@ import flet as ft
 import pyodbc
 from INTER_Profesores import mostrar_menu_principal
 from DB import CONNECTION_STRING
-def main(page: ft.Page):
+
+def get_profesor_data(pro_nameID: int):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_info = "SELECT * FROM Profesores WHERE pro_nameID = ?"
+                cursor.execute(sql_info, pro_nameID)
+                return cursor.fetchone()
+    except pyodbc.Error as ex:
+        print(f"Error de conexión o consulta: {ex.args[0]}")
+        return None         
+
+
+def main(page: ft.Page, pro_nameID: int):
     page.clean()
     page.title = "Inicio de Sesión"
     page.window.width = 400
     page.window.height = 300
     page.bgcolor= "#d1d1d1"
+    pro_user_data = get_profesor_data(pro_nameID)
 
     sql_verify = "SELECT pro_nameID FROM Profesores WHERE pro_rut = ? AND pro_password = ?"
 
