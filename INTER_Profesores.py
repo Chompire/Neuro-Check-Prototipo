@@ -12,23 +12,22 @@ def get_profesor_data(pro_nameID: int):
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
         return None
-
+color_Docente = "#0A00CF"
 def create_app_bar(page: ft.Page, title: str):
     return ft.AppBar(
         title=ft.TextButton(
             content=ft.Text("Neuro Check", size=25, weight=ft.FontWeight.BOLD, color="white"),
             on_click=lambda _: page.go("/inicio_profesor")
         ),
-        bgcolor="#0A00CF",
+        bgcolor=color_Docente,
         center_title=False,
         actions=[
             ft.Row([
                 ft.Text(title, color="white"),
                 ft.PopupMenuButton(items=[
                     ft.PopupMenuItem(
-                        icon=ft.icons.EXIT_TO_APP,
+                        icon=ft.Icons.EXIT_TO_APP,
                         text="Cerrar sesión",
-                        # Aquí deberías agregar la lógica para cerrar sesión, ej: page.go("/")
                     ),
                 ])
             ]),
@@ -39,7 +38,7 @@ def create_inicio_view(page: ft.Page, profesor_data):
     doc_name = profesor_data[1] if profesor_data else "Desconocido"
     
     return ft.View(
-        route="/inicio_profesor",
+        route="/inicio_profesor_pie",
         bgcolor="#d1d1d1",
         controls=[
             create_app_bar(page, "Inicio"),
@@ -53,7 +52,7 @@ def create_inicio_view(page: ft.Page, profesor_data):
                     ),
                     ft.Card(
                         elevation=0,
-                        color="#0A00CF",
+                        color=color_Docente,
                         content=ft.Container(
                             content=ft.Column([
                                 ft.ListTile(
@@ -70,7 +69,7 @@ def create_inicio_view(page: ft.Page, profesor_data):
                         )
                     ),
                     ft.Card(
-                        color="#0A00CF",
+                        color=color_Docente,
                         content=ft.Container(
                             content=ft.Column([
                                 ft.ListTile(
@@ -131,9 +130,9 @@ def create_perfil_view(page: ft.Page, profesor_data):
         ],
         data_text_style=ft.TextStyle(color="black"),
         heading_text_style=ft.TextStyle(color="black", weight=ft.FontWeight.BOLD),
-        border=ft.border.all(1, ft.colors.BLACK),
-        vertical_lines=ft.border.BorderSide(1, ft.colors.BLACK),
-        horizontal_lines=ft.border.BorderSide(1, ft.colors.BLACK),
+        border=ft.border.all(1, ft.Colors.BLACK),
+        vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+        horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
     )
 
     return ft.View(
@@ -169,5 +168,4 @@ def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
     page.on_route_change = route_change
     page.on_view_pop = view_pop
 
-    # Iniciar en la ruta principal del profesor
     page.go("/inicio_profesor")
