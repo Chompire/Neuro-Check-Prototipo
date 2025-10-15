@@ -1,30 +1,7 @@
 import flet as ft
-import pyodbc
 from INTER_Profesores import mostrar_menu_principal
 from INTER_PIE import menu_principalPIE
-from DB import CONNECTION_STRING
-
-def get_profesor_id(pro_rut: str, pro_password: str):
-    try:
-        with pyodbc.connect(CONNECTION_STRING) as cnxn:
-            with cnxn.cursor() as cursor:
-                sql_verify = "SELECT pro_nameID FROM Profesores WHERE pro_rut = ? AND pro_password = ?"
-                cursor.execute(sql_verify, pro_rut, pro_password)
-                return cursor.fetchone()
-    except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
-        return None
-    
-def get_profesor_cargo(pro_id:int):
-    try:
-        with pyodbc.connect(CONNECTION_STRING) as cnxn:
-            with cnxn.cursor() as cursor:
-                sql_verify = "SELECT pro_cargo FROM Profesores WHERE pro_nameID = ?"
-                cursor.execute(sql_verify, pro_id)
-                return cursor.fetchone()
-    except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
-        return None
+from CRUD import profesorREAD
  
 
 
@@ -49,15 +26,15 @@ def main(page: ft.Page):
     )
     fondo = ft.Container(ft.Image(src="/fondo.png", width= 1920, height= 1080,fit=ft.ImageFit.CONTAIN), expand=True)
     def login_click(e):
-        prof_parameters = get_profesor_id(usuario.value, password.value)
-        prof_cargo = get_profesor_cargo(prof_parameters[0])
-        print(prof_cargo)
-        print(prof_parameters[0])  
-        if prof_parameters:
-            if prof_cargo[0] == 1:
-                menu_principalPIE(page, prof_parameters[0])
+        profesor_data = profesorREAD(pro_rut=usuario.value, pro_password=password.value)
+        
+        if profesor_data:
+            prof_id = profesor_data[0]
+            prof_cargo = profesor_data[8]
+            if prof_cargo == 1:
+                menu_principalPIE(page, prof_id)
             else:
-                mostrar_menu_principal(page, prof_parameters[0])
+                mostrar_menu_principal(page, prof_id)
             page.update()
         else:
             mensaje.value = "Usuario o contraseña incorrectos"

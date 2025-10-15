@@ -1,17 +1,6 @@
 import flet as ft
-import pyodbc
-from DB import CONNECTION_STRING
+from CRUD import profesorREAD
 
-def get_profesor_data(pro_nameID: int):
-    try:
-        with pyodbc.connect(CONNECTION_STRING) as cnxn:
-            with cnxn.cursor() as cursor:
-                sql_info = "SELECT * FROM Profesores WHERE pro_nameID = ?"
-                cursor.execute(sql_info, pro_nameID)
-                return cursor.fetchone()
-    except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
-        return None
 color_Docente = "#0A00CF"
 def create_app_bar(page: ft.Page, title: str):
     return ft.AppBar(
@@ -148,7 +137,7 @@ def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
     page.clean()
     page.title = "Neuro Check - Profesor"
     page.bgcolor = "#d1d1d1"
-    profesor_data = get_profesor_data(pro_nameID)
+    profesor_data = profesorREAD(pro_nameID)
 
     def route_change(e: ft.RouteChangeEvent):
         print(f"Cambiando a la ruta: {e.route}")
