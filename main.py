@@ -72,4 +72,4 @@ def main(page: ft.Page):
         )
     )
 
-ft.app(target=main, port=5000, view=ft.AppView.WEB_BROWSER, assets_dir="assets")
+ft.app(target=main, assets_dir="assets", view=ft.AppView.FLET_APP)

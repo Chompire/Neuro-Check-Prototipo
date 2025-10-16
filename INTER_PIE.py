@@ -231,22 +231,6 @@ def modificación_docente(page: ft.Page, profesor_data):
         profesorDELETE(selected_prof_id)
         load_profesores_to_table()
 
-    # --- Funciones que abren los diálogos (conectadas a los botones) ---
-    def open_add_dialog(e):
-        page.dialog = add_dialog
-        add_dialog.open = True
-        page.update()
-
-    def open_edit_dialog(e):
-        page.dialog = edit_dialog
-        edit_dialog.open = True
-        page.update()
-
-    def open_delete_dialog(e):
-        page.dialog = delete_dialog
-        delete_dialog.open = True
-        page.update()
-
     def on_row_select(e):
         nonlocal selected_prof_id, original_selected_rut
         selected_prof = e.control.data
