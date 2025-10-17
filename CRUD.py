@@ -14,18 +14,19 @@ def profesorCREATE(datos_profesor: tuple):
                                     "pro_apellido_mat, " \
                                         "pro_nacimiento, " \
                                             "pro_rut, " \
+                                                "pro_email, " \
                                                 "pro_cargo, " \
                                                 "pro_password, " \
                                                     "lvl_curso," \
                                                         "pro_state) " \
-                                                            "VALUES(?,?,?,?,?,?,?,?,?,?,?);"
+                                                            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);"
                 cursor.execute(sql_add, datos_profesor)
                 cnxn.commit()
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
         return None
 
-def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_password: str | None = None):
+def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_password: str | None = None, pro_email: str | None = None):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -35,7 +36,7 @@ def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_
                     cursor.execute(sql_info, pro_nameID)
                     return cursor.fetchone()
                 elif pro_rut is not None and pro_password is not None:
-                    sql_info = "SELECT * FROM Profesores WHERE pro_rut = ? AND pro_password = ?"
+                    sql_info = "SELECT * FROM Profesores WHERE pro_email = ? AND pro_password = ?"
                     cursor.execute(sql_info, pro_rut, pro_password)
                     return cursor.fetchone()
                 elif pro_rut is not None:

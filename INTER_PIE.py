@@ -4,7 +4,8 @@ from DB import CONNECTION_STRING
 from CRUD import profesorCREATE,profesorREAD, profesorUPDATE,profesorDELETE
 
 
-color_PIE = "#CF6400"
+color_PIE = "#FF0000"
+color_Background = "#FFFFFF"
 def create_app_bar(page: ft.Page, title: str):
     return ft.AppBar(
         title=ft.TextButton(
@@ -26,19 +27,35 @@ def create_app_bar(page: ft.Page, title: str):
         ]
     )
 
+def create_footer():
+    """Crea un control de pie de página reutilizable."""
+    return ft.Container(
+        content=ft.Text(
+            "© 2024 Neuro Check. Todos los derechos reservados.",
+            size=12,
+            color=ft.Colors.BLACK54,
+            text_align=ft.TextAlign.CENTER,
+        ),
+        alignment=ft.alignment.center,
+        padding=10,
+    )
+
 def create_inicio_view(page: ft.Page, profesor_data):
     doc_name = profesor_data[1] if profesor_data else "Desconocido"
     return ft.View(
         route="/inicio_profesor",
-        bgcolor="#d1d1d1",
+        bgcolor=color_Background,
         controls=[
             create_app_bar(page, "Inicio"),
-            ft.Container(
-                expand=True,
-                content=ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    vertical_alignment=ft.CrossAxisAlignment.START,
-                    controls=[
+            ft.Column(
+                expand=True, # Permite que la columna ocupe todo el espacio vertical
+                controls=[
+                    ft.Container(
+                        expand=True, # El contenido principal se expande
+                        content=ft.Row(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            vertical_alignment=ft.CrossAxisAlignment.START,
+                            controls=[
                         ft.Column(
                             expand=True,
                             scroll=ft.ScrollMode.AUTO,
@@ -120,9 +137,12 @@ def create_inicio_view(page: ft.Page, profesor_data):
                             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                             spacing=15
                         )
-                    ]
-                )
-            )
+                            ]
+                        )
+                    ),
+                    create_footer() # El pie de página se coloca al final
+                ]
+            ),
         ]
     )
 
@@ -311,6 +331,7 @@ def modificación_docente(page: ft.Page, profesor_data):
     apellido_pat = ft.TextField(label="Apellido paterno", label_style=ft.TextStyle(color="black"), color="black")
     apellido_mat = ft.TextField(label="Apellido materno", label_style=ft.TextStyle(color="black"), color="black")
     rut_field = ft.TextField(label="RUT", width=300, label_style=ft.TextStyle(color="black"), color="black")
+    mail_field = ft.TextField(label="Email", label_style=ft.TextStyle(color="black"), color="black")
     fecha_nacimiento_field = ft.TextField(
         label="Fecha de nacimiento",
         label_style=ft.TextStyle(color="black"),
@@ -394,62 +415,70 @@ def modificación_docente(page: ft.Page, profesor_data):
 
     return ft.View(
         route="/modificación_docente",
-        bgcolor="#d1d1d1",
+        bgcolor=color_Background,
         controls=[
-            feedback_snackbar, # Añade el SnackBar a la vista para que pueda ser mostrado
+            feedback_snackbar,
             create_app_bar(page, "Modificación Docente"),
-            ft.Row(
-                vertical_alignment=ft.CrossAxisAlignment.START,
+            ft.Column(
                 expand=True,
+                scroll=ft.ScrollMode.AUTO,
                 controls=[
-                    ft.Column(
-                        scroll=ft.ScrollMode.AUTO,
-                        spacing=20,
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.START,
+                        expand=True,
                         controls=[
-                            ft.Container(
-                                content=ft.Column([
-                                    ft.Row([head_mod_1]),
-                                    ft.Row([data_table]),
-                                    
-                                ], horizontal_alignment=ft.CrossAxisAlignment.START),
-                                
-                                padding=10,
-                                border=ft.border.all(1, ft.Colors.BLACK26),
-                                border_radius=8 
-                            ),
-        
-                            ft.Container(
-                                content=ft.Column([
-                                    ft.Row([head_mod_2]),
-                                    ft.Row([
-                                        nombre1,
-                                        nombre2,
-                                        nombre3,
-                                    ], alignment=ft.MainAxisAlignment.CENTER),
-                                    ft.Row([
-                                        apellido_pat,
-                                        apellido_mat,
-                                        fecha_nacimiento_field,
-                                    ], alignment=ft.MainAxisAlignment.CENTER),
-                                    ft.Row([
-                                        rut_field,
-                                        cargo_field,
-                                        curso_field,
-                                    ], alignment=ft.MainAxisAlignment.CENTER),
-                                    ft.Row([
-                                        estado_field,
-                                    ], alignment=ft.MainAxisAlignment.CENTER),
-                                    ft.Row([add_button, edit_button, delete_button], alignment=ft.MainAxisAlignment.START),
-                                ], horizontal_alignment=ft.CrossAxisAlignment.CENTER),
-                                width=950,
-                                padding=10,
-                                border=ft.border.all(1, ft.Colors.BLACK26),
-                                border_radius=8
+                            ft.Column(
+                                spacing=20,
+                                controls=[
+                                    ft.Container(
+                                        content=ft.Column([
+                                            ft.Row([head_mod_1]),
+                                            ft.Row([data_table]),
+                                            
+                                        ],),
+                                        
+                                        padding=10,
+                                        border=ft.border.all(2, ft.Colors.BLACK),
+                                        border_radius=8 
+                                    ),
+                
+                                    ft.Container(
+                                        content=ft.Column([
+                                            ft.Row([head_mod_2]),
+                                            ft.Row([
+                                                nombre1,
+                                                nombre2,
+                                                nombre3,
+                                            ],),
+                                            ft.Row([
+                                                apellido_pat,
+                                                apellido_mat,
+                                                fecha_nacimiento_field,
+                                            ],),
+                                            ft.Row([
+                                                rut_field,
+                                                mail_field,
+                                                cargo_field,
+                                                
+                                            ],),
+                                            ft.Row([
+                                                curso_field,
+                                                estado_field,
+                                            ],  ),
+                                            ft.Row([add_button, edit_button, delete_button],),
+                                        ],),
+                                        padding=10,
+                                        border=ft.border.all(2, ft.Colors.BLACK),
+                                        border_radius=8,
+                                        bgcolor="white",                                                                                
+                                    )
+                                ]
                             )
                         ]
-                    )
+                    ),
+                    create_footer()
                 ]
-            )
+            ),
         ]
     )
     
@@ -457,7 +486,7 @@ def create_perfil_view(page: ft.Page, profesor_data):
     if not profesor_data:
         return ft.View(
             route="/perfil_docente",
-            bgcolor="#d1d1d1",
+            bgcolor=color_Background,
             controls=[
                 create_app_bar(page, "Perfil Docente"),
                 ft.Text("No se pudo cargar la información del perfil.", color="red")
@@ -473,6 +502,7 @@ def create_perfil_view(page: ft.Page, profesor_data):
             ft.DataColumn(ft.Text("Apellidos")),
             ft.DataColumn(ft.Text("Nacimiento"), numeric=True),
             ft.DataColumn(ft.Text("RUT")),
+            ft.DataColumn(ft.Text("Email")),
             ft.DataColumn(ft.Text("Cargo")),
             ft.DataColumn(ft.Text("Curso")),
             ft.DataColumn(ft.Text("Estado")),
@@ -483,7 +513,8 @@ def create_perfil_view(page: ft.Page, profesor_data):
                 ft.DataCell(ft.Text(f"{doc_info[4]} {doc_info[5]}")),
                 ft.DataCell(ft.Text(f"{doc_info[6]}")),
                 ft.DataCell(ft.Text(f"{doc_info[7]}")),
-                ft.DataCell(ft.Text("Profesional PIE" if doc_info[8] else "Profesor Docente")),
+                ft.DataCell(ft.Text(f"{doc_info[8]}")),
+                ft.DataCell(ft.Text("Profesional PIE" if doc_info[9] else "Profesor Docente")),
                 ft.DataCell(ft.Text(f"{doc_info[10]}")),
                 ft.DataCell(ft.Text(f"Habilitado" if doc_info[11] else "Inhabilitado")),
             ]),
@@ -497,53 +528,59 @@ def create_perfil_view(page: ft.Page, profesor_data):
 
     return ft.View(
         route="/perfil_docente",
-        bgcolor="#d1d1d1",
+        bgcolor=color_Background,
         controls=[
             create_app_bar(page, "Perfil Docente"),
-            ft.Row(
-                alignment=ft.MainAxisAlignment.CENTER,
-                vertical_alignment=ft.CrossAxisAlignment.START,
+            ft.Column(
                 expand=True,
                 controls=[
-                    ft.Column(
-                        scroll=ft.ScrollMode.AUTO,
-                        spacing=20,
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.START,
+                        expand=True,
                         controls=[
+                            ft.Column(
+                                scroll=ft.ScrollMode.AUTO,
+                                spacing=20,
+                                controls=[
+                                    ft.Container(
+                                content=
+                                ft.Column([
+                                    ft.Row([ft.Text("Datos de Docente",size=20, weight=ft.FontWeight.BOLD, color="black")]),
+                                    ft.Row([info_table], alignment=ft.MainAxisAlignment.CENTER)],
+                                    scroll=ft.ScrollMode.AUTO,
+                                ),
+                                border=ft.border.all(1, ft.Colors.BLACK26),
+                                border_radius=8,
+                                padding=10,
+                            ),
                             ft.Container(
-                        content=
-                        ft.Column([
-                            ft.Row([ft.Text("Datos de Docente",size=20, weight=ft.FontWeight.BOLD, color="black")]),
-                            ft.Row([info_table], alignment=ft.MainAxisAlignment.CENTER)],
-                            scroll=ft.ScrollMode.AUTO,
-                        ),
-                        border=ft.border.all(1, ft.Colors.BLACK26),
-                        border_radius=8,
-                        padding=10,
-                    ),
-                    ft.Container(
-                        content=
-                        ft.Column([
-                            ft.Row([ft.Text("Lista de alumnos testeados",size=20, weight=ft.FontWeight.BOLD, color="black")]),
-                            ft.Row([info_table], alignment=ft.MainAxisAlignment.CENTER)],
-                            scroll=ft.ScrollMode.AUTO,
-                        ),
-                        border=ft.border.all(1, ft.Colors.BLACK26),
-                        border_radius=8,
-                        padding=10,
-                    ),
+                                content=
+                                ft.Column([
+                                    ft.Row([ft.Text("Lista de alumnos testeados",size=20, weight=ft.FontWeight.BOLD, color="black")]),
+                                    ft.Row([info_table], alignment=ft.MainAxisAlignment.CENTER)],
+                                    scroll=ft.ScrollMode.AUTO,
+                                ),
+                                border=ft.border.all(1, ft.Colors.BLACK26),
+                                border_radius=8,
+                                padding=10,
+                            ),
+                                ]
+                            ),                    
                         ]
-                    ),                    
+                    ),
+                    create_footer()
                 ]
-            )
+            ),
         ]
     )
 
 def menu_principalPIE(page: ft.Page, pro_nameID: int):
     page.clean()
     page.title = "Neuro Check - Profesor"
-    page.bgcolor = "#d1d1d1"
+    page.bgcolor = color_Background
     profesor_data = profesorREAD(pro_nameID)
-    
+    print(profesor_data)
 
     def route_change(e: ft.RouteChangeEvent):
         print(f"Cambiando a la ruta: {e.route}")
