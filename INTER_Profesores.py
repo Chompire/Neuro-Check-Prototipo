@@ -114,7 +114,7 @@ def create_perfil_view(page: ft.Page, profesor_data):
                 ft.DataCell(ft.Text(f"{doc_info[6]}")),
                 ft.DataCell(ft.Text(f"{doc_info[7]}")),
                 ft.DataCell(ft.Text("Profesional PIE" if doc_info[8] else "Profesor Docente")),
-                ft.DataCell(ft.Text(f"{doc_info[10]}")),
+                ft.DataCell(ft.Text(f"{doc_info[13] or ''}")), # Usamos el índice 13 (nombre del curso)
             ]),
         ],
         data_text_style=ft.TextStyle(color="black"),

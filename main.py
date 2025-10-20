@@ -12,7 +12,7 @@ def main(page: ft.Page):
     page.window.height = 300
     page.bgcolor= "#d1d1d1"
     titulo = ft.Text("Iniciar Sesión", size=20, weight=ft.FontWeight.BOLD)
-    usuario = ft.TextField(label="RUT", width=300)
+    usuario = ft.TextField(label="RUT (sin puntos ni guión)", width=300)
 
 
     password = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, width=300)

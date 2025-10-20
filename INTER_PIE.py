@@ -1,7 +1,8 @@
 import flet as ft
 import pyodbc
 from DB import CONNECTION_STRING
-from CRUD import profesorCREATE,profesorREAD, profesorUPDATE,profesorDELETE
+from CRUD import profesorCREATE,profesorREAD, profesorUPDATE,profesorDELETE, cursoREAD_all
+import datetime
 
 
 color_PIE = "#FF0000"
@@ -154,91 +155,156 @@ def modificación_docente(page: ft.Page, profesor_data):
         content=ft.Text(""),
         bgcolor=ft.Colors.GREEN_700
     )
+    def open_dialog(e, dialog):
+        page.dialog = dialog
+        dialog.open = True
+        page.update()
 
     # --- Funciones de confirmación para los diálogos ---
     def confirm_add(e):
-        page.dialog.open = False
-        add_profesor_logic()
-
+        add_profesor_logic(e)
+        page.close(add_dialog)
+    
     def confirm_update(e):
-        page.dialog.open = False
         update_profesor_logic()
+        page.close(edit_dialog)
+    
 
-    def confirm_delete(e):
-        page.dialog.open = False
+    def confirm_delete(e, dialog):
         delete_profesor_logic()
+        page.close(delete_dialog)
 
-    def close_dialog(e):
-        page.dialog.open = False
+
+
+    def close_dialog(e, dialog):
+        dialog.open = False
         page.update()
+        
 
     # --- Diálogos de Alerta ---
     add_dialog = ft.AlertDialog(
         modal=True, title=ft.Text("Confirmar Creación"),
         content=ft.Text("¿Desea agregar este nuevo profesor?"),
-        actions=[ft.TextButton("Sí, agregar", on_click=confirm_add), ft.TextButton("Cancelar", on_click=close_dialog)],
     )
+    add_dialog.actions=[ft.TextButton("Sí, agregar", on_click= confirm_add ), ft.TextButton("Cancelar", on_click=lambda e: page.close(add_dialog))]
     edit_dialog = ft.AlertDialog(
-        modal=True, title=ft.Text("Confirmar Edición"),
+        modal=True, title=ft.Text("Confirmar Actualización"),
         content=ft.Text("¿Desea guardar los cambios realizados?"),
-        actions=[ft.TextButton("Sí, guardar", on_click=confirm_update), ft.TextButton("Cancelar", on_click=close_dialog)],
     )
+    edit_dialog.actions=[ft.TextButton("Sí, guardar", on_click=confirm_update), ft.TextButton("Cancelar", on_click=lambda e: page.close(edit_dialog))]
     delete_dialog = ft.AlertDialog(
         modal=True, title=ft.Text("Confirmar Eliminación"),
         content=ft.Text("¿Está seguro de que desea eliminar a este profesor? Esta acción no se puede deshacer."),
-        actions=[ft.TextButton("Sí, eliminar", on_click=confirm_delete, style=ft.ButtonStyle(color=ft.Colors.RED)), ft.TextButton("Cancelar", on_click=close_dialog)],
     )
+    delete_dialog.actions=[ft.TextButton("Sí, eliminar", on_click=lambda e: confirm_delete(delete_dialog), style=ft.ButtonStyle(color=ft.Colors.RED)), ft.TextButton("Cancelar", on_click=lambda e: page.close(delete_dialog))]
 
     # --- Lógica de las operaciones (separada de los eventos de click) ---
-    def add_profesor_logic():
-        rut_a_verificar = rut_field.value
+    def add_profesor_logic(e):
+        rut_a_verificar = rut_field.value.strip()
+        email_a_verificar = mail_field.value.strip()
+
+        # 1. Validar que el RUT no esté vacío
+        if not rut_a_verificar:
+            feedback_snackbar.content = ft.Text("Error: El campo RUT es obligatorio.")
+            feedback_snackbar.bgcolor = ft.Colors.RED_700
+            feedback_snackbar.open = True
+            page.update()
+            return
+
+        # 3. Validar que los campos obligatorios (incluyendo Dropdowns) no estén vacíos
+        # Incluimos todos los campos que probablemente son NOT NULL en la base de datos.
+        # Si pro_nombre_2 o pro_nombre_3 son NOT NULL, también deberían agregarse aquí.
+        # Asumimos que pro_password es manejado internamente y no puede ser vacío.
+
+        campos_obligatorios = {
+            "Primer nombre": nombre1.value,
+            "Apellido paterno": apellido_pat.value,
+            "Email": email_a_verificar,
+            "Cargo": cargo_field.value,
+            "Estado": estado_field.value,
+            "Apellido materno": apellido_mat.value, # Añadido
+            "Fecha de nacimiento": fecha_nacimiento_field.value, # Añadido
+            "Curso": curso_field.value, # Añadido
+        } 
+
+        for nombre_campo, valor_campo in campos_obligatorios.items():
+            # Un campo se considera vacío si no tiene valor (es None o una cadena vacía después de quitar espacios)
+            if not valor_campo:
+                feedback_snackbar.content = ft.Text(f"Error: El campo '{nombre_campo}' es obligatorio.")
+                feedback_snackbar.bgcolor = ft.Colors.RED_700
+                feedback_snackbar.open = True
+                page.update()
+                return
+
+        # 2. Validar que el RUT no exista ya en la base de datos
         if profesorREAD(pro_rut=rut_a_verificar):
             feedback_snackbar.content = ft.Text(f"Error: El RUT '{rut_a_verificar}' ya está registrado.")
             feedback_snackbar.bgcolor = ft.Colors.RED_700
             feedback_snackbar.open = True
-            page.update()   
-        else:
-            cargo_valor = 1 if cargo_field.value == "Profesional PIE" else 0
-            estado_valor = 1 if estado_field.value == "Habilitado" else 0
-            profesorCREATE(datos_profesor=(
-                nombre1.value,
-                nombre2.value,
-                nombre3.value,
-                apellido_pat.value,
-                apellido_mat.value,
-                fecha_nacimiento_field.value,
-                rut_a_verificar,
-                cargo_valor,
-                password_define,
-                curso_field.value,
-                estado_valor,
-            ))
+            page.update()
+            return
+
+        # 4. Si todas las validaciones pasan, proceder con la creación
+        cargo_valor = 1 if cargo_field.value == "Profesional PIE" else 0
+        estado_valor = 1 if estado_field.value == "Habilitado" else 0
+        
+        datos_nuevos = (
+            nombre1.value, nombre2.value, nombre3.value,
+            apellido_pat.value, apellido_mat.value,
+            fecha_nacimiento_field.value,
+            rut_a_verificar, email_a_verificar,
+            cargo_valor, password_define, 
+            curso_field.value, estado_valor,
+        )
+
+        if profesorCREATE(datos_profesor=datos_nuevos):
             feedback_snackbar.content = ft.Text("Profesor agregado con éxito")
             feedback_snackbar.bgcolor = ft.Colors.GREEN_700
-            feedback_snackbar.open = True
             load_profesores_to_table()
-            page.update()
+            clear_form_fields()
+            reset_selection_state()
+        else:
+            feedback_snackbar.content = ft.Text("Error al agregar profesor. Revisa los campos.")
+            feedback_snackbar.bgcolor = ft.Colors.RED_700
+
+        feedback_snackbar.open = True
+        page.update()
 
     def update_profesor_logic():
         nonlocal selected_prof_id, original_selected_rut
-        nuevo_rut = rut_field.value
+        nuevo_rut = rut_field.value.strip()
+        nuevo_email = mail_field.value.strip()
+
+        # Validar campos obligatorios antes de la actualización
+        campos_obligatorios = {
+            "Primer nombre": nombre1.value, "Apellido paterno": apellido_pat.value,
+            "Apellido materno": apellido_mat.value, "Fecha de nacimiento": fecha_nacimiento_field.value,
+            "RUT": nuevo_rut, "Email": nuevo_email,
+            "Cargo": cargo_field.value, "Estado": estado_field.value,
+            "Curso": curso_field.value,
+        }
+        # ... (el resto de la validación de campos obligatorios es igual)
+        # ... (el resto de la validación de campos obligatorios es igual)
+
         # 1. Verificar si el RUT ya existe para OTRO profesor
-        profesor_existente = profesorREAD(pro_rut=rut_field.value)
-        if profesor_existente and profesor_existente[0] != selected_prof_id:
-            # 2. Si el nuevo RUT ya existe y no es del profesor actual, mostrar error
-            feedback_snackbar.content = ft.Text(f"Error: El RUT '{rut_field.value}' ya está registrado para otro usuario.")
+        profesor_con_mismo_rut = profesorREAD(pro_rut=nuevo_rut)
+        if profesor_con_mismo_rut and profesor_con_mismo_rut[0] != selected_prof_id:
+            feedback_snackbar.content = ft.Text(f"Error: El RUT '{nuevo_rut}' ya está registrado para otro usuario.")
             feedback_snackbar.bgcolor = ft.Colors.RED_700
             feedback_snackbar.open = True
             page.update()
-        elif selected_prof_id is not None:
-            # 3. Si no hay duplicados, proceder con la actualización
+            return
+
+        # 2. Si no hay duplicados, proceder con la actualización
+        if selected_prof_id is not None:
             estado_valor = 1 if estado_field.value == "Habilitado" else 0
             cargo_valor = 1 if cargo_field.value == "Profesional PIE" else 0
             datos_actualizados = {
                 "pro_nombre_1": nombre1.value, "pro_nombre_2": nombre2.value, "pro_nombre_3": nombre3.value,
                 "pro_apellido_pat": apellido_pat.value, "pro_apellido_mat": apellido_mat.value,
                 "pro_nacimiento": fecha_nacimiento_field.value, "pro_rut": nuevo_rut,
-                "pro_cargo": cargo_valor, "lvl_curso": curso_field.value, "pro_state": estado_valor,
+                "pro_email": nuevo_email, "pro_cargo": cargo_valor,
+                "lvl_curso": curso_field.value, "pro_state": estado_valor,
             }
             profesorUPDATE(selected_prof_id, datos_actualizados)
             feedback_snackbar.content = ft.Text("Profesor actualizado con éxito")
@@ -248,8 +314,14 @@ def modificación_docente(page: ft.Page, profesor_data):
 
     def delete_profesor_logic():
         nonlocal selected_prof_id
-        profesorDELETE(selected_prof_id)
-        load_profesores_to_table()
+        if selected_prof_id:
+            profesorDELETE(selected_prof_id)
+            feedback_snackbar.content = ft.Text("Profesor eliminado con éxito.")
+            feedback_snackbar.bgcolor = ft.Colors.GREEN_700
+            feedback_snackbar.open = True
+            load_profesores_to_table()
+            clear_form_fields()
+            reset_selection_state()
 
     def on_row_select(e):
         nonlocal selected_prof_id, original_selected_rut
@@ -265,43 +337,63 @@ def modificación_docente(page: ft.Page, profesor_data):
             delete_button.visible = True
             add_button.disabled = True  # Deshabilita el botón de añadir
             selected_prof_id = selected_prof[0]
-            original_selected_rut = selected_prof[7] # Guardar el RUT original
-            nombre1.value = selected_prof[1]
-            nombre2.value = selected_prof[2]
-            nombre3.value = selected_prof[3]
-            apellido_pat.value = selected_prof[4]
-            apellido_mat.value = selected_prof[5]
-            fecha_nacimiento_field.value = selected_prof[6]
-            rut_field.value = selected_prof[7]
-            cargo_field.value = "Profesional PIE" if selected_prof[8] else "Profesor Docente"
-            curso_field.value = selected_prof[10]
-            estado_field.value = "Habilitado" if selected_prof[11] else "Inhabilitado"
-            page.update()
+            original_selected_rut = selected_prof[6] 
+            nombre1.value = selected_prof[1] or ""
+            nombre2.value = selected_prof[2] or ""
+            nombre3.value = selected_prof[3] or ""
+            apellido_pat.value = selected_prof[4] or ""
+            apellido_mat.value = selected_prof[5] or ""
+            fecha_nacimiento_field.value = str(selected_prof[6]) if selected_prof[6] else ""
+            rut_field.value = selected_prof[7] or "" # Este es pro_rut
+            mail_field.value = selected_prof[8]
+            cargo_field.value = "Profesional PIE" if selected_prof[9] else "Profesor Docente"
+            curso_field.value = selected_prof[11] # Asignamos el ID del curso al Dropdown
+            estado_field.value = "Habilitado" if selected_prof[12] else "Inhabilitado"
                 
         else:
-            nombre1.value =None
-            nombre2.value =None
-            nombre3.value = None
-            apellido_pat.value =None
-            apellido_mat.value = None
-            fecha_nacimiento_field.value = None
-            rut_field.value = None
-            cargo_field.value = None
-            curso_field.value = None
-            estado_field.value = None
+            clear_form_fields()
+            reset_selection_state()
+
+        # Para depuración: Imprime los valores actuales de los campos del formulario
+        print(f"Valores en formulario: RUT='{rut_field.value}', Email='{mail_field.value}', Fecha='{fecha_nacimiento_field.value}'")
+
+            
+        page.update()
+
+    def clear_form_fields():
+        nombre1.value = ""
+        nombre2.value = ""
+        nombre3.value = ""
+        apellido_pat.value = ""
+        apellido_mat.value = ""
+        fecha_nacimiento_field.value = ""
+        rut_field.value = ""
+        mail_field.value = ""
+        cargo_field.value = None
+        curso_field.value = None
+        estado_field.value = None
+
+    def reset_selection_state():
+        nonlocal selected_prof_id, original_selected_rut
+        for row in data_table.rows:
+            row.selected = False
+        
+        if selected_prof_id is not None:
             edit_button.visible = False
             delete_button.visible = False
             add_button.disabled = False # Habilita el botón de añadir
             selected_prof_id = None
             original_selected_rut = None # Limpiar el RUT guardado
-            
-        page.update()
 
-    
+    date_picker = ft.DatePicker(
+        on_change=lambda e: handle_date_change(date_picker),
+        first_date=datetime.datetime(1900, 1, 1),
+        last_date=datetime.datetime.now(),
+    )
+    page.overlay.append(date_picker)
 
-    def handle_date_change(e):
-        fecha_nacimiento_field.value = e.control.value.strftime('%Y-%m-%d')
-        page.close(e.control)
+    def handle_date_change(picker: ft.DatePicker):
+        fecha_nacimiento_field.value = picker.value.strftime('%Y-%m-%d')
         page.update()
 
     data_table = ft.DataTable(
@@ -309,6 +401,7 @@ def modificación_docente(page: ft.Page, profesor_data):
         columns=[
             ft.DataColumn(ft.Text("Nombres")), ft.DataColumn(ft.Text("Apellidos")),
             ft.DataColumn(ft.Text("Nacimiento")), ft.DataColumn(ft.Text("RUT")),
+            ft.DataColumn(ft.Text("Email")),
             ft.DataColumn(ft.Text("Cargo")), ft.DataColumn(ft.Text("Curso")),
             ft.DataColumn(ft.Text("Estado")),
         ],
@@ -330,28 +423,28 @@ def modificación_docente(page: ft.Page, profesor_data):
     nombre3 = ft.TextField(label="Tercer nombre", label_style=ft.TextStyle(color="black"), color="black")
     apellido_pat = ft.TextField(label="Apellido paterno", label_style=ft.TextStyle(color="black"), color="black")
     apellido_mat = ft.TextField(label="Apellido materno", label_style=ft.TextStyle(color="black"), color="black")
-    rut_field = ft.TextField(label="RUT", width=300, label_style=ft.TextStyle(color="black"), color="black")
-    mail_field = ft.TextField(label="Email", label_style=ft.TextStyle(color="black"), color="black")
     fecha_nacimiento_field = ft.TextField(
         label="Fecha de nacimiento",
         label_style=ft.TextStyle(color="black"),
         color="black",
         read_only=True,
-        on_click=lambda _: page.open(ft.DatePicker(on_change=handle_date_change))
+        on_click=lambda _: open_date_picker()
     )
-
-    cursos_disponibles = ["4° Básico A", "4° Básico B", "4° Básico C", "4° Básico D"]
+    rut_field = ft.TextField(label="RUT", width=300, label_style=ft.TextStyle(color="black"), color="black")
+    mail_field = ft.TextField(label="Email", label_style=ft.TextStyle(color="black"), color="black")
     cargo_field = ft.Dropdown(
         label="Cargo",
         width=300,
         options=[ft.dropdown.Option("Profesional PIE"), ft.dropdown.Option("Profesor Docente")],
         label_style=ft.TextStyle(color="black"), color="black",
     )
+    # Obtenemos los cursos desde la base de datos
+    cursos_from_db = cursoREAD_all()
     curso_field = ft.Dropdown(
         label="Curso",
         width=300,
-        options=[ft.dropdown.Option(curso) for curso in cursos_disponibles],
-        label_style=ft.TextStyle(color="black"),
+        # Creamos las opciones usando el ID como clave (key) y el nombre como texto visible
+        options=[ft.dropdown.Option(key=curso[0], text=curso[1]) for curso in cursos_from_db],
         color="black",
     )
     estado_field = ft.Dropdown(
@@ -361,27 +454,18 @@ def modificación_docente(page: ft.Page, profesor_data):
         label_style=ft.TextStyle(color="black"), color="black",
     )
 
-    add_button = ft.IconButton(icon=ft.Icons.ADD, icon_color=ft.Colors.WHITE, bgcolor=color_PIE, tooltip="Añadir nuevo", on_click=lambda e:page.open(add_dialog))
-    edit_button = ft.IconButton(icon=ft.Icons.EDIT, icon_color=ft.Colors.WHITE, bgcolor="#007bff", visible=False, tooltip="Editar", on_click=lambda e:page.open(edit_dialog))
-    delete_button = ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.WHITE, bgcolor="#dc3545", visible=False, tooltip="Eliminar", on_click=lambda e:page.open(delete_dialog))
-    def open_dialog(e, dialog):
-        page.dialog = dialog
-        dialog.open = True
+    def open_date_picker():
+        date_picker.open = True
         page.update()
 
-    add_button = ft.IconButton(
-        icon=ft.Icons.ADD, icon_color=ft.Colors.WHITE, bgcolor=color_PIE, 
-        tooltip="Añadir nuevo", on_click=lambda e: open_dialog(e, add_dialog)
-    )
-    edit_button = ft.IconButton(
-        icon=ft.Icons.EDIT, icon_color=ft.Colors.WHITE, bgcolor="#007bff", visible=False, 
-        tooltip="Editar", on_click=lambda e: open_dialog(e, edit_dialog)
-    )
-    delete_button = ft.IconButton(
-        icon=ft.Icons.DELETE, icon_color=ft.Colors.WHITE, bgcolor="#dc3545", visible=False, 
-        tooltip="Eliminar", on_click=lambda e: open_dialog(e, delete_dialog)
-    )
-
+    
+    
+    
+    add_button = ft.IconButton(icon=ft.Icons.ADD, icon_color=ft.Colors.WHITE, bgcolor=color_PIE, tooltip="Añadir nuevo", on_click=lambda e: page.open(add_dialog))
+    edit_button = ft.IconButton(icon=ft.Icons.EDIT, icon_color=ft.Colors.WHITE, bgcolor="#007bff", visible=False, tooltip="Editar", on_click=lambda e: page.open(edit_dialog))
+    delete_button = ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.WHITE, bgcolor="#dc3545", visible=False, tooltip="Eliminar", on_click=lambda e: page.open(delete_dialog))
+    
+        
     head_mod_1= ft.Text("Lista de Docentes",size=20, weight=ft.FontWeight.BOLD, color="black")
     head_mod_2= ft.Text("Añadir / Editar Docente",size=20, weight=ft.FontWeight.BOLD, color="black")
     
@@ -397,9 +481,10 @@ def modificación_docente(page: ft.Page, profesor_data):
                         ft.DataCell(ft.Text(f"{prof[4]} {prof[5]}")),
                         ft.DataCell(ft.Text(str(prof[6]))),
                         ft.DataCell(ft.Text(prof[7])),
-                        ft.DataCell(ft.Text("Profesional PIE" if prof[8] else "Profesor Docente")),
-                        ft.DataCell(ft.Text(prof[10])),
-                        ft.DataCell(ft.Text("Habilitado" if prof[11] else "Inhabilitado")),
+                        ft.DataCell(ft.Text(prof[8])),
+                        ft.DataCell(ft.Text("Profesional PIE" if prof[9] else "Profesor Docente")),
+                        ft.DataCell(ft.Text(prof[13] or "")), # Usamos el índice 13 (nombre del curso)
+                        ft.DataCell(ft.Text("Habilitado" if prof[12] else "Inhabilitado")),
                     ],
                         data=prof,
                         # Si el ID de esta fila coincide con el que queremos seleccionar, la marcamos.
@@ -514,9 +599,9 @@ def create_perfil_view(page: ft.Page, profesor_data):
                 ft.DataCell(ft.Text(f"{doc_info[6]}")),
                 ft.DataCell(ft.Text(f"{doc_info[7]}")),
                 ft.DataCell(ft.Text(f"{doc_info[8]}")),
-                ft.DataCell(ft.Text("Profesional PIE" if doc_info[9] else "Profesor Docente")),
-                ft.DataCell(ft.Text(f"{doc_info[10]}")),
-                ft.DataCell(ft.Text(f"Habilitado" if doc_info[11] else "Inhabilitado")),
+                ft.DataCell(ft.Text("Profesional PIE" if doc_info[9] == 1 else "Profesor Docente")),
+                ft.DataCell(ft.Text(f"{doc_info[13] or ''}")), # Usamos el índice 13 (nombre del curso)
+                ft.DataCell(ft.Text(f"Habilitado" if doc_info[12] == 1 else "Inhabilitado")),
             ]),
         ],
         data_text_style=ft.TextStyle(color="black"),
@@ -607,7 +692,7 @@ def menu_principalPIE(page: ft.Page, pro_nameID: int):
 
 if __name__ == "__main__":
     def main_standalone(page: ft.Page):
-        id_profesor_pie_test = 13
+        id_profesor_pie_test = 2
         menu_principalPIE(page, id_profesor_pie_test)
 
-    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.WEB_BROWSER)
+    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)

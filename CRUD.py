@@ -22,30 +22,39 @@ def profesorCREATE(datos_profesor: tuple):
                                                             "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);"
                 cursor.execute(sql_add, datos_profesor)
                 cnxn.commit()
+                return True  # Retorna True si la operación fue exitosa
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
-        return None
+        return False  # Retorna False si ocurrió un error
 
-def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_password: str | None = None, pro_email: str | None = None):
+def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_password: str | None = None, pro_email: str | None = None, lvl_curso: int | None = None):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 if pro_nameID is not None:
-                    # Obtener un solo profesor por ID
-                    sql_info = "SELECT * FROM Profesores WHERE pro_nameID = ?"
+                    # Corregido: Usar la tabla 'Curso' y las columnas 'cur_nameID', 'cur_nombre'
+                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.pro_nameID = ?"
                     cursor.execute(sql_info, pro_nameID)
                     return cursor.fetchone()
                 elif pro_rut is not None and pro_password is not None:
-                    sql_info = "SELECT * FROM Profesores WHERE pro_email = ? AND pro_password = ?"
+                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.pro_rut = ? AND pro_password = ?"
                     cursor.execute(sql_info, pro_rut, pro_password)
                     return cursor.fetchone()
                 elif pro_rut is not None:
-                    sql_info = "SELECT * FROM Profesores WHERE pro_rut = ?"
+                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.pro_rut = ?"
                     cursor.execute(sql_info, pro_rut)
                     return cursor.fetchone()
+                elif pro_email is not None:
+                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.pro_email = ?"
+                    cursor.execute(sql_info, pro_email)
+                    return cursor.fetchone()
+                elif lvl_curso is not None:
+                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.lvl_curso = ?"
+                    cursor.execute(sql_info, lvl_curso)
+                    return cursor.fetchall()
                 else:
-                    # Obtener todos los profesores
-                    sql_info = "SELECT * FROM Profesores"
+                    # Corregido: Usar la tabla 'Curso' y las columnas 'cur_nameID', 'cur_nombre'
+                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID"
                     cursor.execute(sql_info)
                     return cursor.fetchall()
     except pyodbc.Error as ex:
@@ -60,7 +69,7 @@ def profesorUPDATE(pro_nameID: int, datos_profesor: dict):
                 set_clause = ", ".join([f"{key} = ?" for key in datos_profesor.keys()])
                 sql_update = f"UPDATE Profesores SET {set_clause} WHERE pro_nameID = ?"
                 params = list(datos_profesor.values()) + [pro_nameID]
-                cursor.execute(sql_update, *params)
+                cursor.execute(sql_update, params)
                 cnxn.commit()
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
@@ -74,3 +83,16 @@ def profesorDELETE(pro_nameID: int):
                 cnxn.commit()
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
+
+def cursoREAD_all():
+    """Lee todos los cursos de la base de datos."""
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                # Selecciona el ID y el nombre de cada curso
+                sql_info = "SELECT cur_nameID, cur_nombre FROM Curso ORDER BY cur_nombre"
+                cursor.execute(sql_info)
+                return cursor.fetchall()  # Retorna una lista de tuplas (id, nombre)
+    except pyodbc.Error as ex:
+        print(f"Error de conexión o consulta de cursos: {ex.args[0]}")
+        return []
