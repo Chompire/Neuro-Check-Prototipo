@@ -1,7 +1,7 @@
 import flet as ft
 import pyodbc
 from DB import CONNECTION_STRING
-
+#-------------------profesorCRUD
 def profesorCREATE(datos_profesor: tuple):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
@@ -83,7 +83,7 @@ def profesorDELETE(pro_nameID: int):
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
 
-def cursoREAD_all():
+def cursoREAD():
     """Lee todos los cursos de la base de datos."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
@@ -114,6 +114,8 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None):
         print(f"Error de conexión o consulta de estudiantes: {ex.args[0]}")
         return None if es_nameID is not None else []
 
+#-------------------testCRUD
+
 def testCREATE(test_data: tuple):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
@@ -137,6 +139,9 @@ def testREAD(test_ID: int):
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
         return None if test_ID is not None else []
+    
+#-------------------preguntaCRUD
+
 def preguntaCREATE(pregunta_data: tuple):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
@@ -148,3 +153,14 @@ def preguntaCREATE(pregunta_data: tuple):
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
         return False 
+    
+def preguntaREAD(ID_test: int | None = None):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                if ID_test is not None:
+                    sql_info = "SELECT pre_respuesta, pre_tipo FROM Preguntas WHERE ID_test = ?"
+                    cursor.execute(sql_info, ID_test)
+                    return cursor.fetchall()
+    except pyodbc.Error as ex:
+        return False

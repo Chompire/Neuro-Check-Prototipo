@@ -1,7 +1,7 @@
 import flet as ft
 import pyodbc
 from DB import CONNECTION_STRING
-from CRUD import profesorCREATE,profesorREAD, profesorUPDATE,profesorDELETE, cursoREAD_all
+from CRUD import profesorCREATE,profesorREAD, profesorUPDATE,profesorDELETE, cursoREAD
 import datetime
 
 
@@ -419,7 +419,7 @@ def modificación_docente(page: ft.Page, profesor_data):
         label_style=ft.TextStyle(color="black"), color="black",
     )
     # Obtenemos los cursos desde la base de datos
-    cursos_from_db = cursoREAD_all()
+    cursos_from_db = cursoREAD()
     curso_field = ft.Dropdown(
         label="Curso",
         width=300,

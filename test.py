@@ -1,5 +1,6 @@
 import flet as ft
 from CRUD import estudiantesREAD, testCREATE, profesorREAD, preguntaCREATE, testREAD
+from resultados import ver_resultados
 color_Background = "#FF7F7F"
 
 def test_viewATENCION(page: ft.Page,test_id):
@@ -13,8 +14,6 @@ def test_viewATENCION(page: ft.Page,test_id):
         page.snack_bar.open = True
         page.go("/test_memoria")
         page.update()
-
-    # --- Variables para las preguntas de Atención ---
     preguntas_atencion = [
         "1. ¿El estudiante se distrae con facilidad en clases?",
         "2. ¿Le cuesta mantener la atención en tareas o actividades lúdicas?",
@@ -46,6 +45,7 @@ def test_viewATENCION(page: ft.Page,test_id):
     
     atencion_column = ft.Column(
                         controls=[
+                            ft.Text("Atención", size=40, weight=ft.FontWeight.BOLD, color="black"),
                             ft.Text(preguntas_atencion[0], size=20, weight=ft.FontWeight.BOLD, color="black"),
                             atencion_radiogroup1,
                             
@@ -231,7 +231,7 @@ def test_viewEMOCIONAL(page: ft.Page, test_id):
             preguntaCREATE((pregunta_texto, respuesta, "Emocional", test_id))
         page.snack_bar = ft.SnackBar(ft.Text("Test finalizado y respuestas guardadas."), bgcolor=ft.Colors.GREEN)
         page.snack_bar.open = True
-        page.go("/perfil_docente")
+        ver_resultados(page, test_id)
         page.update()
 
     # --- Variables para las preguntas Emocionales ---
@@ -310,8 +310,6 @@ def iniciar_test(page: ft.Page, es_nameID: int, pro_nameID: int):
             page.views.append(test_viewSOCIAL(page, test_id))
         elif page.route == "/test_emocional":
             page.views.append(test_viewEMOCIONAL(page, test_id))
-        
-
         page.update()
     
     def view_pop(e: ft.ViewPopEvent):

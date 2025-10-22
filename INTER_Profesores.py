@@ -34,7 +34,7 @@ def create_inicio_view(page: ft.Page, profesor_data):
         controls=[
             create_app_bar(page, "Inicio"),
             ft.Column(
-                expand=True, # Permite que la columna ocupe todo el espacio vertical
+                expand=True,
                 controls=[
                     ft.Container(
                         expand=True, # El contenido principal se expande
