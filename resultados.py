@@ -32,15 +32,12 @@ def resultado(page: ft.Page, test_id, porcentaje):
     ]
 )  
 
-
-
 def ver_resultados(page: ft.Page, ID_test: int):
     page.clean()
     page.title = "Neuro Check - Test"
     page.bgcolor = color_Background
     page.route = "/resultados"
     test_id = preguntaREAD((ID_test))
-    
     atencion_res = 0
     memoria_res = 0
     social_res = 0
@@ -74,8 +71,7 @@ def ver_resultados(page: ft.Page, ID_test: int):
                 emocional_res += 0
             else:
                 emocional_res += 0
-
-    
+   
     puntaje = atencion_res + memoria_res + social_res + emocional_res
     porcentaje = (puntaje / 20) * 100
     print(f"{porcentaje}%")

@@ -181,8 +181,7 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data):
                 data_row_color={
                 ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
                 ft.ControlState.DEFAULT: ft.Colors.WHITE70,
-                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),
-                
+                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),                
             },
                 columns=[
                     ft.DataColumn(ft.Text("Nombre")),
@@ -261,9 +260,6 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data):
             , padding=20, alignment=ft.alignment.center)
         ]
     )
-
-
-
 
 def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
     page.clean()
