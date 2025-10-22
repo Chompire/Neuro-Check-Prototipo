@@ -34,7 +34,7 @@ def main(page: ft.Page):
             if prof_cargo == 1:
                 menu_principalPIE(page, prof_id)
             else:
-                mostrar_menu_principal(page, prof_id)
+                mostrar_menu_principal(page, prof_id) # Se elimina la llamada duplicada
             page.update()
         else:
             mensaje.value = "Usuario o contraseña incorrectos"

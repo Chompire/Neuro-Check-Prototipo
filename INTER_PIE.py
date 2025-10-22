@@ -222,8 +222,7 @@ def modificación_docente(page: ft.Page, profesor_data):
             "Email": email_a_verificar,
             "Cargo": cargo_field.value,
             "Estado": estado_field.value,
-            "Apellido materno": apellido_mat.value, # Añadido
-            "Fecha de nacimiento": fecha_nacimiento_field.value, # Añadido
+            "Apellido materno": apellido_mat.value,
             "Curso": curso_field.value, # Añadido
         } 
 
@@ -251,7 +250,6 @@ def modificación_docente(page: ft.Page, profesor_data):
         datos_nuevos = (
             nombre1.value, nombre2.value, nombre3.value,
             apellido_pat.value, apellido_mat.value,
-            fecha_nacimiento_field.value,
             rut_a_verificar, email_a_verificar,
             cargo_valor, password_define, 
             curso_field.value, estado_valor,
@@ -278,7 +276,7 @@ def modificación_docente(page: ft.Page, profesor_data):
         # Validar campos obligatorios antes de la actualización
         campos_obligatorios = {
             "Primer nombre": nombre1.value, "Apellido paterno": apellido_pat.value,
-            "Apellido materno": apellido_mat.value, "Fecha de nacimiento": fecha_nacimiento_field.value,
+            "Apellido materno": apellido_mat.value,
             "RUT": nuevo_rut, "Email": nuevo_email,
             "Cargo": cargo_field.value, "Estado": estado_field.value,
             "Curso": curso_field.value,
@@ -302,7 +300,7 @@ def modificación_docente(page: ft.Page, profesor_data):
             datos_actualizados = {
                 "pro_nombre_1": nombre1.value, "pro_nombre_2": nombre2.value, "pro_nombre_3": nombre3.value,
                 "pro_apellido_pat": apellido_pat.value, "pro_apellido_mat": apellido_mat.value,
-                "pro_nacimiento": fecha_nacimiento_field.value, "pro_rut": nuevo_rut,
+                "pro_rut": nuevo_rut,
                 "pro_email": nuevo_email, "pro_cargo": cargo_valor,
                 "lvl_curso": curso_field.value, "pro_state": estado_valor,
             }
@@ -343,7 +341,6 @@ def modificación_docente(page: ft.Page, profesor_data):
             nombre3.value = selected_prof[3] or ""
             apellido_pat.value = selected_prof[4] or ""
             apellido_mat.value = selected_prof[5] or ""
-            fecha_nacimiento_field.value = str(selected_prof[6]) if selected_prof[6] else ""
             rut_field.value = selected_prof[7] or "" # Este es pro_rut
             mail_field.value = selected_prof[8]
             cargo_field.value = "Profesional PIE" if selected_prof[9] else "Profesor Docente"
@@ -355,7 +352,7 @@ def modificación_docente(page: ft.Page, profesor_data):
             reset_selection_state()
 
         # Para depuración: Imprime los valores actuales de los campos del formulario
-        print(f"Valores en formulario: RUT='{rut_field.value}', Email='{mail_field.value}', Fecha='{fecha_nacimiento_field.value}'")
+        print(f"Valores en formulario: RUT='{rut_field.value}', Email='{mail_field.value}'")
 
             
         page.update()
@@ -366,7 +363,6 @@ def modificación_docente(page: ft.Page, profesor_data):
         nombre3.value = ""
         apellido_pat.value = ""
         apellido_mat.value = ""
-        fecha_nacimiento_field.value = ""
         rut_field.value = ""
         mail_field.value = ""
         cargo_field.value = None
@@ -385,22 +381,12 @@ def modificación_docente(page: ft.Page, profesor_data):
             selected_prof_id = None
             original_selected_rut = None # Limpiar el RUT guardado
 
-    date_picker = ft.DatePicker(
-        on_change=lambda e: handle_date_change(date_picker),
-        first_date=datetime.datetime(1900, 1, 1),
-        last_date=datetime.datetime.now(),
-    )
-    page.overlay.append(date_picker)
-
-    def handle_date_change(picker: ft.DatePicker):
-        fecha_nacimiento_field.value = picker.value.strftime('%Y-%m-%d')
-        page.update()
 
     data_table = ft.DataTable(
         heading_row_color= color_PIE,
         columns=[
             ft.DataColumn(ft.Text("Nombres")), ft.DataColumn(ft.Text("Apellidos")),
-            ft.DataColumn(ft.Text("Nacimiento")), ft.DataColumn(ft.Text("RUT")),
+            ft.DataColumn(ft.Text("RUT")),
             ft.DataColumn(ft.Text("Email")),
             ft.DataColumn(ft.Text("Cargo")), ft.DataColumn(ft.Text("Curso")),
             ft.DataColumn(ft.Text("Estado")),
@@ -423,13 +409,7 @@ def modificación_docente(page: ft.Page, profesor_data):
     nombre3 = ft.TextField(label="Tercer nombre", label_style=ft.TextStyle(color="black"), color="black")
     apellido_pat = ft.TextField(label="Apellido paterno", label_style=ft.TextStyle(color="black"), color="black")
     apellido_mat = ft.TextField(label="Apellido materno", label_style=ft.TextStyle(color="black"), color="black")
-    fecha_nacimiento_field = ft.TextField(
-        label="Fecha de nacimiento",
-        label_style=ft.TextStyle(color="black"),
-        color="black",
-        read_only=True,
-        on_click=lambda _: open_date_picker()
-    )
+
     rut_field = ft.TextField(label="RUT", width=300, label_style=ft.TextStyle(color="black"), color="black")
     mail_field = ft.TextField(label="Email", label_style=ft.TextStyle(color="black"), color="black")
     cargo_field = ft.Dropdown(
@@ -452,15 +432,7 @@ def modificación_docente(page: ft.Page, profesor_data):
         width=300,
         options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")],
         label_style=ft.TextStyle(color="black"), color="black",
-    )
-
-    def open_date_picker():
-        date_picker.open = True
-        page.update()
-
-    
-    
-    
+    )    
     add_button = ft.IconButton(icon=ft.Icons.ADD, icon_color=ft.Colors.WHITE, bgcolor=color_PIE, tooltip="Añadir nuevo", on_click=lambda e: page.open(add_dialog))
     edit_button = ft.IconButton(icon=ft.Icons.EDIT, icon_color=ft.Colors.WHITE, bgcolor="#007bff", visible=False, tooltip="Editar", on_click=lambda e: page.open(edit_dialog))
     delete_button = ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.WHITE, bgcolor="#dc3545", visible=False, tooltip="Eliminar", on_click=lambda e: page.open(delete_dialog))
@@ -481,10 +453,9 @@ def modificación_docente(page: ft.Page, profesor_data):
                         ft.DataCell(ft.Text(f"{prof[4]} {prof[5]}")),
                         ft.DataCell(ft.Text(str(prof[6]))),
                         ft.DataCell(ft.Text(prof[7])),
-                        ft.DataCell(ft.Text(prof[8])),
                         ft.DataCell(ft.Text("Profesional PIE" if prof[9] else "Profesor Docente")),
-                        ft.DataCell(ft.Text(prof[13] or "")), # Usamos el índice 13 (nombre del curso)
-                        ft.DataCell(ft.Text("Habilitado" if prof[12] else "Inhabilitado")),
+                        ft.DataCell(ft.Text(prof[12] or "")), # Usamos el índice 13 (nombre del curso)
+                        ft.DataCell(ft.Text("Habilitado" if prof[11] else "Inhabilitado")),
                     ],
                         data=prof,
                         # Si el ID de esta fila coincide con el que queremos seleccionar, la marcamos.
@@ -538,16 +509,16 @@ def modificación_docente(page: ft.Page, profesor_data):
                                             ft.Row([
                                                 apellido_pat,
                                                 apellido_mat,
-                                                fecha_nacimiento_field,
+                                                rut_field,
                                             ],),
                                             ft.Row([
-                                                rut_field,
+                                                
                                                 mail_field,
                                                 cargo_field,
+                                                curso_field,
                                                 
                                             ],),
-                                            ft.Row([
-                                                curso_field,
+                                            ft.Row([                                                
                                                 estado_field,
                                             ],  ),
                                             ft.Row([add_button, edit_button, delete_button],),

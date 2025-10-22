@@ -1,7 +1,10 @@
 import flet as ft
-from CRUD import profesorREAD
+from test import iniciar_test
+from CRUD import profesorREAD, estudiantesREAD, testCREATE
 
-color_Docente = "#0A00CF"
+color_Docente = "#FF0000"
+color_Background = "#FF7F7F"
+
 def create_app_bar(page: ft.Page, title: str):
     return ft.AppBar(
         title=ft.TextButton(
@@ -25,84 +28,108 @@ def create_app_bar(page: ft.Page, title: str):
 
 def create_inicio_view(page: ft.Page, profesor_data):
     doc_name = profesor_data[1] if profesor_data else "Desconocido"
-    
     return ft.View(
-        route="/inicio_profesor_pie",
-        bgcolor="#d1d1d1",
+        route="/inicio_profesor",
+        bgcolor=color_Background,
         controls=[
             create_app_bar(page, "Inicio"),
             ft.Column(
+                expand=True, # Permite que la columna ocupe todo el espacio vertical
                 controls=[
-                    ft.Text("¡Bienvenido!", size=50, weight=ft.FontWeight.BOLD, color="black"),
-                    ft.Text(f"Profesor {doc_name}", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                    ft.Row(
-                        [ft.Text("¿Qué desea hacer?", size=25, weight=ft.FontWeight.BOLD, color="black")],
-                        alignment=ft.MainAxisAlignment.START
-                    ),
-                    ft.Card(
-                        elevation=0,
-                        color=color_Docente,
-                        content=ft.Container(
-                            content=ft.Column([
-                                ft.ListTile(
-                                    title=ft.Text("Realizar test", size=20, weight=ft.FontWeight.BOLD),
-                                    subtitle=ft.Text(
-                                        "El test sirve para obtener el porcentaje de riesgo del estudiante para posiblemente derivarlo al equipo PIE.",
-                                        size=15
+                    ft.Container(
+                        expand=True, # El contenido principal se expande
+                        content=ft.Row(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            vertical_alignment=ft.CrossAxisAlignment.START,
+                            controls=[
+                        ft.Column(
+                            expand=True,
+                            scroll=ft.ScrollMode.AUTO,
+                            controls=[
+                                ft.Text("¡Bienvenido!", size=50, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text(f"Profesor {doc_name}", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                    ft.Container(
+                                    content=ft.Text(
+                                        "¿Qué desea hacer?",
+                                        size=25,
+                                        weight=ft.FontWeight.BOLD,
+                                        color="black",
                                     ),
+                                    width=600,
                                 ),
-                                ft.ElevatedButton(text="Entrar", color="black", bgcolor="#8E78FC")
-                            ]),
-                            width=450,
-                            padding=10,
+                                ft.Card(
+                                    elevation=0,
+                                    color=color_Docente,
+                                    content=ft.Container(
+                                        content=ft.Column([
+                                            ft.ListTile(
+                                                title=ft.Text("Realizar test", size=20, weight=ft.FontWeight.BOLD),
+                                                subtitle=ft.Text(
+                                                    "El test sirve para obtener el porcentaje de riesgo del estudiante para posiblemente derivarlo al equipo PIE.",
+                                                    size=15
+                                                ),
+                                            ),
+                                            ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background, on_click=lambda _: page.go("/seleccionar_estudiante"))
+                                        ]),
+                                        width=600,
+                                        padding=10,
+                                    )
+                                ),
+                                ft.Card(
+                                    color=color_Docente,
+                                    content=ft.Container(
+                                        content=ft.Column([
+                                            ft.ListTile(
+                                                title=ft.Text("Perfil docente", size=20, weight=ft.FontWeight.BOLD),
+                                                subtitle=ft.Text(
+                                                    "Puedes ver tu información personal y revisar los resultados de los tests.",
+                                                    size=15
+                                                ),
+                                            ),
+                                            ft.ElevatedButton(
+                                                text="Entrar",
+                                                color="black",
+                                                bgcolor="#FCAD78",
+                                                on_click=lambda _: page.go("/perfil_docente")
+                                            )
+                                        ]),
+                                        width=600,
+                                        padding=10
+                                    )
+                                ),
+                                
+                            ],
+                            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                            spacing=15
+                        )
+                            ]
                         )
                     ),
-                    ft.Card(
-                        color=color_Docente,
-                        content=ft.Container(
-                            content=ft.Column([
-                                ft.ListTile(
-                                    title=ft.Text("Perfil docente", size=20, weight=ft.FontWeight.BOLD),
-                                    subtitle=ft.Text(
-                                        "Puedes ver tu información personal y revisar los resultados de los tests.",
-                                        size=15
-                                    ),
-                                ),
-                                ft.ElevatedButton(
-                                    text="Entrar",
-                                    color="black",
-                                    bgcolor="#8E78FC",
-                                    on_click=lambda _: page.go("/perfil_docente")
-                                )
-                            ]),
-                            width=450,
-                            padding=10
-                        )
-                    ),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                spacing=15
-            )
+                     # El pie de página se coloca al final
+                ]
+            ),
         ]
     )
-
 def create_perfil_view(page: ft.Page, profesor_data):
     if not profesor_data:
         return ft.View(
             route="/perfil_docente",
-            bgcolor="#d1d1d1",
+            bgcolor=color_Background,
             controls=[
                 create_app_bar(page, "Perfil Docente"),
                 ft.Text("No se pudo cargar la información del perfil.", color="red")
             ]
         )
+   
 
     doc_info = list(profesor_data)
+    print(doc_info)
     info_table = ft.DataTable(
+        heading_row_color= color_Docente,
+        data_row_color="white",
         columns=[
             ft.DataColumn(ft.Text("Nombres")),
             ft.DataColumn(ft.Text("Apellidos")),
-            ft.DataColumn(ft.Text("Nacimiento"), numeric=True),
             ft.DataColumn(ft.Text("RUT")),
             ft.DataColumn(ft.Text("Cargo")),
             ft.DataColumn(ft.Text("Curso")),
@@ -112,13 +139,12 @@ def create_perfil_view(page: ft.Page, profesor_data):
                 ft.DataCell(ft.Text(f"{doc_info[1]} {doc_info[2] or ''} {doc_info[3] or ''}".strip())),
                 ft.DataCell(ft.Text(f"{doc_info[4]} {doc_info[5]}")),
                 ft.DataCell(ft.Text(f"{doc_info[6]}")),
-                ft.DataCell(ft.Text(f"{doc_info[7]}")),
-                ft.DataCell(ft.Text("Profesional PIE" if doc_info[8] else "Profesor Docente")),
-                ft.DataCell(ft.Text(f"{doc_info[13] or ''}")), # Usamos el índice 13 (nombre del curso)
+                ft.DataCell(ft.Text("Profesional PIE" if doc_info[9] else "Profesor Docente")),
+                ft.DataCell(ft.Text(f"{doc_info[12] or ''}")), # Usamos el índice 13 (nombre del curso)
             ]),
         ],
         data_text_style=ft.TextStyle(color="black"),
-        heading_text_style=ft.TextStyle(color="black", weight=ft.FontWeight.BOLD),
+        heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
         border=ft.border.all(1, ft.Colors.BLACK),
         vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
         horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
@@ -126,35 +152,153 @@ def create_perfil_view(page: ft.Page, profesor_data):
 
     return ft.View(
         route="/perfil_docente",
-        bgcolor="#d1d1d1",
+        bgcolor=color_Background,
         controls=[
             create_app_bar(page, "Perfil Docente"),
             ft.Container(content=info_table, padding=20, alignment=ft.alignment.center)
         ]
     )
 
+def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data):
+    if not estudiante_data:
+        return ft.View(
+            route="/seleccionar_estudiante",
+            bgcolor=color_Background,
+            controls=[
+                create_app_bar(page, "Seleccionar Estudiante"),
+                ft.Text("No se pudo cargar la información del los estudiantes.", color="red")
+            ]
+        )
+    
+    selected_es_id = None
+    estudiante_table = ft.DataTable(
+                heading_row_color= color_Docente,
+                heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+                data_text_style=ft.TextStyle(color="black"),
+                border=ft.border.all(1, ft.Colors.BLACK),
+                vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+                horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+                data_row_color={
+                ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
+                ft.ControlState.DEFAULT: ft.Colors.WHITE70,
+                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),
+                
+            },
+                columns=[
+                    ft.DataColumn(ft.Text("Nombre")),
+                    ft.DataColumn(ft.Text("Apellido")),
+                    ft.DataColumn(ft.Text("Nacimiento")),
+                    ft.DataColumn(ft.Text("RUT")),
+                    ft.DataColumn(ft.Text("Curso")),
+                    ft.DataColumn(ft.Text("Profesor Jefe")),
+                ],
+    )
+    def es_row_select(e):
+        nonlocal selected_es_id
+        selected_es= e.control.data
+        is_currently_selected = e.control.selected
+
+        for row in estudiante_table.rows:
+            row.selected = False
+        if not is_currently_selected:
+            e.control.selected = True
+            next_button.visible = True
+            selected_es_id =  selected_es[0]
+            
+        else:
+            for row in estudiante_table.rows:
+                row.selected = False
+            if selected_es_id is not None:
+                next_button.visible = False
+        
+        page.update()
+
+    def carga_estudiantes(id_to_select = None):
+        estudiante_table.rows.clear()
+        estudiante = estudiante_data
+        if estudiante:
+            for est_dat in estudiante_data:
+                estudiante_table.rows.append(
+                        ft.DataRow(
+                            cells=[
+                            ft.DataCell(ft.Text(f"{est_dat[1]} {est_dat[2] or ''}{est_dat[3] or ''}".strip())),
+                            ft.DataCell(ft.Text(f"{est_dat[4]} {est_dat[5]}")),
+                            ft.DataCell(ft.Text(f"{est_dat[6]}")), #nacimiento
+                            ft.DataCell(ft.Text(f"{est_dat[7]}")),# rut
+                            ft.DataCell(ft.Text(f"{est_dat[12]}")),#curso
+                            ft.DataCell(ft.Text(f"{est_dat[13]}")),
+                        ],
+                        data=est_dat, # Se asignan los datos de la fila al atributo 'data'
+                        selected=True if id_to_select is not None and est_dat[0] == id_to_select else False,
+                        on_select_changed=es_row_select,
+                    ),
+        )
+            
+        page.update()
+    carga_estudiantes()
+
+   
+    next_button = ft.IconButton(icon=ft.Icons.SKIP_NEXT, icon_color=ft.Colors.WHITE, bgcolor=color_Docente, visible=False, on_click= lambda _: iniciar_test(page, selected_es_id, profesor_data[0]))
+   
+
+
+    return ft.View(
+        route="/seleccionar_estudiante",
+        bgcolor=color_Background,
+        controls=[
+            create_app_bar(page, "Seleccionar Estudiante"),
+            ft.Container(content=
+            ft.Column(
+                scroll=ft.ScrollMode.AUTO,
+                controls=[
+                    ft.Column(
+                        controls=[estudiante_table]
+                    ),
+                    ft.Column(controls=[next_button])
+                ],
+                
+            )
+            , padding=20, alignment=ft.alignment.center)
+        ]
+    )
+
+
+
+
 def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
     page.clean()
     page.title = "Neuro Check - Profesor"
-    page.bgcolor = "#d1d1d1"
+    page.bgcolor = color_Background
     profesor_data = profesorREAD(pro_nameID)
-
     def route_change(e: ft.RouteChangeEvent):
         print(f"Cambiando a la ruta: {e.route}")
         page.views.clear()
-        page.views.append(create_inicio_view(page, profesor_data))
+        page.views.append(create_inicio_view(page, profesor_data)) # Vista inicial
         if page.route == "/perfil_docente":
             page.views.append(create_perfil_view(page, profesor_data))
+        elif page.route == "/seleccionar_estudiante":
+            page.views.append(seleccionar_estudiante(page, estudiantesREAD(), profesor_data)) # Carga los estudiantes al navegar
         
         page.update()
 
     def view_pop(e: ft.ViewPopEvent):
         print(f"Cerrando vista: {e.view}")
-        page.views.pop()
-        top_view = page.views[-1]
-        page.go(top_view.route)
+        page.views.pop() # Elimina la vista actual
+        if page.views: # Verifica si aún quedan vistas en la pila
+            top_view = page.views[-1]
+            page.go(top_view.route)
+        else:
+            # Si no quedan vistas, regresa a la pantalla de inicio de sesión principal
+            page.go("/")
+            page.update()
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
 
     page.go("/inicio_profesor")
+if __name__ == "__main__":
+    def main_standalone(page: ft.Page):
+        id_profesor_pie_test = 2
+        mostrar_menu_principal(page, id_profesor_pie_test) # Se elimina el argumento faltante
+
+    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)

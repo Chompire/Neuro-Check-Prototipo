@@ -12,13 +12,12 @@ def profesorCREATE(datos_profesor: tuple):
                             "pro_nombre_3, " \
                                 "pro_apellido_pat, " \
                                     "pro_apellido_mat, " \
-                                        "pro_nacimiento, " \
                                             "pro_rut, " \
                                                 "pro_email, " \
                                                 "pro_cargo, " \
                                                 "pro_password, " \
                                                     "lvl_curso," \
-                                                        "pro_state) " \
+                                                        "pro_state, pro_nacimiento) " \
                                                             "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);"
                 cursor.execute(sql_add, datos_profesor)
                 cnxn.commit()
@@ -89,10 +88,63 @@ def cursoREAD_all():
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                # Selecciona el ID y el nombre de cada curso
-                sql_info = "SELECT cur_nameID, cur_nombre FROM Curso ORDER BY cur_nombre"
+                # Selecciona solo los cursos habilitados (cur_state = 1)
+                sql_info = "SELECT cur_nameID, cur_nombre FROM Curso WHERE cur_state = 1 ORDER BY cur_nombre"
                 cursor.execute(sql_info)
                 return cursor.fetchall()  # Retorna una lista de tuplas (id, nombre)
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta de cursos: {ex.args[0]}")
         return []
+    
+
+def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None):
+    """Lee todos los estudiantes de la base de datos."""
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                if es_nameID is not None:
+                    sql_info = "SELECT e.*, c.cur_nombre, p.pro_nombre_1, p.pro_apellido_pat FROM Estudiantes e LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID WHERE e.es_nameID = ?"
+                    cursor.execute(sql_info, es_nameID)
+                    return cursor.fetchone()
+                else:
+                    sql_info = "SELECT e.*, c.cur_nombre, p.pro_nombre_1, p.pro_apellido_pat FROM Estudiantes e LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID"
+                    cursor.execute(sql_info)
+                    return cursor.fetchall()
+    except pyodbc.Error as ex:
+        print(f"Error de conexión o consulta de estudiantes: {ex.args[0]}")
+        return None if es_nameID is not None else []
+
+def testCREATE(test_data: tuple):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_add = "INSERT INTO Test (es_ID, pro_ID) OUTPUT INSERTED.test_ID VALUES(?,?); "
+                cursor.execute(sql_add, test_data)      
+                test_id = cursor.fetchone()[0]
+                cnxn.commit()
+                return test_id
+    except pyodbc.Error as ex:
+        print(f"Error de conexión o consulta: {ex.args[0]}")
+        return None
+    
+def testREAD(test_ID: int):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_info = "SELECT * FROM Test WHERE test_id = ?"
+                cursor.execute(sql_info, test_ID)
+                return cursor.fetchone()
+    except pyodbc.Error as ex:
+        print(f"Error de conexión o consulta: {ex.args[0]}")
+        return None if test_ID is not None else []
+def preguntaCREATE(pregunta_data: tuple):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_add = "INSERT INTO Preguntas (pre_texto, pre_respuesta, pre_tipo, ID_test) VALUES(?,?,?,?)"
+                cursor.execute(sql_add, pregunta_data)
+                cnxn.commit()
+                return True  # Retorna True si la operación fue exitosa
+    except pyodbc.Error as ex:
+        print(f"Error de conexión o consulta: {ex.args[0]}")
+        return False 
