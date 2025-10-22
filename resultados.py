@@ -26,7 +26,6 @@ def resultado(page: ft.Page, test_id, porcentaje):
                                       ]),
                     ft.Row([ft.Text("Registro de fallas:", size=40, weight=ft.FontWeight.BOLD, color="black")]),
                     ft.Row([ft.Text("Conclusión:", size=40, weight=ft.FontWeight.BOLD, color="black")]),
-            
             ]
         )
     ]
@@ -43,35 +42,31 @@ def ver_resultados(page: ft.Page, ID_test: int):
     social_res = 0
     emocional_res = 0
     for pregunta in test_id:
-        if pregunta[1] == "Atención":
-            if pregunta[0] == "si":
+        print(pregunta)
+        if pregunta[2] == "Atención":
+            if pregunta[1] == "si":
                 atencion_res += 1
-            elif pregunta[0] == "no" or pregunta[0] is None:
-                atencion_res += 0
             else:
                 atencion_res += 0
-        elif pregunta[1] == "Memoria":
-            if pregunta[0] == "si":
+        elif pregunta[2] == "Memoria":
+            if pregunta[1] == "si":
                 memoria_res += 1
-            elif pregunta[0] == "no" or pregunta[0] is None:
-                memoria_res += 0
             else:
                 memoria_res += 0
-        elif pregunta[1] == "Social":
-            if pregunta[0] == "si":
+        elif pregunta[2] == "Social":
+            if pregunta[1] == "si":
                 social_res += 1
-            elif pregunta[0] == "no" or pregunta[0] is None:
-                social_res += 0
             else:
                 social_res += 0
-        elif pregunta[1] == "Emocional":
-            if pregunta[0] == "si":
+        elif pregunta[2] == "Emocional":
+            if pregunta[1] == "si":
                 emocional_res += 1
-            elif pregunta[0] == "no" or pregunta[0] is None:
-                emocional_res += 0
             else:
                 emocional_res += 0
-   
+    print(f"Atención: {atencion_res}")
+    print(f"Memoria: {memoria_res}")
+    print(f"Social: {social_res}")
+    print(f"Emocional: {emocional_res}")
     puntaje = atencion_res + memoria_res + social_res + emocional_res
     porcentaje = (puntaje / 20) * 100
     print(f"{porcentaje}%")
@@ -100,7 +95,7 @@ def ver_resultados(page: ft.Page, ID_test: int):
 
 if __name__ == "__main__":
     def main_standalone(page: ft.Page):
-        id_profesor_pie_test = 29
+        id_profesor_pie_test = 37
         ver_resultados(page, id_profesor_pie_test)
 
     ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)

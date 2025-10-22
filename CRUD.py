@@ -120,7 +120,7 @@ def testCREATE(test_data: tuple):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                sql_add = "INSERT INTO Test (es_ID, pro_ID) OUTPUT INSERTED.test_ID VALUES(?,?); "
+                sql_add = "INSERT INTO Test (es_ID, pro_ID, test_status) OUTPUT INSERTED.test_ID VALUES(?,?,0); "
                 cursor.execute(sql_add, test_data)      
                 test_id = cursor.fetchone()[0]
                 cnxn.commit()
@@ -139,6 +139,19 @@ def testREAD(test_ID: int):
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
         return None if test_ID is not None else []
+    
+def testUPDATE(test_ID: int, test_data: dict):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                set_clause = ", ".join([f"{key} = ?" for key in test_data.keys()])
+                sql_update = f"UPDATE Test SET {set_clause} WHERE test_ID = ?"
+                params = list(test_data.values()) + [test_ID]
+                cursor.execute(sql_update, params)
+                cnxn.commit()
+    except pyodbc.Error as ex:
+        print(f"Error de conexión o consulta: {ex.args[0]}")
+        
     
 #-------------------preguntaCRUD
 
@@ -160,6 +173,8 @@ def preguntaREAD(ID_test: int | None = None):
             with cnxn.cursor() as cursor:
                 if ID_test is not None:
                     sql_info = "SELECT pre_respuesta, pre_tipo FROM Preguntas WHERE ID_test = ?"
+                    # Modificamos la consulta para obtener también el texto de la pregunta
+                    sql_info = "SELECT pre_texto, pre_respuesta, pre_tipo FROM Preguntas WHERE ID_test = ?"
                     cursor.execute(sql_info, ID_test)
                     return cursor.fetchall()
     except pyodbc.Error as ex:

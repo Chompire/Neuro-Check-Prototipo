@@ -350,11 +350,8 @@ def modificación_docente(page: ft.Page, profesor_data):
         else:
             clear_form_fields()
             reset_selection_state()
-
         # Para depuración: Imprime los valores actuales de los campos del formulario
         print(f"Valores en formulario: RUT='{rut_field.value}', Email='{mail_field.value}'")
-
-            
         page.update()
 
     def clear_form_fields():

@@ -14,6 +14,8 @@ def test_viewATENCION(page: ft.Page,test_id):
         page.snack_bar.open = True
         page.go("/test_memoria")
         page.update()
+
+    # --- Variables para las preguntas de Atención ---
     preguntas_atencion = [
         "1. ¿El estudiante se distrae con facilidad en clases?",
         "2. ¿Le cuesta mantener la atención en tareas o actividades lúdicas?",
