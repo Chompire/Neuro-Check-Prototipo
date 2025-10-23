@@ -36,47 +36,47 @@ def ver_resultados(page: ft.Page, ID_test: int):
     page.title = "Neuro Check - Test"
     page.bgcolor = color_Background
     page.route = "/resultados"
-    test_id = preguntaREAD((ID_test))
+    
+    preguntas_del_test = preguntaREAD(ID_test)
+    print("Preguntas del test:",preguntas_del_test)
+
     atencion_res = 0
     memoria_res = 0
     social_res = 0
     emocional_res = 0
-    for pregunta in test_id:
+    total_preguntas_respondidas = 0
+
+    for pregunta in preguntas_del_test:
         print(pregunta)
-        if pregunta[2] == "Atención":
-            if pregunta[1] == "si":
+        total_preguntas_respondidas += 1
+        if pregunta[3] == "Atención":
+            if pregunta[2] == "si":
                 atencion_res += 1
-            else:
-                atencion_res += 0
-        elif pregunta[2] == "Memoria":
-            if pregunta[1] == "si":
+        elif pregunta[3] == "Memoria":
+            if pregunta[2] == "si":
                 memoria_res += 1
-            else:
-                memoria_res += 0
-        elif pregunta[2] == "Social":
-            if pregunta[1] == "si":
+        elif pregunta[3] == "Social":
+            if pregunta[2] == "si":
                 social_res += 1
-            else:
-                social_res += 0
-        elif pregunta[2] == "Emocional":
-            if pregunta[1] == "si":
+        elif pregunta[3] == "Emocional":
+            if pregunta[2] == "si":
                 emocional_res += 1
-            else:
-                emocional_res += 0
+
     print(f"Atención: {atencion_res}")
     print(f"Memoria: {memoria_res}")
     print(f"Social: {social_res}")
     print(f"Emocional: {emocional_res}")
     puntaje = atencion_res + memoria_res + social_res + emocional_res
-    porcentaje = (puntaje / 20) * 100
+    
+    # Calcular porcentaje dinámicamente basado en el número de preguntas respondidas
+    porcentaje = (puntaje / total_preguntas_respondidas) * 100 if total_preguntas_respondidas > 0 else 0
     print(f"{porcentaje}%")
-
 
 
     def route_change(e: ft.RouteChangeEvent):
        print(f"Cambiando a la ruta: {e.route}")
        page.views.clear()
-       page.views.append(resultado(page,test_id, porcentaje))
+       page.views.append(resultado(page, ID_test, porcentaje))
        page.update()
 
     def view_pop(e: ft.ViewPopEvent):
@@ -95,7 +95,7 @@ def ver_resultados(page: ft.Page, ID_test: int):
 
 if __name__ == "__main__":
     def main_standalone(page: ft.Page):
-        id_profesor_pie_test = 37
+        id_profesor_pie_test = 72
         ver_resultados(page, id_profesor_pie_test)
 
     ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)

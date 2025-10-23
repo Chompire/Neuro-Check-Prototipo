@@ -1,6 +1,6 @@
 import flet as ft
 from test import iniciar_test
-from CRUD import profesorREAD, estudiantesREAD, testCREATE
+from CRUD import profesorREAD, estudiantesREAD, preguntaREAD, testREAD
 
 color_Docente = "#FF0000"
 color_Background = "#FF7F7F"
@@ -138,8 +138,8 @@ def create_perfil_view(page: ft.Page, profesor_data):
             ft.DataRow(cells=[
                 ft.DataCell(ft.Text(f"{doc_info[1]} {doc_info[2] or ''} {doc_info[3] or ''}".strip())),
                 ft.DataCell(ft.Text(f"{doc_info[4]} {doc_info[5]}")),
-                ft.DataCell(ft.Text(f"{doc_info[6]}")),
-                ft.DataCell(ft.Text("Profesional PIE" if doc_info[9] else "Profesor Docente")),
+                ft.DataCell(ft.Text(f"{doc_info[6]}")), # pro_rut is at index 7
+                ft.DataCell(ft.Text("Profesional PIE" if doc_info[9] == 1 else "Profesor Docente")), # pro_cargo is at index 9
                 ft.DataCell(ft.Text(f"{doc_info[12] or ''}")), # Usamos el índice 13 (nombre del curso)
             ]),
         ],
@@ -159,7 +159,7 @@ def create_perfil_view(page: ft.Page, profesor_data):
         ]
     )
 
-def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data):
+def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_data):
     if not estudiante_data:
         return ft.View(
             route="/seleccionar_estudiante",
@@ -171,6 +171,7 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data):
         )
     
     selected_es_id = None
+    selected_test_id = None
     estudiante_table = ft.DataTable(
                 heading_row_color= color_Docente,
                 heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
@@ -192,6 +193,27 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data):
                     ft.DataColumn(ft.Text("Profesor Jefe")),
                 ],
     )
+    test_incompletos =ft.DataTable(
+        heading_row_color= color_Docente,
+                heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+                data_text_style=ft.TextStyle(color="black"),
+                border=ft.border.all(1, ft.Colors.BLACK),
+                vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+                horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+                data_row_color={
+                ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
+                ft.ControlState.DEFAULT: ft.Colors.WHITE70,
+                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),                
+            },
+                columns=[
+                    ft.DataColumn(ft.Text("Nombre")),
+                    ft.DataColumn(ft.Text("Apellido")),                    
+                    ft.DataColumn(ft.Text("RUT")),
+                    ft.DataColumn(ft.Text("Curso")),
+                    ft.DataColumn(ft.Text("Profesor emisor")),
+                    ft.DataColumn(ft.Text("Estado")),
+                ],
+    )
     def es_row_select(e):
         nonlocal selected_es_id
         selected_es= e.control.data
@@ -209,12 +231,37 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data):
                 row.selected = False
             if selected_es_id is not None:
                 next_button.visible = False
+        for row in test_incompletos.rows:
+            row.selected = False
         
         page.update()
+    def test_row_select(e):
+        nonlocal selected_test_id
+        selected_test= e.control.data
+        is_currently_selected = e.control.selected
 
+        for row in test_incompletos.rows:
+            row.selected = False
+        if not is_currently_selected:
+            e.control.selected = True
+            upload_button.visible = True
+            selected_test_id =  selected_test[1]
+            
+            
+        else:
+            for row in test_incompletos.rows:
+                row.selected = False
+            if selected_test_id is not None:
+                upload_button.visible = False
+        page.update()       
+    
     def carga_estudiantes(id_to_select = None):
+        
         estudiante_table.rows.clear()
         estudiante = estudiante_data
+        test_incompletos.rows.clear()
+        test = test_data
+        
         if estudiante:
             for est_dat in estudiante_data:
                 estudiante_table.rows.append(
@@ -231,14 +278,55 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data):
                         selected=True if id_to_select is not None and est_dat[0] == id_to_select else False,
                         on_select_changed=es_row_select,
                     ),
+            
         )
+        if test:
+            for test_dat in test_data:
+                test_incompletos.rows.append(
+                        ft.DataRow(
+                            cells=[
+                            ft.DataCell(ft.Text(f"{test_dat[2]}")),
+                            ft.DataCell(ft.Text(f"{test_dat[3]}")),
+                            ft.DataCell(ft.Text(f"{test_dat[4]}")),#rut
+                            ft.DataCell(ft.Text(f"{test_dat[5]}")),#curso
+                            ft.DataCell(ft.Text(f"{test_dat[6]} {test_dat[7] or ''}".strip())),#profesor
+                            ft.DataCell(ft.Text(f"{test_dat[0]}")),#estado
+                            ],
+                            data = test_dat,
+                            selected=True if id_to_select is not None and test_dat[0] == id_to_select else False,
+                            on_select_changed=test_row_select,
+                        ),
+        )
+
             
         page.update()
     carga_estudiantes()
+   
 
-   
-    next_button = ft.IconButton(icon=ft.Icons.SKIP_NEXT, icon_color=ft.Colors.WHITE, bgcolor=color_Docente, visible=False, on_click= lambda _: iniciar_test(page, selected_es_id, profesor_data[0]))
-   
+    def on_iniciar_test_click(_):
+        if selected_es_id is None:
+            page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecciona un estudiante para iniciar el test."), bgcolor=ft.Colors.RED)
+            page.snack_bar.open = True
+            page.update()
+            return
+        if profesor_data is None or len(profesor_data) < 1: # Asegurarse de que profesor_data sea válido y tenga pro_nameID
+            page.snack_bar = ft.SnackBar(ft.Text("Error: No se pudo obtener la información del profesor para iniciar el test."), bgcolor=ft.Colors.RED)
+            page.snack_bar.open = True
+            page.update()
+            return
+        iniciar_test(page, selected_es_id, profesor_data[0])
+
+    def on_reanudar_test_click(_):
+        if selected_test_id is None:
+            page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecciona un test para reanudar."), bgcolor=ft.Colors.RED)
+            page.snack_bar.open = True
+            page.update()
+            return
+        # Reutilizamos iniciar_test para reanudar, pasándole el test_id
+        iniciar_test(page, es_nameID=None, pro_nameID=None, test_id=selected_test_id)
+
+    next_button = ft.IconButton(icon=ft.Icons.SKIP_NEXT, icon_color=ft.Colors.WHITE, bgcolor=color_Docente, visible=False, on_click=on_iniciar_test_click)
+    upload_button = ft.IconButton(icon=ft.Icons.SKIP_NEXT, icon_color=ft.Colors.WHITE, bgcolor=color_Docente, visible=False, on_click=on_reanudar_test_click)
 
 
     return ft.View(
@@ -246,14 +334,15 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data):
         bgcolor=color_Background,
         controls=[
             create_app_bar(page, "Seleccionar Estudiante"),
-            ft.Container(content=
+            ft.Container(
+                expand = True,
+                content=
             ft.Column(
                 scroll=ft.ScrollMode.AUTO,
                 controls=[
-                    ft.Column(
-                        controls=[estudiante_table]
-                    ),
-                    ft.Column(controls=[next_button])
+                    ft.Column(controls=[ft.Text("Nuevo test", size=40, weight=ft.FontWeight.BOLD, color="black"),estudiante_table,next_button]),
+                    ft.Divider(color=color_Docente),
+                    ft.Column(controls=[ft.Text("Terminar test", size=40, weight=ft.FontWeight.BOLD, color="black"),test_incompletos, upload_button]), 
                 ],
                 
             )
@@ -266,6 +355,10 @@ def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
     page.title = "Neuro Check - Profesor"
     page.bgcolor = color_Background
     profesor_data = profesorREAD(pro_nameID)
+    test_data = testREAD(test_ID=None,test_status=0)
+    
+    page.route = "/inicio_profesor"
+
     def route_change(e: ft.RouteChangeEvent):
         print(f"Cambiando a la ruta: {e.route}")
         page.views.clear()
@@ -273,7 +366,7 @@ def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
         if page.route == "/perfil_docente":
             page.views.append(create_perfil_view(page, profesor_data))
         elif page.route == "/seleccionar_estudiante":
-            page.views.append(seleccionar_estudiante(page, estudiantesREAD(), profesor_data)) # Carga los estudiantes al navegar
+            page.views.append(seleccionar_estudiante(page, estudiantesREAD(), profesor_data, test_data)) # Carga los estudiantes al navegar
         
         page.update()
 

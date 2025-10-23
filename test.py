@@ -1,15 +1,35 @@
 import flet as ft
-from CRUD import estudiantesREAD, testCREATE, profesorREAD, preguntaCREATE, testREAD
+from CRUD import testCREATE, preguntaCREATE, preguntaREAD, preguntaUPDATE, testREAD,testUPDATE
 from resultados import ver_resultados
 color_Background = "#FF7F7F"
-
-def test_viewATENCION(page: ft.Page,test_id):
+color_Docente = "#FF0000"
+def create_app_bar(page: ft.Page, title: str):
+    return ft.AppBar(
+        title=ft.TextButton(
+            content=ft.Text("Neuro Check", size=25, weight=ft.FontWeight.BOLD, color="white"),
+            on_click=lambda _: page.go("/inicio_profesor")
+        ),
+        bgcolor=color_Docente,
+        center_title=False,
+        actions=[
+            ft.Row([
+                ft.Text(title, color="white"),
+                ft.PopupMenuButton(items=[
+                    ft.PopupMenuItem(
+                        icon=ft.Icons.EXIT_TO_APP,
+                        text="Cerrar sesión",
+                    ),
+                ])
+            ]),
+        ]
+    )
+def test_viewATENCION(page: ft.Page,test_id, id_atencion, respuestas_guardadas=None):
 
     def guardar_respuestas(e):
         respuestas_atencion = [atencion_radiogroup1.value,atencion_radiogroup2.value,atencion_radiogroup3.value,atencion_radiogroup4.value,atencion_radiogroup5.value]
         for i, pregunta_texto in enumerate(preguntas_atencion):
             respuesta = respuestas_atencion[i]
-            preguntaCREATE((pregunta_texto, respuesta,"Atención", test_id))
+            preguntaUPDATE(id_atencion[i], {"pre_respuesta": respuesta})
         page.snack_bar = ft.SnackBar(ft.Text("Sección de Atención guardada."), bgcolor=ft.Colors.GREEN)
         page.snack_bar.open = True
         page.go("/test_memoria")
@@ -44,6 +64,14 @@ def test_viewATENCION(page: ft.Page,test_id):
         ft.Radio(value="si", label="Sí"),
         ft.Radio(value="no", label="No"),
     ]))
+
+    # Si hay respuestas guardadas, las asignamos a los RadioGroups
+    if respuestas_guardadas:
+        atencion_radiogroup1.value = respuestas_guardadas[0]
+        atencion_radiogroup2.value = respuestas_guardadas[1]
+        atencion_radiogroup3.value = respuestas_guardadas[2]
+        atencion_radiogroup4.value = respuestas_guardadas[3]
+        atencion_radiogroup5.value = respuestas_guardadas[4]
     
     atencion_column = ft.Column(
                         controls=[
@@ -71,6 +99,7 @@ def test_viewATENCION(page: ft.Page,test_id):
         route="/test_atencion",
         bgcolor=color_Background,
         controls=[
+            create_app_bar(page, "Test"),
                 ft.Column(
                     expand=True,
                     scroll=ft.ScrollMode.AUTO,
@@ -82,12 +111,12 @@ def test_viewATENCION(page: ft.Page,test_id):
                 )
             ]
         )
-def test_viewMEMORIA(page: ft.Page,test_id):
+def test_viewMEMORIA(page: ft.Page,test_id, id_memoria, respuestas_guardadas=None):
     def guardar_respuestas(e):
         respuestas_memoria = [memoria_radiogroup1.value,memoria_radiogroup2.value,memoria_radiogroup3.value,memoria_radiogroup4.value,memoria_radiogroup5.value]
         for i, pregunta_texto in enumerate(preguntas_memoria):
             respuesta = respuestas_memoria[i]
-            preguntaCREATE((pregunta_texto, respuesta, "Memoria", test_id))
+            preguntaUPDATE(id_memoria[i], {"pre_respuesta": respuesta})
         page.snack_bar = ft.SnackBar(ft.Text("Sección de Memoria guardada."), bgcolor=ft.Colors.GREEN)
         page.snack_bar.open = True
         page.go("/test_social")
@@ -121,6 +150,14 @@ def test_viewMEMORIA(page: ft.Page,test_id):
         ft.Radio(value="si", label="Sí"),
         ft.Radio(value="no", label="No"),
     ]))
+
+    # Si hay respuestas guardadas, las asignamos a los RadioGroups
+    if respuestas_guardadas:
+        memoria_radiogroup1.value = respuestas_guardadas[0]
+        memoria_radiogroup2.value = respuestas_guardadas[1]
+        memoria_radiogroup3.value = respuestas_guardadas[2]
+        memoria_radiogroup4.value = respuestas_guardadas[3]
+        memoria_radiogroup5.value = respuestas_guardadas[4]
     memoria_column = ft.Column(
                         controls=[
                             ft.Text("Memoria", size=40, weight=ft.FontWeight.BOLD, color="black"),
@@ -153,13 +190,13 @@ def test_viewMEMORIA(page: ft.Page,test_id):
         ]
     )
 
-def test_viewSOCIAL(page: ft.Page, test_id):
+def test_viewSOCIAL(page: ft.Page, test_id, id_social, respuestas_guardadas=None):
 
     def guardar_respuestas(e):
         respuestas_social = [social_radiogroup1.value,social_radiogroup2.value,social_radiogroup3.value,social_radiogroup4.value,social_radiogroup5.value]
         for i, pregunta_texto in enumerate(preguntas_social):
             respuesta = respuestas_social[i]
-            preguntaCREATE((pregunta_texto, respuesta, "Social", test_id))
+            preguntaUPDATE(id_social[i], {"pre_respuesta": respuesta})
         page.snack_bar = ft.SnackBar(ft.Text("Sección Social guardada."), bgcolor=ft.Colors.GREEN)
         page.snack_bar.open = True
         page.go("/test_emocional")
@@ -193,6 +230,14 @@ def test_viewSOCIAL(page: ft.Page, test_id):
         ft.Radio(value="si", label="Sí"),
         ft.Radio(value="no", label="No"),
     ]))
+
+    # Si hay respuestas guardadas, las asignamos a los RadioGroups
+    if respuestas_guardadas:
+        social_radiogroup1.value = respuestas_guardadas[0]
+        social_radiogroup2.value = respuestas_guardadas[1]
+        social_radiogroup3.value = respuestas_guardadas[2]
+        social_radiogroup4.value = respuestas_guardadas[3]
+        social_radiogroup5.value = respuestas_guardadas[4]
     social_column = ft.Column(
                         controls=[
                             ft.Text("Social", size=40, weight=ft.FontWeight.BOLD, color="black"),
@@ -225,14 +270,16 @@ def test_viewSOCIAL(page: ft.Page, test_id):
         ]
     )
 
-def test_viewEMOCIONAL(page: ft.Page, test_id):
+def test_viewEMOCIONAL(page: ft.Page, test_id, id_emocional, respuestas_guardadas=None):
     def guardar_respuestas(e):
         respuestas_emocional = [emocional_radiogroup1.value,emocional_radiogroup2.value,emocional_radiogroup3.value,emocional_radiogroup4.value,emocional_radiogroup5.value]
         for i, pregunta_texto in enumerate(preguntas_emocional):
             respuesta = respuestas_emocional[i]
-            preguntaCREATE((pregunta_texto, respuesta, "Emocional", test_id))
+            preguntaUPDATE(id_emocional[i], {"pre_respuesta": respuesta}) # Corregido: Esta línea estaba fuera del bucle
+            
         page.snack_bar = ft.SnackBar(ft.Text("Test finalizado y respuestas guardadas."), bgcolor=ft.Colors.GREEN)
         page.snack_bar.open = True
+        testUPDATE(test_id, {"test_status": 1})
         ver_resultados(page, test_id)
         page.update()
 
@@ -264,6 +311,14 @@ def test_viewEMOCIONAL(page: ft.Page, test_id):
         ft.Radio(value="si", label="Sí"),
         ft.Radio(value="no", label="No"),
     ]))
+
+    # Si hay respuestas guardadas, las asignamos a los RadioGroups
+    if respuestas_guardadas:
+        emocional_radiogroup1.value = respuestas_guardadas[0]
+        emocional_radiogroup2.value = respuestas_guardadas[1]
+        emocional_radiogroup3.value = respuestas_guardadas[2]
+        emocional_radiogroup4.value = respuestas_guardadas[3]
+        emocional_radiogroup5.value = respuestas_guardadas[4]
     emocional_column = ft.Column(
                         controls=[
                             ft.Text("Emocional", size=40, weight=ft.FontWeight.BOLD, color="black"),
@@ -296,32 +351,99 @@ def test_viewEMOCIONAL(page: ft.Page, test_id):
         ]
     )
 
-def iniciar_test(page: ft.Page, es_nameID: int, pro_nameID: int):
+def iniciar_test(page: ft.Page, es_nameID: int | None, pro_nameID: int | None, test_id: int | None = None):
     page.clean()
     page.title = "Neuro Check - Test"
     page.bgcolor = color_Background
-    test_id = testCREATE((es_nameID, pro_nameID))
+    id_atencion =[]
+    id_memoria = []
+    id_social = []
+    id_emocional = []
+    # Listas para almacenar las respuestas al reanudar
+    respuestas_atencion = []
+    respuestas_memoria = []
+    respuestas_social = []
+    respuestas_emocional = []
+    if test_id is None:
+        crear_id = testCREATE((es_nameID, pro_nameID))
+        print(f"Creando preguntas iniciales para el test ID: {crear_id}")
+        for i in range(5):
+            pre_id = preguntaCREATE(("",None,"Atención", crear_id))
+            print(f"  -> Pregunta de Atención creada con ID: {pre_id}")
+            id_atencion.append(pre_id)
+            
+        for i in range(5):
+            pre_id = preguntaCREATE(("",None,"Memoria", crear_id))
+            print(f"  -> Pregunta de Memoria creada con ID: {pre_id}")
+            id_memoria.append(pre_id)
+
+        for i in range(5):
+            pre_id = preguntaCREATE(("",None,"Social", crear_id))
+            print(f"  -> Pregunta Social creada con ID: {pre_id}")
+            id_social.append(pre_id)
+
+        for i in range(5):
+            pre_id = preguntaCREATE(("",None,"Emocional", crear_id))
+            print(f"  -> Pregunta Emocional creada con ID: {pre_id}")
+            id_emocional.append(pre_id)
+    elif es_nameID is not None:
+        crear_id = es_nameID
+    else:
+        crear_id = test_id
+        print(f"Reanudando test ID: {crear_id}. Obteniendo IDs de preguntas existentes...")
+        preguntas_existentes = preguntaREAD(test_id)
+        for pregunta in preguntas_existentes:
+            # La tupla es (pre_ID, pre_texto, pre_respuesta, pre_tipo)
+            pre_id = pregunta[0]
+            pre_respuesta = pregunta[2]
+            pre_tipo = pregunta[3]
+            if pre_tipo == "Atención":
+                id_atencion.append(pre_id)
+                respuestas_atencion.append(pre_respuesta)
+            elif pre_tipo == "Memoria":
+                id_memoria.append(pre_id)
+                respuestas_memoria.append(pre_respuesta)
+            elif pre_tipo == "Social":
+                id_social.append(pre_id)
+                respuestas_social.append(pre_respuesta)
+            elif pre_tipo == "Emocional":
+                id_emocional.append(pre_id)
+                respuestas_emocional.append(pre_respuesta)
+        print(f"IDs de Atención cargados: {id_atencion}")
+        print(f"Respuestas de Atención cargadas: {respuestas_atencion}")
+        print(f"IDs de Memoria cargados: {id_memoria}")
+        print(f"Respuestas de Memoria cargadas: {respuestas_memoria}")
+        print(f"IDs de Social cargados: {id_social}")
+        print(f"Respuestas de Social cargadas: {respuestas_social}")
+        print(f"IDs de Emocional cargados: {id_emocional}")
+        print(f"Respuestas de Emocional cargadas: {respuestas_emocional}")
+    
 
     def route_change(e: ft.RouteChangeEvent):
         print(f"Cambiando a la ruta: {e.route}")
         page.views.clear()
-        page.views.append(test_viewATENCION(page,test_id))
+        page.views.append(test_viewATENCION(page,crear_id, id_atencion, respuestas_atencion))
         if  page.route == "/test_memoria":
-            page.views.append(test_viewMEMORIA(page, test_id))
+            page.views.append(test_viewMEMORIA(page, crear_id, id_memoria, respuestas_memoria))
         elif page.route == "/test_social":
-            page.views.append(test_viewSOCIAL(page, test_id))
+            page.views.append(test_viewSOCIAL(page, crear_id, id_social, respuestas_social))
         elif page.route == "/test_emocional":
-            page.views.append(test_viewEMOCIONAL(page, test_id))
+            page.views.append(test_viewEMOCIONAL(page, crear_id, id_emocional, respuestas_emocional))
+        elif page.route == "/inicio_profesor":
+            from INTER_Profesores import mostrar_menu_principal
+            mostrar_menu_principal(page, pro_nameID)
+            page.go("/inicio_profesor") # Navegamos a la ruta correcta después de reiniciar
         page.update()
     
     def view_pop(e: ft.ViewPopEvent):
         print(f"Cerrando vista: {e.view}")
-        page.views.pop()
-        if page.views:
+        # Solo intentar hacer pop si hay vistas en la lista para evitar el IndexError
+        if page.views: 
+            page.views.pop()
             top_view = page.views[-1]
             page.go(top_view.route)
         else:
-            page.go("/")
+            # Al salir del test, volver a la selección de estudiante
             page.update()
 
     page.on_route_change = route_change
