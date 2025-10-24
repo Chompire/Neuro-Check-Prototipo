@@ -110,7 +110,7 @@ def create_inicio_view(page: ft.Page, profesor_data):
             ),
         ]
     )
-def create_perfil_view(page: ft.Page, profesor_data):
+def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data):
     if not profesor_data:
         return ft.View(
             route="/perfil_docente",
@@ -120,6 +120,56 @@ def create_perfil_view(page: ft.Page, profesor_data):
                 ft.Text("No se pudo cargar la información del perfil.", color="red")
             ]
         )
+    
+    test_completos =ft.DataTable(
+                heading_row_color= color_Docente,
+                heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+                bgcolor="white",
+                data_text_style=ft.TextStyle(color="black"),
+                border=ft.border.all(2, ft.Colors.BLACK),
+                vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+                horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+                data_row_color={
+                ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
+                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),                
+            },
+                columns=[
+                    ft.DataColumn(ft.Text("Nombre")),
+                    ft.DataColumn(ft.Text("Apellido")),                    
+                    ft.DataColumn(ft.Text("RUT")),
+                    ft.DataColumn(ft.Text("Curso")),
+                    ft.DataColumn(ft.Text("Profesor emisor")),                    
+                    ft.DataColumn(ft.Text("Fecha de creación")),
+                    ft.DataColumn(ft.Text("Fecha de finalización")),
+                    ft.DataColumn(ft.Text("Estado")),
+                ],
+    )
+    def carga_estudiantes(id_to_select = None): 
+        test_completos.rows.clear()
+        test = test_data
+        
+        if test:
+            for test_dat in test_data:
+                test_completos.rows.append(
+                        ft.DataRow(
+                            cells=[
+                            ft.DataCell(ft.Text(f"{test_dat[4]}")),
+                            ft.DataCell(ft.Text(f"{test_dat[5]}")),
+                            ft.DataCell(ft.Text(f"{test_dat[6]}")),#rut
+                            ft.DataCell(ft.Text(f"{test_dat[7]}")),#curso
+                            ft.DataCell(ft.Text(f"{test_dat[8]} {test_dat[9] or ''}".strip())),#profesor
+                            ft.DataCell(ft.Text(f"{test_dat[2] or ''}")), # Fecha de creación
+                            ft.DataCell(ft.Text(f"{test_dat[3] or ''}")), # Fecha de finalización
+                            ft.DataCell(ft.Text("Incompleto" if test_dat[0] == 0 else "Completo")),
+                            ],
+                            data = test_dat,
+                            selected=True if id_to_select is not None and test_dat[0] == id_to_select else False,
+                            
+                        ),
+        )
+        page.update()
+    
+    carga_estudiantes()
    
 
     doc_info = list(profesor_data)
@@ -164,7 +214,11 @@ def create_perfil_view(page: ft.Page, profesor_data):
                     ft.Row(
                         controls=[info_table],
                         scroll=ft.ScrollMode.AUTO
-                    )
+                    ),
+                    ft.Divider(color="black"),
+                    ft.Column(controls=[
+                        ft.Row(controls=[ft.Text("Resultados de tests", size=30, weight=ft.FontWeight.BOLD, color="black")]),
+                        test_completos]),
                 ]),
             
         ]
@@ -375,11 +429,11 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
                 scroll=ft.ScrollMode.AUTO,
                 controls=[
                     ft.Column(controls=[
-                        ft.Row(controls=[ft.Text("Nuevo test", size=40, weight=ft.FontWeight.BOLD, color="black"),next_button]),
+                        ft.Row(controls=[ft.Text("Nuevo test", size=30, weight=ft.FontWeight.BOLD, color="black"),next_button]),
                         estudiante_table]),
                     ft.Divider(color="black"),
                     ft.Column(controls=[
-                        ft.Row(controls=[ft.Text("Terminar test", size=40, weight=ft.FontWeight.BOLD, color="black"),upload_button]),
+                        ft.Row(controls=[ft.Text("Terminar test", size=30, weight=ft.FontWeight.BOLD, color="black"),upload_button]),
                         test_incompletos]),
                 ],
             )]
@@ -393,7 +447,8 @@ def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
     page.title = "Neuro Check - Profesor"
     page.bgcolor = color_Background
     profesor_data = profesorREAD(pro_nameID)
-    test_data = testREAD(test_ID=None,test_status=0)
+    test_data_false = testREAD(test_ID=None,test_status=0)
+    test_data_true = testREAD(test_ID=None,test_status=1)
     
     page.route = "/inicio_profesor"
 
@@ -402,9 +457,9 @@ def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
         page.views.clear()
         page.views.append(create_inicio_view(page, profesor_data)) # Vista inicial
         if page.route == "/perfil_docente":
-            page.views.append(create_perfil_view(page, profesor_data))
+            page.views.append(create_perfil_view(page, estudiantesREAD(),profesor_data, test_data_true))
         elif page.route == "/seleccionar_estudiante":
-            page.views.append(seleccionar_estudiante(page, estudiantesREAD(), profesor_data, test_data)) # Carga los estudiantes al navegar
+            page.views.append(seleccionar_estudiante(page, estudiantesREAD(), profesor_data, test_data_false)) # Carga los estudiantes al navegar
         
         page.update()
 
