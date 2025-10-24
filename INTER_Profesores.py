@@ -89,7 +89,7 @@ def create_inicio_view(page: ft.Page, profesor_data):
                                             ft.ElevatedButton(
                                                 text="Entrar",
                                                 color="black",
-                                                bgcolor="#FCAD78",
+                                                bgcolor= color_Background   ,
                                                 on_click=lambda _: page.go("/perfil_docente")
                                             )
                                         ]),
@@ -155,7 +155,10 @@ def create_perfil_view(page: ft.Page, profesor_data):
         bgcolor=color_Background,
         controls=[
             create_app_bar(page, "Perfil Docente"),
-            ft.Container(content=info_table, padding=20, alignment=ft.alignment.center)
+            ft.Column(
+                expand=True, controls=[ft.Text("Datos del docente", size=40, weight=ft.FontWeight.BOLD, color="black"),
+                                       ft.Container(content=info_table, padding=20)]),
+            
         ]
     )
 

@@ -6,19 +6,12 @@ def profesorCREATE(datos_profesor: tuple):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                sql_add = "INSERT INTO Profesores (" \
-                    "pro_nombre_1, " \
-                        "pro_nombre_2, " \
-                            "pro_nombre_3, " \
-                                "pro_apellido_pat, " \
-                                    "pro_apellido_mat, " \
-                                            "pro_rut, " \
-                                                "pro_email, " \
-                                                "pro_cargo, " \
-                                                "pro_password, " \
-                                                    "lvl_curso," \
-                                                        "pro_state, pro_nacimiento) " \
-                                                            "VALUES(?,?,?,?,?,?,?,?,?,?,?,?);"
+                sql_add = """INSERT INTO Profesores(
+                pro_nombre_1,pro_nombre_2, pro_nombre_3,
+                pro_apellido_pat, pro_apellido_mat,
+                pro_rut, pro_email,pro_cargo,pro_password, 
+                lvl_curso,pro_state, pro_nacimiento)
+                VALUES(?,?,?,?,?,?,?,?,?,?,?,?);"""
                 cursor.execute(sql_add, datos_profesor)
                 cnxn.commit()
                 return True  # Retorna True si la operación fue exitosa
@@ -103,11 +96,23 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None):
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 if es_nameID is not None:
-                    sql_info = "SELECT e.*, c.cur_nombre, p.pro_nombre_1, p.pro_apellido_pat FROM Estudiantes e LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID WHERE e.es_nameID = ?"
+                    sql_info = """
+                    SELECT e.*,
+                    c.cur_nombre,
+                    p.pro_nombre_1, p.pro_apellido_pat
+                    FROM Estudiantes e
+                    LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
+                    LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID WHERE e.es_nameID = ?"""
                     cursor.execute(sql_info, es_nameID)
                     return cursor.fetchone()
                 else:
-                    sql_info = "SELECT e.*, c.cur_nombre, p.pro_nombre_1, p.pro_apellido_pat FROM Estudiantes e LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID"
+                    sql_info = """
+                    SELECT e.*,
+                    c.cur_nombre,
+                    p.pro_nombre_1, p.pro_apellido_pat
+                    FROM Estudiantes e
+                    LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
+                    LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID"""
                     cursor.execute(sql_info)
                     return cursor.fetchall()
     except pyodbc.Error as ex:

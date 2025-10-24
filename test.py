@@ -7,7 +7,7 @@ def create_app_bar(page: ft.Page, title: str):
     return ft.AppBar(
         title=ft.TextButton(
             content=ft.Text("Neuro Check", size=25, weight=ft.FontWeight.BOLD, color="white"),
-            on_click=lambda _: page.go("/inicio_profesor")
+            on_click=lambda _: page.go("/seleccionar_estudiante")
         ),
         bgcolor=color_Docente,
         center_title=False,
@@ -429,10 +429,10 @@ def iniciar_test(page: ft.Page, es_nameID: int | None, pro_nameID: int | None, t
             page.views.append(test_viewSOCIAL(page, crear_id, id_social, respuestas_social))
         elif page.route == "/test_emocional":
             page.views.append(test_viewEMOCIONAL(page, crear_id, id_emocional, respuestas_emocional))
-        elif page.route == "/inicio_profesor":
+        elif page.route == "/seleccionar_estudiante":
             from INTER_Profesores import mostrar_menu_principal
             mostrar_menu_principal(page, pro_nameID)
-            page.go("/inicio_profesor") # Navegamos a la ruta correcta después de reiniciar
+            page.go("/seleccionar_estudiante") # Navegamos a la ruta correcta después de reiniciar
         page.update()
     
     def view_pop(e: ft.ViewPopEvent):
