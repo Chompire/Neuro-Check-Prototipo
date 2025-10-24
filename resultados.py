@@ -1,8 +1,28 @@
 import flet as ft
 from CRUD import preguntaREAD
 color_Background = "#FF7F7F"
+color_Docente = "#FF0000"
 
-
+def create_app_bar(page: ft.Page, title: str):
+    return ft.AppBar(
+        title=ft.TextButton(
+            content=ft.Text("Neuro Check", size=25, weight=ft.FontWeight.BOLD, color="white"),
+            on_click=lambda _: page.go("/inicio_profesor")
+        ),
+        bgcolor=color_Docente,
+        center_title=False,
+        actions=[
+            ft.Row([
+                ft.Text(title, color="white"),
+                ft.PopupMenuButton(items=[
+                    ft.PopupMenuItem(
+                        icon=ft.Icons.EXIT_TO_APP,
+                        text="Cerrar sesión",
+                    ),
+                ])
+            ]),
+        ]
+    )
 def resultado(page: ft.Page, test_id, porcentaje):  
     guardar_button = ft.IconButton(icon=ft.Icons.SAVE, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE)
     rehacer_button = ft.IconButton(icon=ft.Icons.REFRESH, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.RED)
@@ -12,6 +32,7 @@ def resultado(page: ft.Page, test_id, porcentaje):
         route="/resultados",
         bgcolor=color_Background,
         controls=[
+            create_app_bar(page, "Resultados"),
             ft.Column(
                 scroll=ft.ScrollMode.AUTO,
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -38,7 +59,6 @@ def ver_resultados(page: ft.Page, ID_test: int):
     page.route = "/resultados"
     
     preguntas_del_test = preguntaREAD(ID_test)
-    print("Preguntas del test:",preguntas_del_test)
 
     atencion_res = 0
     memoria_res = 0
@@ -49,23 +69,18 @@ def ver_resultados(page: ft.Page, ID_test: int):
     for pregunta in preguntas_del_test:
         print(pregunta)
         total_preguntas_respondidas += 1
-        if pregunta[3] == "Atención":
-            if pregunta[2] == "si":
+        if pregunta[2] == "Atención":
+            if pregunta[1] == "si":
                 atencion_res += 1
-        elif pregunta[3] == "Memoria":
-            if pregunta[2] == "si":
+        elif pregunta[2] == "Memoria":
+            if pregunta[1] == "si":
                 memoria_res += 1
-        elif pregunta[3] == "Social":
-            if pregunta[2] == "si":
+        elif pregunta[2] == "Social":
+            if pregunta[1] == "si":
                 social_res += 1
-        elif pregunta[3] == "Emocional":
-            if pregunta[2] == "si":
+        elif pregunta[2] == "Emocional":
+            if pregunta[1] == "si":
                 emocional_res += 1
-
-    print(f"Atención: {atencion_res}")
-    print(f"Memoria: {memoria_res}")
-    print(f"Social: {social_res}")
-    print(f"Emocional: {emocional_res}")
     puntaje = atencion_res + memoria_res + social_res + emocional_res
     
     # Calcular porcentaje dinámicamente basado en el número de preguntas respondidas

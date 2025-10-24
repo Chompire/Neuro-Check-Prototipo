@@ -145,7 +145,7 @@ def create_perfil_view(page: ft.Page, profesor_data):
         ],
         data_text_style=ft.TextStyle(color="black"),
         heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
-        border=ft.border.all(1, ft.Colors.BLACK),
+        border=ft.border.all(2, ft.Colors.BLACK),
         vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
         horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
     )
@@ -155,9 +155,17 @@ def create_perfil_view(page: ft.Page, profesor_data):
         bgcolor=color_Background,
         controls=[
             create_app_bar(page, "Perfil Docente"),
+            
             ft.Column(
-                expand=True, controls=[ft.Text("Datos del docente", size=40, weight=ft.FontWeight.BOLD, color="black"),
-                                       ft.Container(content=info_table, padding=20)]),
+                
+                expand=True, 
+                controls=[
+                    ft.Text("Datos del docente", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                    ft.Row(
+                        controls=[info_table],
+                        scroll=ft.ScrollMode.AUTO
+                    )
+                ]),
             
         ]
     )
@@ -176,18 +184,19 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
     selected_es_id = None
     selected_test_id = None
     estudiante_table = ft.DataTable(
-                heading_row_color= color_Docente,
-                heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
-                data_text_style=ft.TextStyle(color="black"),
-                border=ft.border.all(1, ft.Colors.BLACK),
-                vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
-                horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
-                data_row_color={
-                ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
-                ft.ControlState.DEFAULT: ft.Colors.WHITE70,
-                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),                
+        border=ft.border.all(2, ft.Colors.BLACK),
+        bgcolor="white",
+        heading_row_color= color_Docente,        
+        heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+        data_text_style=ft.TextStyle(color="black"),        
+        vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+        horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+        data_row_color={
+        ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),    
+        ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),                
             },
                 columns=[
+                    
                     ft.DataColumn(ft.Text("Nombre")),
                     ft.DataColumn(ft.Text("Apellido")),
                     ft.DataColumn(ft.Text("Nacimiento")),
@@ -197,15 +206,15 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
                 ],
     )
     test_incompletos =ft.DataTable(
-        heading_row_color= color_Docente,
+                heading_row_color= color_Docente,
                 heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+                bgcolor="white",
                 data_text_style=ft.TextStyle(color="black"),
-                border=ft.border.all(1, ft.Colors.BLACK),
+                border=ft.border.all(2, ft.Colors.BLACK),
                 vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
                 horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
                 data_row_color={
                 ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
-                ft.ControlState.DEFAULT: ft.Colors.WHITE70,
                 ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),                
             },
                 columns=[
@@ -213,7 +222,9 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
                     ft.DataColumn(ft.Text("Apellido")),                    
                     ft.DataColumn(ft.Text("RUT")),
                     ft.DataColumn(ft.Text("Curso")),
-                    ft.DataColumn(ft.Text("Profesor emisor")),
+                    ft.DataColumn(ft.Text("Profesor emisor")),                    
+                    ft.DataColumn(ft.Text("Fecha de creación")),
+                    ft.DataColumn(ft.Text("Fecha de finalización")),
                     ft.DataColumn(ft.Text("Estado")),
                 ],
     )
@@ -288,12 +299,14 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
                 test_incompletos.rows.append(
                         ft.DataRow(
                             cells=[
-                            ft.DataCell(ft.Text(f"{test_dat[2]}")),
-                            ft.DataCell(ft.Text(f"{test_dat[3]}")),
-                            ft.DataCell(ft.Text(f"{test_dat[4]}")),#rut
-                            ft.DataCell(ft.Text(f"{test_dat[5]}")),#curso
-                            ft.DataCell(ft.Text(f"{test_dat[6]} {test_dat[7] or ''}".strip())),#profesor
-                            ft.DataCell(ft.Text(f"{test_dat[0]}")),#estado
+                            ft.DataCell(ft.Text(f"{test_dat[4]}")),
+                            ft.DataCell(ft.Text(f"{test_dat[5]}")),
+                            ft.DataCell(ft.Text(f"{test_dat[6]}")),#rut
+                            ft.DataCell(ft.Text(f"{test_dat[7]}")),#curso
+                            ft.DataCell(ft.Text(f"{test_dat[8]} {test_dat[9] or ''}".strip())),#profesor
+                            ft.DataCell(ft.Text(f"{test_dat[2] or ''}")), # Fecha de creación
+                            ft.DataCell(ft.Text(f"{test_dat[3] or ''}")), # Fecha de finalización
+                            ft.DataCell(ft.Text("Incompleto" if test_dat[0] == 0 else "Completo")),
                             ],
                             data = test_dat,
                             selected=True if id_to_select is not None and test_dat[0] == id_to_select else False,
@@ -328,8 +341,24 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
         # Reutilizamos iniciar_test para reanudar, pasándole el test_id
         iniciar_test(page, es_nameID=None, pro_nameID=None, test_id=selected_test_id)
 
-    next_button = ft.IconButton(icon=ft.Icons.SKIP_NEXT, icon_color=ft.Colors.WHITE, bgcolor=color_Docente, visible=False, on_click=on_iniciar_test_click)
-    upload_button = ft.IconButton(icon=ft.Icons.SKIP_NEXT, icon_color=ft.Colors.WHITE, bgcolor=color_Docente, visible=False, on_click=on_reanudar_test_click)
+    next_button = ft.ElevatedButton(
+        text="Iniciar Test",
+        icon=ft.Icons.PLAY_ARROW,
+        icon_color=ft.Colors.WHITE,
+        color=ft.Colors.WHITE,
+        bgcolor=color_Docente,
+        visible=False,
+        on_click=on_iniciar_test_click,
+        width=150,
+        height=50)
+    upload_button = ft.ElevatedButton(
+        text="Reanudar Test",
+        icon=ft.Icons.PLAY_CIRCLE_OUTLINE,
+        icon_color=ft.Colors.WHITE,
+        color=ft.Colors.WHITE,
+        bgcolor=color_Docente, visible=False, on_click=on_reanudar_test_click,
+        width=150,
+        height=50)
 
 
     return ft.View(
@@ -338,18 +367,24 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
         controls=[
             create_app_bar(page, "Seleccionar Estudiante"),
             ft.Container(
+                
                 expand = True,
-                content=
+                content=ft.Row(vertical_alignment=ft.CrossAxisAlignment.START,controls=[
             ft.Column(
+                expand = True,
                 scroll=ft.ScrollMode.AUTO,
                 controls=[
-                    ft.Column(controls=[ft.Text("Nuevo test", size=40, weight=ft.FontWeight.BOLD, color="black"),estudiante_table,next_button]),
-                    ft.Divider(color=color_Docente),
-                    ft.Column(controls=[ft.Text("Terminar test", size=40, weight=ft.FontWeight.BOLD, color="black"),test_incompletos, upload_button]), 
+                    ft.Column(controls=[
+                        ft.Row(controls=[ft.Text("Nuevo test", size=40, weight=ft.FontWeight.BOLD, color="black"),next_button]),
+                        estudiante_table]),
+                    ft.Divider(color="black"),
+                    ft.Column(controls=[
+                        ft.Row(controls=[ft.Text("Terminar test", size=40, weight=ft.FontWeight.BOLD, color="black"),upload_button]),
+                        test_incompletos]),
                 ],
-                
+            )]
             )
-            , padding=20, alignment=ft.alignment.center)
+            )
         ]
     )
 

@@ -155,10 +155,6 @@ def modificación_docente(page: ft.Page, profesor_data):
         content=ft.Text(""),
         bgcolor=ft.Colors.GREEN_700
     )
-    def open_dialog(e, dialog):
-        page.dialog = dialog
-        dialog.open = True
-        page.update()
 
     # --- Funciones de confirmación para los diálogos ---
     def confirm_add(e):

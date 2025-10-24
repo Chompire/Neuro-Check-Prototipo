@@ -125,7 +125,7 @@ def testCREATE(test_data: tuple):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                sql_add = "INSERT INTO Test (es_ID, pro_ID, test_status) OUTPUT INSERTED.test_ID VALUES(?,?,0); "
+                sql_add = "INSERT INTO Test (es_ID, pro_ID, test_status, test_fecha_inicio, test_fecha_termino) OUTPUT INSERTED.test_ID VALUES(?,?,0,?,?)"
                 cursor.execute(sql_add, test_data)      
                 test_id = cursor.fetchone()[0]
                 cnxn.commit()
@@ -145,7 +145,7 @@ def testREAD(test_ID: int | None = None , test_status: int | None = None):
                 elif test_status is not None:
                     sql_info = """
                         SELECT
-                            t.test_status, t.test_ID,
+                            t.test_status, t.test_ID, test_fecha_inicio, test_fecha_termino,
                             e.es_nombre_1, e.es_apellido_pat, e.es_rut, c.cur_nombre,
                             p.pro_nombre_1, p.pro_apellido_pat, p.pro_rut
                             FROM Test t
@@ -178,7 +178,7 @@ def preguntaCREATE(pregunta_data: tuple):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                sql_add = "INSERT INTO Preguntas (pre_texto, pre_respuesta, pre_tipo, ID_test) OUTPUT INSERTED.pre_ID VALUES(?,?,?,?)"
+                sql_add = "INSERT INTO Preguntas (pre_respuesta, pre_tipo, ID_test) OUTPUT INSERTED.pre_ID VALUES(?,?,?)"
                 cursor.execute(sql_add, pregunta_data)
                 pre_id= cursor.fetchone()[0]
                 cnxn.commit()
@@ -193,7 +193,7 @@ def preguntaREAD(ID_test: int | None = None):
             with cnxn.cursor() as cursor:
                 if ID_test is not None:
                     # Devolvemos el ID para poder usarlo en las actualizaciones
-                    sql_info = "SELECT pre_ID, pre_texto, pre_respuesta, pre_tipo FROM Preguntas WHERE ID_test = ?"
+                    sql_info = "SELECT pre_ID, pre_respuesta, pre_tipo FROM Preguntas WHERE ID_test = ?"
                     cursor.execute(sql_info, ID_test)
                     return cursor.fetchall()
     except pyodbc.Error as ex:
