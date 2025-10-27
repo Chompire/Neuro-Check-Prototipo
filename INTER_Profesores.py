@@ -208,7 +208,7 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
             create_app_bar(page, "Perfil Docente"),
             
             ft.Column(
-                
+                scroll=ft.ScrollMode.AUTO,
                 expand=True, 
                 controls=[
                     ft.Text("Datos del docente", size=30, weight=ft.FontWeight.BOLD, color="black"),

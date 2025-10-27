@@ -1,6 +1,7 @@
 import flet as ft
 from CRUD import testCREATE, preguntaCREATE, preguntaREAD, preguntaUPDATE, testREAD,testUPDATE
 import datetime
+import time
 color_Background = "#FF7F7F"
 color_Docente = "#FF0000"
 def create_app_bar(page: ft.Page, title: str):
@@ -82,6 +83,9 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
                 from resultados import ver_resultados
                 error_snack_bar.content = ft.Text("Test finalizado")
                 error_snack_bar.open = True
+                page.update()        
+                time.sleep(2)
+
                 testUPDATE(test_id, {"test_status": 1}) 
                 ver_resultados(page, test_id)
             else:

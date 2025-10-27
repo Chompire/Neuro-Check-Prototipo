@@ -5,7 +5,6 @@ from INTER_Profesores import mostrar_menu_principal
 import time
 color_Background = "#FF7F7F"
 color_Docente = "#FF0000"
-
 def create_app_bar(page: ft.Page, title: str):
     return ft.AppBar(
         title=ft.TextButton(
@@ -37,11 +36,9 @@ def resultado(page: ft.Page, test_id, porcentaje, id_profesor):
         iniciar_test(page, es_nameID=None, pro_nameID=pro_id, test_id=test_id)
 
     def guardar_test(e, test_id):
-        page.overlay.append(save_snackbar)
         save_snackbar.content = ft.Text("Se han guardado los resultados exitosamente.")
         save_snackbar.open = True
-        page.update()
-        
+        page.update()        
         time.sleep(2)
 
         testUPDATE(test_id, {"test_status": 1})
@@ -65,6 +62,7 @@ def resultado(page: ft.Page, test_id, porcentaje, id_profesor):
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 expand=True,               
                 controls=[
+                    save_snackbar,
                     ft.Row([ft.Text("Porcentaje de riesgo:", size=40, weight=ft.FontWeight.BOLD, color="black")]),
                     ft.Column(
                         width=600,
