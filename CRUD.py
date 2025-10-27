@@ -170,7 +170,41 @@ def testUPDATE(test_ID: int, test_data: dict):
                 cnxn.commit()
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
-        
+
+#-------------------resultados_detalladosCRUD
+
+def resultados_detalladosCREATE(detalles_data: tuple):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_add = """INSERT INTO Resultados_detallados
+                            (det_nameES, det_apellidoES,lvl_curso, det_namePRO, det_apellidoPRO, 
+                             det_porcentaje, det_puntaje, det_fecha, id_test) OUTPUT INSERTED.det_ID
+                            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+                cursor.execute(sql_add, detalles_data)
+                det_id = cursor.fetchone()[0]
+                cnxn.commit()
+                return det_id
+    except pyodbc.Error as ex:
+        print(f"Error al crear resultado detallado: {ex.args[0]}")
+        return None
+
+def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = None):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                if test_ID is not None:
+                    sql_info = "SELECT * FROM Resultados_detallados WHERE id_test = ?"
+                    cursor.execute(sql_info, test_ID)
+                elif det_ID is not None:
+                    sql_info = "SELECT * FROM Resultados_detallados WHERE det_id = ?"
+                    cursor.execute(sql_info, det_ID)
+                else:
+                    return [] # No se proporcionó ID, devolver lista vacía
+                return cursor.fetchall()
+    except pyodbc.Error as ex:
+        print(f"Error al leer resultados detallados: {ex.args[0]}")
+        return []
     
 #-------------------preguntaCRUD
 

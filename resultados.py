@@ -1,5 +1,5 @@
 import flet as ft
-from CRUD import preguntaREAD, preguntaUPDATE, testREAD, testUPDATE
+from CRUD import preguntaREAD, preguntaUPDATE, testREAD, testUPDATE, estudiantesREAD, profesorREAD, resultados_detalladosCREATE
 import datetime
 from INTER_Profesores import mostrar_menu_principal
 import time
@@ -25,7 +25,7 @@ def create_app_bar(page: ft.Page, title: str):
             ]),
         ]
     )
-def resultado(page: ft.Page, test_id, porcentaje, id_profesor):
+def resultado(page: ft.Page, test_id, porcentaje, puntaje, id_profesor):
     save_snackbar = ft.SnackBar(content = ft.Text(""), bgcolor=ft.Colors.GREEN)
     def rehacer_test(e, test_id, pro_id):
         testUPDATE(test_id, {"test_status": 0})
@@ -43,7 +43,27 @@ def resultado(page: ft.Page, test_id, porcentaje, id_profesor):
         time.sleep(2)
         testUPDATE(test_id, {"test_status": 1})
         testUPDATE(test_id, {"test_fecha_termino": datetime.datetime.now()})
-        mostrar_menu_principal(page, pro_nameID=id_profesor)
+        test_info = testREAD(test_id)
+        student_info = estudiantesREAD(test_info[1])
+        print(student_info)
+
+        profesor_info = profesorREAD(id_profesor)
+
+        detalles_data = (
+            f"{student_info[1]} {student_info[2] or ''} {student_info[3] or ''}".strip(),  # det_nameES
+            f"{student_info[4]} {student_info[5]}".strip(), # det_apellidoES
+            f"{student_info[8]}", #curso
+            profesor_info[1], # det_namePRO
+            f"{profesor_info[4]} {profesor_info[5]}".strip(), # det_apellidoPRO
+            porcentaje, # det_porcentaje
+            puntaje, # det_puntaje
+            datetime.datetime.now().date(), # det_fecha
+            test_id # id_test
+        )
+        result = resultados_detalladosCREATE(detalles_data)
+        mostrar_menu_principal(page, pro_nameID=id_profesor, det_ID=result)
+        page.go(f"/resultados_detallados/det/{result}")
+        
 
     guardar_button = ft.IconButton(icon=ft.Icons.SAVE, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE, on_click=lambda e: guardar_test(e, test_id))
     rehacer_button = ft.IconButton(icon=ft.Icons.REFRESH, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.RED, on_click=lambda e: rehacer_test(e, test_id, id_profesor))
@@ -74,21 +94,8 @@ def resultado(page: ft.Page, test_id, porcentaje, id_profesor):
         )
     ]
 )
-def resultados_detallados(page: ft.Page):
-    datatable = ft.DataTable(
-        heading_row_color= color_Docente,
-        heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
-        columns=[
-            
-            ft.DataColumn()]
-    )
-    return ft.View(
-        route="/resultados_detallados",
-        bgcolor=color_Background,
-        controls=[
-            create_app_bar(page, "Resultados detallados"),
-        ]
-    )
+
+
 def ver_resultados(page: ft.Page, ID_test: int):
     page.clean()
     page.title = "Neuro Check - Test"
@@ -117,7 +124,7 @@ def ver_resultados(page: ft.Page, ID_test: int):
         elif pregunta[2] == "Emocional":
             if pregunta[1] == "si":
                 emocional_res += 1
-    puntaje = atencion_res + memoria_res + social_res + emocional_res   
+    puntaje = atencion_res + memoria_res + social_res + emocional_res
     porcentaje = (puntaje / total_preguntas_respondidas) * 100 if total_preguntas_respondidas > 0 else 0
     print(f"{porcentaje}%")
 
@@ -125,15 +132,15 @@ def ver_resultados(page: ft.Page, ID_test: int):
     def route_change(e: ft.RouteChangeEvent):
         print(f"Cambiando a la ruta: {e.route}")
         page.views.clear()
-        page.views.append(resultado(page, ID_test, porcentaje, id_profesor))
-        if page.route == "/test":
+        page.views.append(resultado(page, ID_test, porcentaje, puntaje, id_profesor))
+        if page.route == "/test":   
            from test import iniciar_test
            iniciar_test(page, ID_test)
-        elif page.route == "/resultados_detallados":
-           page.views.append(resultados_detallados(page))
-           page.go("/resultados_detallados")
+        elif page.route == f"/resultados_detallados/det/":
+           mostrar_menu_principal(page, pro_nameID=id_profesor, test_ID=ID_test) 
+           page.go(f"/resultados_detallados/det/")
         else:
-           page.go("/resultados") # Navegar a la vista por defecto
+           page.go("/resultados")
         page.update()
 
     def view_pop(e: ft.ViewPopEvent):
@@ -153,6 +160,6 @@ def ver_resultados(page: ft.Page, ID_test: int):
 if __name__ == "__main__":
     def main_standalone(page: ft.Page):
         id_profesor_pie_test = 2
-        ver_resultados(page, id_profesor_pie_test)
+        ver_resultados(page, 23)
 
     ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)

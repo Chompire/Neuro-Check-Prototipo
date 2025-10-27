@@ -1,6 +1,8 @@
 import flet as ft
 from test import iniciar_test
-from CRUD import profesorREAD, estudiantesREAD, preguntaREAD, testREAD
+from CRUD import profesorREAD, estudiantesREAD, preguntaREAD, testREAD, resultados_detalladosREAD
+
+
 
 color_Docente = "#FF0000"
 color_Background = "#FF7F7F"
@@ -122,6 +124,15 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
             ]
         )
     
+    def test_completos_row_select(e):
+        # Deseleccionar todas las filas primero para un comportamiento de selección única
+        for row in test_completos.rows:
+            row.selected = False
+        # Seleccionar la fila actual y navegar
+        e.control.selected = True
+        test_id_seleccionado = e.control.data[1] # El test_ID está en el índice 1 de los datos de la fila
+        page.go(f"/resultados_detallados/test/{test_id_seleccionado}")
+
     test_completos =ft.DataTable(
                 heading_row_color= color_Docente,
                 heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
@@ -166,7 +177,7 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
                             ],
                             data = test_dat,
                             selected=True if id_to_select is not None and test_dat[0] == id_to_select else False,
-                            
+                            on_select_changed=test_completos_row_select,
                         ),
         )   
         page.update()
@@ -175,7 +186,6 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
    
 
     doc_info = list(profesor_data)
-    print(doc_info)
     info_table = ft.DataTable(
         heading_row_color= color_Docente,
         data_row_color="white",
@@ -300,9 +310,9 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
             if selected_es_id is not None:
                 next_button.visible = False
         for row in test_incompletos.rows:
-            row.selected = False
-        
+            row.selected = False        
         page.update()
+        
     def test_row_select(e):
         nonlocal selected_test_id
         selected_test= e.control.data
@@ -391,7 +401,6 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
             page.snack_bar.open = True
             page.update()
             return
-        # Reutilizamos iniciar_test para reanudar, pasándole el test_id
         iniciar_test(page, es_nameID=None, pro_nameID=None, test_id=selected_test_id)
 
     next_button = ft.ElevatedButton(
@@ -420,7 +429,6 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
         controls=[
             create_app_bar(page, "Seleccionar Estudiante"),
             ft.Container(
-                
                 expand = True,
                 content=ft.Row(vertical_alignment=ft.CrossAxisAlignment.START,controls=[
             ft.Column(
@@ -438,10 +446,106 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
             )]
             )
             )
-        ]
+        ])
+
+def resultados_detallados(page: ft.Page, profesor_data, id_value: int, id_type: str):
+    if id_type == 'test':
+        test_info = resultados_detalladosREAD(test_ID=id_value)
+    elif id_type == 'det':
+        test_info = resultados_detalladosREAD(det_ID=id_value)
+    else:
+        test_info = []
+    
+    rows = []
+    
+    puntaje_control = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text("Puntaje", weight=ft.FontWeight.BOLD, size=16,color="white"),
+                ft.Text(f"{test_info[0][7]}/20" if test_info else "N/A", size=24, weight=ft.FontWeight.BOLD,color="white"),
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        border=ft.border.all(2, color_Docente),
+        border_radius=8,
+        padding=15,
+        bgcolor=color_Docente
+    )
+    porcentaje_control = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text("Porcentaje", weight=ft.FontWeight.BOLD, size=16,color="white"),
+                ft.Text(f"{test_info[0][6]}%", size=24, weight=ft.FontWeight.BOLD,color="white"),
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        ),
+        border=ft.border.all(2, color_Docente),
+        border_radius=8,
+        padding=15,
+        bgcolor= color_Docente
     )
 
-def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
+    if test_info:
+        for test in test_info:
+            nombre_es = test[1]
+            apellido_es = test[2]
+            curso = test[3]
+            fecha_termino = test[8] # Correct index for det_fecha
+            año_termino = fecha_termino.year if fecha_termino else "N/A"
+            rows.append(
+                ft.DataRow(cells=[
+                    ft.DataCell(ft.Text(nombre_es)),
+                    ft.DataCell(ft.Text(apellido_es)),
+                    ft.DataCell(ft.Text(curso)),
+                    ft.DataCell(ft.Text(str(año_termino))),
+                ])
+            )
+        # Si hay datos, actualizar los controles de puntaje y porcentaje con el primer resultado
+        
+
+    datatable = ft.DataTable(
+        heading_row_color= color_Docente,
+        heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+        bgcolor="white",
+        border=ft.border.all(2, ft.Colors.BLACK),
+        vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+        horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+        data_text_style=ft.TextStyle(color="black"),
+        columns=[
+            ft.DataColumn(ft.Text("Nombre")),
+            ft.DataColumn(ft.Text("Apellidos")),
+            ft.DataColumn(ft.Text("Curso")),
+            ft.DataColumn(ft.Text("Fecha de test"))],
+        rows=rows
+    )
+    return ft.View(
+        route="/resultados_detallados",
+        bgcolor=color_Background,
+        controls=[
+            create_app_bar(page, "Resultados detallados"),
+            ft.Row(
+                # Usamos una Fila que se expande para poder centrar su contenido
+                expand=True,
+                alignment=ft.MainAxisAlignment.CENTER,
+                vertical_alignment=ft.CrossAxisAlignment.START,
+                controls=[
+                    ft.Column(
+                        scroll=ft.ScrollMode.AUTO,
+                        controls=[
+                            ft.Text("Resultados detallados", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                            datatable,
+                            ft.Divider(color="black"),
+                            ft.Row(
+                                controls=[puntaje_control, porcentaje_control],
+                            )
+                        ]
+                    )
+                ]
+            )
+        ]
+    )   
+
+def mostrar_menu_principal(page: ft.Page, pro_nameID: int, test_ID: int = None, det_ID  = None, results_test_ID: int = None):
     page.clean()
     page.title = "Neuro Check - Profesor"
     page.bgcolor = color_Background
@@ -457,28 +561,40 @@ def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
         if page.route == "/perfil_docente":
             page.views.append(create_perfil_view(page, estudiantesREAD(),profesor_data, test_data_true))
         elif page.route == "/seleccionar_estudiante":
-            page.views.append(seleccionar_estudiante(page, estudiantesREAD(), profesor_data, test_data_false)) # Carga los estudiantes al navegar
+            page.views.append(seleccionar_estudiante(page, estudiantesREAD(), profesor_data, test_data_false))
+        elif page.route.startswith("/resultados_detallados"):
+            parts = page.route.split('/')
+            if len(parts) == 4:
+                id_type = parts[2] # 'test' o 'det'
+                id_value = int(parts[3])
+                page.views.append(resultados_detallados(page, profesor_data, id_value, id_type))
+       
+
         
         page.update()
 
     def view_pop(e: ft.ViewPopEvent):
         print(f"Cerrando vista: {e.view}")
-        page.views.pop() # Elimina la vista actual
-        if page.views: # Verifica si aún quedan vistas en la pila
+        page.views.pop()
+        if page.views:  # Verifica si aún quedan vistas en la pila
             top_view = page.views[-1]
             page.go(top_view.route)
         else:
-            # Si no quedan vistas, regresa a la pantalla de inicio de sesión principal
+            # Si no quedan vistas, regresa a la pantalla de inicio del profesor
             page.go("/")
-            page.update()
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
 
-    page.go("/inicio_profesor")
+    if det_ID:
+        page.go(f"/resultados_detallados/det/{det_ID}")
+    elif test_ID:
+        page.go(f"/resultados_detallados/test/{test_ID}")
+    else:
+        page.go("/inicio_profesor")
 if __name__ == "__main__":
     def main_standalone(page: ft.Page):
         id_profesor_pie_test = 2
         mostrar_menu_principal(page, id_profesor_pie_test) # Se elimina el argumento faltante
 
-    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)
+    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.WEB_BROWSER)
