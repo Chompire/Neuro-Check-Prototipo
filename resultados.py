@@ -37,13 +37,12 @@ def resultado(page: ft.Page, test_id, porcentaje, id_profesor):
 
     def guardar_test(e, test_id):
         save_snackbar.content = ft.Text("Se han guardado los resultados exitosamente.")
+        save_snackbar.bgcolor = ft.Colors.GREEN
         save_snackbar.open = True
         page.update()        
         time.sleep(2)
-
         testUPDATE(test_id, {"test_status": 1})
-        testUPDATE(test_id, {"test_fecha_termino": datetime.datetime.now()})        
-        
+        testUPDATE(test_id, {"test_fecha_termino": datetime.datetime.now()})
         mostrar_menu_principal(page, pro_nameID=id_profesor)
 
     guardar_button = ft.IconButton(icon=ft.Icons.SAVE, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE, on_click=lambda e: guardar_test(e, test_id))
@@ -76,6 +75,13 @@ def resultado(page: ft.Page, test_id, porcentaje, id_profesor):
     ]
 )
 def resultados_detallados(page: ft.Page):
+    datatable = ft.DataTable(
+        heading_row_color= color_Docente,
+        heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+        columns=[
+            
+            ft.DataColumn()]
+    )
     return ft.View(
         route="/resultados_detallados",
         bgcolor=color_Background,

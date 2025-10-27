@@ -82,6 +82,7 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
             if test_completo:
                 from resultados import ver_resultados
                 error_snack_bar.content = ft.Text("Test finalizado")
+                error_snack_bar.bgcolor = ft.Colors.GREEN
                 error_snack_bar.open = True
                 page.update()        
                 time.sleep(2)
