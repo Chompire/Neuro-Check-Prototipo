@@ -57,10 +57,10 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
 
     def manejar_respuestas(e, accion: str, ids_atencion, ids_memoria, ids_social, ids_emocional):
         # 1. Recoger todas las respuestas (Lógica común)
-        respuestas_atencion = [atencion_radiogroup1.value,atencion_radiogroup2.value,atencion_radiogroup3.value,atencion_radiogroup4.value,atencion_radiogroup5.value]
-        respuestas_memoria = [memoria_radiogroup1.value,memoria_radiogroup2.value,memoria_radiogroup3.value,memoria_radiogroup4.value,memoria_radiogroup5.value]
-        respuestas_social = [social_radiogroup1.value,social_radiogroup2.value,social_radiogroup3.value,social_radiogroup4.value,social_radiogroup5.value]
-        respuestas_emocional = [emocional_radiogroup1.value,emocional_radiogroup2.value,emocional_radiogroup3.value,emocional_radiogroup4.value,emocional_radiogroup5.value]
+        respuestas_atencion = [rg.value for rg in radiogroups_atencion]
+        respuestas_memoria = [rg.value for rg in radiogroups_memoria]
+        respuestas_social = [rg.value for rg in radiogroups_social]
+        respuestas_emocional = [rg.value for rg in radiogroups_emocional]
         
         # 2. Guardar las respuestas en la base de datos (Lógica común)
         for i, _ in enumerate(preguntas_atencion):
@@ -182,26 +182,27 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
         ft.Radio(value="no", label="No"),
     ]))
     
+    radiogroups_atencion = [atencion_radiogroup1, atencion_radiogroup2, atencion_radiogroup3, atencion_radiogroup4, atencion_radiogroup5]
+    radiogroups_memoria = [memoria_radiogroup1, memoria_radiogroup2, memoria_radiogroup3, memoria_radiogroup4, memoria_radiogroup5]
+    radiogroups_social = [social_radiogroup1, social_radiogroup2, social_radiogroup3, social_radiogroup4, social_radiogroup5]
+    radiogroups_emocional = [emocional_radiogroup1, emocional_radiogroup2, emocional_radiogroup3, emocional_radiogroup4, emocional_radiogroup5]
+
     if respuestas_atencion:
-        radiogroups_atencion = [atencion_radiogroup1, atencion_radiogroup2, atencion_radiogroup3, atencion_radiogroup4, atencion_radiogroup5]
         for i, rg in enumerate(radiogroups_atencion):
             if i < len(respuestas_atencion):
                 rg.value = respuestas_atencion[i]
 
     if respuestas_memoria:
-        radiogroups_memoria = [memoria_radiogroup1, memoria_radiogroup2, memoria_radiogroup3, memoria_radiogroup4, memoria_radiogroup5]
         for i, rg in enumerate(radiogroups_memoria):
             if i < len(respuestas_memoria):
                 rg.value = respuestas_memoria[i]
 
     if respuestas_social:
-        radiogroups_social = [social_radiogroup1, social_radiogroup2, social_radiogroup3, social_radiogroup4, social_radiogroup5]
         for i, rg in enumerate(radiogroups_social):
             if i < len(respuestas_social):
                 rg.value = respuestas_social[i]
 
     if respuestas_emocional:
-        radiogroups_emocional = [emocional_radiogroup1, emocional_radiogroup2, emocional_radiogroup3, emocional_radiogroup4, emocional_radiogroup5]
         for i, rg in enumerate(radiogroups_emocional):
             if i < len(respuestas_emocional):
                 rg.value = respuestas_emocional[i]
