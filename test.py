@@ -1,6 +1,5 @@
 import flet as ft
 from CRUD import testCREATE, preguntaCREATE, preguntaREAD, preguntaUPDATE, testREAD,testUPDATE
-from resultados import ver_resultados
 import datetime
 color_Background = "#FF7F7F"
 color_Docente = "#FF0000"
@@ -55,7 +54,7 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
         "5. ¿Reacciona de forma exagerada a críticas o comentarios negativos?"
     ]
 
-    def manejar_respuestas(e, accion: str):
+    def manejar_respuestas(e, accion: str, ids_atencion, ids_memoria, ids_social, ids_emocional):
         # 1. Recoger todas las respuestas (Lógica común)
         respuestas_atencion = [atencion_radiogroup1.value,atencion_radiogroup2.value,atencion_radiogroup3.value,atencion_radiogroup4.value,atencion_radiogroup5.value]
         respuestas_memoria = [memoria_radiogroup1.value,memoria_radiogroup2.value,memoria_radiogroup3.value,memoria_radiogroup4.value,memoria_radiogroup5.value]
@@ -64,13 +63,13 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
         
         # 2. Guardar las respuestas en la base de datos (Lógica común)
         for i, _ in enumerate(preguntas_atencion):
-            preguntaUPDATE(id_atencion[i], {"pre_respuesta": respuestas_atencion[i]})
+            preguntaUPDATE(ids_atencion[i], {"pre_respuesta": respuestas_atencion[i]})
         for i, _ in enumerate(preguntas_memoria):
-            preguntaUPDATE(id_memoria[i], {"pre_respuesta": respuestas_memoria[i]})
+            preguntaUPDATE(ids_memoria[i], {"pre_respuesta": respuestas_memoria[i]})
         for i, _ in enumerate(preguntas_social):
-            preguntaUPDATE(id_social[i], {"pre_respuesta": respuestas_social[i]})
+            preguntaUPDATE(ids_social[i], {"pre_respuesta": respuestas_social[i]})
         for i, _ in enumerate(preguntas_emocional):
-            preguntaUPDATE(id_emocional[i], {"pre_respuesta": respuestas_emocional[i]})
+            preguntaUPDATE(ids_emocional[i], {"pre_respuesta": respuestas_emocional[i]})
         if accion == "guardar":
             # Acción para el botón "Guardar respuestas"
             error_snack_bar.content = ft.Text("Respuestas guardadas (Puede salir de la ventana).")
@@ -79,12 +78,12 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
         elif accion == "finalizar":
             todas_las_preguntas = preguntaREAD(test_id)
             test_completo = all(pregunta[1] is not None for pregunta in todas_las_preguntas)
-            
             if test_completo:
-                error_snack_bar.content = ft.Text("Test finalizado y respuestas guardadas.")
+                from resultados import ver_resultados
+                error_snack_bar.content = ft.Text("Test finalizado")
                 error_snack_bar.open = True
                 testUPDATE(test_id, {"test_status": 1}) 
-                ver_resultados(page, test_id) # Ir a resultados
+                ver_resultados(page, test_id)
             else:
                 error_snack_bar.content = ft.Text("Advertencia: No todas las preguntas fueron respondidas. Guardando progreso.")
                 error_snack_bar.bgcolor = ft.Colors.YELLOW
@@ -178,8 +177,6 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
         ft.Radio(value="no", label="No"),
     ]))
     
-    # --- Carga de respuestas guardadas ---
-    # Se asignan los valores de las respuestas leídas de la BD a cada RadioGroup.
     if respuestas_atencion:
         radiogroups_atencion = [atencion_radiogroup1, atencion_radiogroup2, atencion_radiogroup3, atencion_radiogroup4, atencion_radiogroup5]
         for i, rg in enumerate(radiogroups_atencion):
@@ -236,8 +233,16 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
                 ],
     )
     
-    save_button = ft.ElevatedButton("Guardar respuestas", on_click= lambda e: manejar_respuestas(e, "guardar"),bgcolor=ft.Colors.RED, color=ft.Colors.WHITE)
-    finalizar_button = ft.ElevatedButton("Finalizar Test", on_click=lambda e: manejar_respuestas(e, "finalizar"),bgcolor=ft.Colors.RED, color=ft.Colors.WHITE)  
+    # Se usa la técnica de argumentos por defecto en lambda para capturar el valor actual de las listas de IDs
+    save_button = ft.ElevatedButton("Guardar respuestas", 
+                                    on_click= lambda e, ids_a=id_atencion, ids_m=id_memoria, ids_s=id_social, ids_e=id_emocional: 
+                                        manejar_respuestas(e, "guardar", ids_a, ids_m, ids_s, ids_e), 
+                                    bgcolor=ft.Colors.RED, color=ft.Colors.WHITE)
+    
+    finalizar_button = ft.ElevatedButton("Finalizar Test", 
+                                         on_click=lambda e, ids_a=id_atencion, ids_m=id_memoria, ids_s=id_social, ids_e=id_emocional: 
+                                             manejar_respuestas(e, "finalizar", ids_a, ids_m, ids_s, ids_e), 
+                                         bgcolor=ft.Colors.RED, color=ft.Colors.WHITE)  
     return ft.View(
         route="/test",
         bgcolor=color_Background,
@@ -251,9 +256,7 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
                         error_snack_bar,
                         column,
                         ft.Row([save_button,finalizar_button]),
-                        
-                        
-                        ]                
+                ]                
             )
         ]
     )   
@@ -296,7 +299,8 @@ def iniciar_test(page: ft.Page, es_nameID, pro_nameID: int, test_id: int | None 
     elif es_nameID is not None:
         crear_id = es_nameID
     else:
-        crear_id = test_id        
+        crear_id = test_id
+        print(crear_id)    
         preguntas_existentes = preguntaREAD(test_id)
         for pregunta in preguntas_existentes:
             pre_id = pregunta[0]

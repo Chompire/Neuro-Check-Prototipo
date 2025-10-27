@@ -111,6 +111,7 @@ def create_inicio_view(page: ft.Page, profesor_data):
         ]
     )
 def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data):
+    
     if not profesor_data:
         return ft.View(
             route="/perfil_docente",
@@ -144,6 +145,7 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
                     ft.DataColumn(ft.Text("Estado")),
                 ],
     )
+    
     def carga_estudiantes(id_to_select = None): 
         test_completos.rows.clear()
         test = test_data
@@ -158,15 +160,15 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
                             ft.DataCell(ft.Text(f"{test_dat[6]}")),#rut
                             ft.DataCell(ft.Text(f"{test_dat[7]}")),#curso
                             ft.DataCell(ft.Text(f"{test_dat[8]} {test_dat[9] or ''}".strip())),#profesor
-                            ft.DataCell(ft.Text(f"{test_dat[2] or ''}")), # Fecha de creación
-                            ft.DataCell(ft.Text(f"{test_dat[3] or ''}")), # Fecha de finalización
+                            ft.DataCell(ft.Text(f"{test_dat[2] or ''}")),
+                            ft.DataCell(ft.Text(f"{test_dat[3] or ''}")),
                             ft.DataCell(ft.Text("Incompleto" if test_dat[0] == 0 else "Completo")),
                             ],
                             data = test_dat,
                             selected=True if id_to_select is not None and test_dat[0] == id_to_select else False,
                             
                         ),
-        )
+        )   
         page.update()
     
     carga_estudiantes()
@@ -199,7 +201,6 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
         vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
         horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
     )
-
     return ft.View(
         route="/perfil_docente",
         bgcolor=color_Background,
@@ -278,7 +279,6 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
                     ft.DataColumn(ft.Text("Curso")),
                     ft.DataColumn(ft.Text("Profesor emisor")),                    
                     ft.DataColumn(ft.Text("Fecha de creación")),
-                    ft.DataColumn(ft.Text("Fecha de finalización")),
                     ft.DataColumn(ft.Text("Estado")),
                 ],
     )
@@ -359,7 +359,6 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
                             ft.DataCell(ft.Text(f"{test_dat[7]}")),#curso
                             ft.DataCell(ft.Text(f"{test_dat[8]} {test_dat[9] or ''}".strip())),#profesor
                             ft.DataCell(ft.Text(f"{test_dat[2] or ''}")), # Fecha de creación
-                            ft.DataCell(ft.Text(f"{test_dat[3] or ''}")), # Fecha de finalización
                             ft.DataCell(ft.Text("Incompleto" if test_dat[0] == 0 else "Completo")),
                             ],
                             data = test_dat,
@@ -449,7 +448,6 @@ def mostrar_menu_principal(page: ft.Page, pro_nameID: int):
     profesor_data = profesorREAD(pro_nameID)
     test_data_false = testREAD(test_ID=None,test_status=0)
     test_data_true = testREAD(test_ID=None,test_status=1)
-    
     page.route = "/inicio_profesor"
 
     def route_change(e: ft.RouteChangeEvent):
