@@ -171,6 +171,16 @@ def testUPDATE(test_ID: int, test_data: dict):
     except pyodbc.Error as ex:
         print(f"Error de conexión o consulta: {ex.args[0]}")
 
+def testDELETE(test_ID: int):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_delete = "DELETE FROM Test WHERE test_ID = ?"
+                cursor.execute(sql_delete, test_ID)
+                cnxn.commit()
+    except pyodbc.Error as ex:
+        print(f"Error de conexión o consulta: {ex.args[0]}")
+
 #-------------------resultados_detalladosCRUD
 
 def resultados_detalladosCREATE(detalles_data: tuple):

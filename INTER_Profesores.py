@@ -125,10 +125,8 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
         )
     
     def test_completos_row_select(e):
-        # Deseleccionar todas las filas primero para un comportamiento de selección única
         for row in test_completos.rows:
             row.selected = False
-        # Seleccionar la fila actual y navegar
         e.control.selected = True
         test_id_seleccionado = e.control.data[1] # El test_ID está en el índice 1 de los datos de la fila
         page.go(f"/resultados_detallados/test/{test_id_seleccionado}")
@@ -215,8 +213,7 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
         route="/perfil_docente",
         bgcolor=color_Background,
         controls=[
-            create_app_bar(page, "Perfil Docente"),
-            
+            create_app_bar(page, "Perfil Docente"),            
             ft.Column(
                 scroll=ft.ScrollMode.AUTO,
                 expand=True, 
@@ -230,8 +227,7 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
                     ft.Column(controls=[
                         ft.Row(controls=[ft.Text("Resultados de tests", size=30, weight=ft.FontWeight.BOLD, color="black")]),
                         test_completos]),
-                ]),
-            
+                ]),            
         ]
     )
 
