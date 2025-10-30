@@ -305,10 +305,7 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
                 ],
     )
     def es_row_select(e):
-        # Limpiar la selección de la otra tabla para evitar confusiones
-       
-
-        # Lógica de selección para la tabla de estudiantes
+        
         nonlocal selected_es_id
         selected_es= e.control.data
         is_currently_selected = e.control.selected
@@ -337,8 +334,7 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
         if not is_currently_selected:
             e.control.selected = True
             upload_button.visible = True
-            selected_test_id =  selected_test[1]
-            
+            selected_test_id =  selected_test[1]  
             
         else:
             for row in test_incompletos.rows:

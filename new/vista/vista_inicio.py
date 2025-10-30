@@ -70,7 +70,7 @@ class InicioView(FletView):  # Heredamos de BaseView
                                                     text="Entrar",
                                                     color="black",
                                                     bgcolor=color_Background,
-                                                    on_click=lambda _: controller.page.go("/perfil_docente")
+                                                    on_click=lambda _: controller.page.go("/resultados_detallados")
                                                 )
                                             ]),
                                             width=600,

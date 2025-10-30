@@ -4,12 +4,17 @@ from vista.vista_inicio import InicioView
 from vista.vista_real_test import RealizarTestView
 from vista.vista_login import LoginView
 from vista.vista_test import TestView
+from vista.vista_resultados import ResultadosView
+from vista.vista_inicio_pie import InicioPIEView
 from vista.vista_perfil_docente import PerfilDocenteView
+
 
 from controlador.ctrl_inicio import InicioController
 from controlador.ctrl_real_test import RealizarTestController
 from controlador.ctrl_login import LoginController
+from controlador.ctrl_inicio_pie import InicioPIEController
 from controlador.ctrl_test import TestController
+from controlador.ctrl_resultados import ResultadosController
 from controlador.ctrl_perfil_docente import PerfilDocenteController
 
 
@@ -58,8 +63,12 @@ def main(page, model: AppModel): # main ahora recibe el modelo
             page.go("/inicio_profesor")
         elif page.route.startswith("/test/"):
             page.go("/realizar_test")
+        elif page.route == "/modificacion_docente":
+            page.go("/inicio_pie")
         elif page.route == "/realizar_test":
             page.go("/inicio_profesor")   
+        elif page.route == "/resultados_detallados":
+            page.go("/inicio_profesor")
         elif page.route == "/inicio_profesor":            
             page.go("/")
 
@@ -67,28 +76,30 @@ def main(page, model: AppModel): # main ahora recibe el modelo
     # El modelo se recibe como argumento, no se reinicializa aquí.
     login_controller = LoginController(page, model)
     inicio_controller = InicioController(page, model)
+    inicio_pie_controller = InicioPIEController(page, model)
     real_test_controller = RealizarTestController(page, model) # <--- CORRECCIÓN: Usar el modelo principal
     test_controller = TestController(page, model)
     perfil_docente_controller = PerfilDocenteController(page, model)
+    resultados_controller = ResultadosController(page, model)
     
     # Obtener el contenido View de cada vista
     login_view = LoginView(login_controller, model)
     inicio_view = InicioView(inicio_controller, model)
+    inicio_pie_view = InicioPIEView(inicio_pie_controller, model)
     rel_test_view = RealizarTestView(real_test_controller, model)
     test_view = TestView(test_controller, model)
+    resultados_view = ResultadosView(resultados_controller, model)
     perfil_docente_view = PerfilDocenteView(perfil_docente_controller, model)
     
     # Asociar vistas con sus controladores
     login_controller.view = login_view
     inicio_controller.view = inicio_view
+    inicio_pie_controller.view = inicio_pie_view
     real_test_controller.view = rel_test_view
     test_controller.view = test_view
+    resultados_controller.view = resultados_view
     perfil_docente_controller.view = perfil_docente_view
-
     
-
-
-    # --- 2. Lógica de enrutamiento (GESTIÓN DE PILA CORRECTA) ---
     def route_change(route):
         print(f"Cambiando a la ruta: {page.route}")
         page.views.clear() 
@@ -108,6 +119,14 @@ def main(page, model: AppModel): # main ahora recibe el modelo
                 nombre_profesor = f"{model.datos_profesor.pro_nombre_1}" # Accedemos al nombre desde el modelo
                 inicio_view.welcome_text.value = nombre_profesor # Actualizamos el texto de bienvenida
             current_view = inicio_view.content
+
+        elif troute.match("/inicio_pie"):
+            view_title.value = "Inicio PIE"
+            inicio_pie_view.content.appbar = create_appbar(page, view_title, view_pop)
+            if hasattr(model, 'datos_profesor') and model.datos_profesor:
+                nombre_profesor = f"{model.datos_profesor.pro_nombre_1}"
+                inicio_pie_view.welcome_text.value = nombre_profesor
+            current_view = inicio_pie_view.content
         
         elif troute.match("/realizar_test"):
             view_title.value = "Realizar test"
@@ -124,24 +143,32 @@ def main(page, model: AppModel): # main ahora recibe el modelo
             current_view = perfil_docente_view.content
         
         elif troute.match("/test/:test_id"): # Cambia la ruta para aceptar un ID
-            test_id = troute.test_id # Se accede al parámetro como un atributo
-            test_controller.load_test(test_id)
             view_title.value = "Test"
             test_view.content.appbar = create_appbar(page, view_title, view_pop)
+            test_controller.cargar_respuestas_guardadas(int(troute.test_id))
             current_view = test_view.content
+
+        elif troute.match("/resultados/:test_id"):
+            view_title.value = "Resultados del Test"
+            resultados_view.content.appbar = create_appbar(page, view_title, view_pop)
+            resultados_controller.calcular_resultados(int(troute.test_id))
+            current_view = resultados_view.content
+
     
         if current_view:
             page.views.append(current_view)
             current_appbar = current_view.appbar
-            if current_appbar and current_appbar.leading:
+            if current_appbar and hasattr(current_appbar, 'leading') and current_appbar.leading:
                 current_appbar.leading.visible = page.route != "/inicio_profesor"
 
         page.update()
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-
-    page.go("/inicio_profesor") 
+    if model.datos_profesor.pro_cargo == 1:
+        page.go("/inicio_pie")
+    else:
+        page.go("/inicio_profesor") 
 
 
 if __name__ == "__main__":
@@ -152,4 +179,4 @@ if __name__ == "__main__":
             model.datos_profesor = test_profesor_data
         main(page, model) # Pasamos la instancia del modelo a main
 
-    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)
+    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.WEB_BROWSER)

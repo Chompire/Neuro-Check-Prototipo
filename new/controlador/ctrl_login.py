@@ -6,8 +6,13 @@ class LoginController(FletController):
         self.page.update()
         rut = self.view.rut_field.current.value
         password = self.view.password_field.current.value
-        if self.model.cargar_profesor(rut, password):
-            self.page.go("/inicio_profesor")
+        profesor_cargado = self.model.cargar_profesor(rut, password)
+        if profesor_cargado:
+            # Verificar el cargo del profesor
+            if self.model.datos_profesor['pro_cargo'] == 1: # 1 para PIE
+                self.page.go("/inicio_pie")
+            else: # Otro cargo (docente normal)
+                self.page.go("/inicio_profesor")
         else:
             self.show_error_snackbar("RUT o contraseña incorrectos.")
             

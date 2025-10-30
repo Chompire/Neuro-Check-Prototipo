@@ -15,7 +15,6 @@ class RealizarTestController(FletController):
         self.selected_test_id = None
         
     def cargar_estudiantes(self, e=None):
-        print("id profesor:",self.id_profesor)
         self.view.estudiante_table.rows.clear()
         lista_estudiantes = db.estudiantesREAD()
         
@@ -41,7 +40,6 @@ class RealizarTestController(FletController):
         is_currently_selected = e.control.selected
         for row in self.view.estudiante_table.rows:
             row.selected = False
-
         if not is_currently_selected:
             e.control.selected = True
             self.view.next_button.visible = True
@@ -53,6 +51,28 @@ class RealizarTestController(FletController):
                     self.view.next_button.visible = False
                 for row in self.view.estudiante_table.rows:
                     row.selected = False
+                    self.view.next_button.visible = False
+        self.page.update()
+    
+    def test_row_select(self, e):
+        selected_test_id = None
+        selected_test= e.control.data
+        is_currently_selected = e.control.selected
+        for row in self.view.test_incompletos.rows:
+            row.selected = False
+        if not is_currently_selected:
+            e.control.selected = True
+            self.view.upload_button.visible = True
+            self.selected_test_id = selected_test.test_ID
+            print(self.selected_test_id)
+        else:
+            for row in self.view.test_incompletos.rows:
+                row.selected = False
+                if selected_test_id  is not None:
+                    self.view.upload_button.visible = False
+                for row in self.view.test_incompletos.rows:
+                    row.selected = False
+                    self.view.upload_button.visible = False
         self.page.update()
 
     def cargar_test_incompletos(self, e=None):
@@ -76,35 +96,23 @@ class RealizarTestController(FletController):
                     data=test,
                     on_select_changed=self.test_row_select,)
                 )
-    def test_row_select(self, e):
-        selected_test_id = None
-        selected_test= e.control.data
-        is_currently_selected = e.control.selected
-        for row in self.view.estudiante_table.rows:
-            row.selected = False
-        if not is_currently_selected:
-            e.control.selected = True
-            self.view.upload_button.visible = True
-            self.selected_test_id = selected_test.test_ID
-        else:
-            for row in self.view.estudiante_table.rows:
-                row.selected = False
-                if selected_test_id  is not None:
-                    self.view.upload_button.visible = False
-                for row in self.view.estudiante_table.rows:
-                    row.selected = False
-        self.page.update()
-
+    
     def on_iniciar_test_click(self, e):
         fecha_inicio = datetime.now()
-        pro_id = self.id_profesor
         pro_id = self.model.datos_profesor.pro_nameID if hasattr(self.model, 'datos_profesor') and self.model.datos_profesor else None
-        pro_id = self.id_profesor # Usamos el ID del profesor ya establecido en el __init__
         test_data = (self.selected_es_id, pro_id, fecha_inicio, None)
-        test_id = db.testCREATE(test_data)
+        test_id = self.model.crear_test(*test_data)
         print (test_id)
         self.selected_test_id = test_id
         if self.selected_test_id is not None:
+            for i in range(10):
+                self.model.crear_pregunta(None,"Atención", self.selected_test_id)
+            for i in range(10):
+                self.model.crear_pregunta(None,"Memoria", self.selected_test_id)
+            for i in range(10):
+                self.model.crear_pregunta(None,"Social", self.selected_test_id)
+            for i in range(10):
+                self.model.crear_pregunta(None,"Emocional", self.selected_test_id)
             self.page.go(f"/test/{self.selected_test_id}")
 
     def on_reanudar_test_click(self, e):

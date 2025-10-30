@@ -1,6 +1,13 @@
 import flet as ft
 from flet_mvc import FletModel
 import crud as db
+from collections import namedtuple
+
+# Define un namedtuple para contener los detalles combinados del test para un acceso más fácil
+TestDetails = namedtuple('TestDetails', [
+    'es_nombre_1', 'es_apellido_pat', 'cur_nombre',
+    'pro_nombre_1', 'pro_apellido_pat'
+])
 
 class AppModel(FletModel):
     def cargar_profesor(self, rut: str, password: str):
@@ -41,7 +48,10 @@ class AppModel(FletModel):
 
     def actualizar_test(self, test_ID: int, test_data: dict):
         db.testUPDATE(test_ID, test_data)
-
+    def leer_test(self, test_ID: int):
+        return db.testREAD(test_ID=test_ID)
+    def eliminar_test(self, test_ID: int):
+        db.testDELETE(test_ID=test_ID)
     def crear_pregunta(self, pre_respuesta: str, pre_tipo: int, ID_test: int):
         pregunta_data = (pre_respuesta, pre_tipo, ID_test)
         pre_id = db.preguntaCREATE(pregunta_data)
@@ -49,6 +59,7 @@ class AppModel(FletModel):
 
     def leer_preguntas(self, ID_test: int):
         return db.preguntaREAD(ID_test)
+
 
     def actualizar_pregunta(self, ID_pregunta: int, pregunta_data: dict):
         db.preguntaUPDATE(ID_pregunta, pregunta_data)
@@ -60,6 +71,24 @@ class AppModel(FletModel):
         detalles_data = (det_nameES, det_apellidoES, lvl_curso, det_namePRO, det_apellidoPRO, det_porcentaje, det_puntaje, det_fecha, id_test)
         det_id = db.resultados_detalladosCREATE(detalles_data)
         return det_id
-
-
-
+    def leer_resultados_detallados(self, id_test: int):
+        return db.resultados_detalladosREAD(id_test)
+    
+    def leer_info_test(self, test_id: int) -> TestDetails | None:
+        test_record = db.testREAD(test_ID=test_id)
+        if not test_record:
+            return None
+        es_id = test_record[1] # es_ID del test
+        pro_id = test_record[2] # pro_ID del test
+        student_record = db.estudiantesREAD(es_nameID=es_id)
+        profesor_record = db.profesorREAD(pro_nameID=pro_id)
+        
+        if student_record and profesor_record:
+            return TestDetails(
+                es_nombre_1=student_record.es_nombre_1,
+                es_apellido_pat=student_record.es_apellido_pat,
+                cur_nombre=student_record.cur_nombre,
+                pro_nombre_1=profesor_record.pro_nombre_1,
+                pro_apellido_pat=profesor_record.pro_apellido_pat
+            )
+        return None
