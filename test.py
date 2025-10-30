@@ -56,13 +56,13 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
     ]
 
     def manejar_respuestas(e, accion: str, ids_atencion, ids_memoria, ids_social, ids_emocional):
-        # 1. Recoger todas las respuestas (Lógica común)
+       
         respuestas_atencion = [rg.value for rg in radiogroups_atencion]
         respuestas_memoria = [rg.value for rg in radiogroups_memoria]
         respuestas_social = [rg.value for rg in radiogroups_social]
         respuestas_emocional = [rg.value for rg in radiogroups_emocional]
         
-        # 2. Guardar las respuestas en la base de datos (Lógica común)
+        
         for i, _ in enumerate(preguntas_atencion):
             preguntaUPDATE(ids_atencion[i], {"pre_respuesta": respuestas_atencion[i]})
         for i, _ in enumerate(preguntas_memoria):
@@ -72,7 +72,7 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
         for i, _ in enumerate(preguntas_emocional):
             preguntaUPDATE(ids_emocional[i], {"pre_respuesta": respuestas_emocional[i]})
         if accion == "guardar":
-            # Acción para el botón "Guardar respuestas"
+            
             error_snack_bar.content = ft.Text("Respuestas guardadas (Puede salir de la ventana).")
             error_snack_bar.open = True # Regresa al menú
         
@@ -208,28 +208,29 @@ def view_test(page: ft.Page,test_id, id_atencion, id_memoria, id_social, id_emoc
                 rg.value = respuestas_emocional[i]
 
     column = ft.Column(
+        
         controls=[
-            ft.Text("Atención", size=40, weight=ft.FontWeight.BOLD, color="black"),
+            ft.Text("Atención", size=30, weight=ft.FontWeight.BOLD, color="black"),
             ft.Text(preguntas_atencion[0], size=20, weight=ft.FontWeight.BOLD, color="black"), atencion_radiogroup1,
             ft.Text(preguntas_atencion[1], size=20, weight=ft.FontWeight.BOLD, color="black"), atencion_radiogroup2,
             ft.Text(preguntas_atencion[2], size=20, weight=ft.FontWeight.BOLD, color="black"), atencion_radiogroup3,
             ft.Text(preguntas_atencion[3], size=20, weight=ft.FontWeight.BOLD, color="black"), atencion_radiogroup4,
             ft.Text(preguntas_atencion[4], size=20, weight=ft.FontWeight.BOLD, color="black"), atencion_radiogroup5,
             ft.Divider(color="black", thickness=2),
-            ft.Text("Memoria", size=40, weight=ft.FontWeight.BOLD, color="black"),
+            ft.Text("Memoria", size=30, weight=ft.FontWeight.BOLD, color="black"),
             ft.Text(preguntas_memoria[0], size=20, weight=ft.FontWeight.BOLD, color="black"), memoria_radiogroup1,
             ft.Text(preguntas_memoria[1], size=20, weight=ft.FontWeight.BOLD, color="black"), memoria_radiogroup2,
             ft.Text(preguntas_memoria[2], size=20, weight=ft.FontWeight.BOLD, color="black"),memoria_radiogroup3,
             ft.Text(preguntas_memoria[3], size=20, weight=ft.FontWeight.BOLD, color="black"), memoria_radiogroup4,
             ft.Text(preguntas_memoria[4], size=20, weight=ft.FontWeight.BOLD, color="black"), memoria_radiogroup5,
             ft.Divider(color="black", thickness=2),
-            ft.Text("Social", size=40, weight=ft.FontWeight.BOLD, color="black"),
+            ft.Text("Social", size=30, weight=ft.FontWeight.BOLD, color="black"),
             ft.Text(preguntas_social[0], size=20, weight=ft.FontWeight.BOLD, color="black"), social_radiogroup1,
             ft.Text(preguntas_social[1], size=20, weight=ft.FontWeight.BOLD, color="black"), social_radiogroup2,
             ft.Text(preguntas_social[2], size=20, weight=ft.FontWeight.BOLD, color="black"), social_radiogroup3,
             ft.Text(preguntas_social[3], size=20, weight=ft.FontWeight.BOLD, color="black"), social_radiogroup4,
             ft.Text(preguntas_social[4], size=20, weight=ft.FontWeight.BOLD, color="black"), social_radiogroup5,
-            ft.Text("Emocional", size=40, weight=ft.FontWeight.BOLD, color="black"),
+            ft.Text("Emocional", size=30, weight=ft.FontWeight.BOLD, color="black"),
             ft.Divider(color="black", thickness=2),
             ft.Text(preguntas_emocional[0], size=20, weight=ft.FontWeight.BOLD, color="black"), emocional_radiogroup1,
             ft.Text(preguntas_emocional[1], size=20, weight=ft.FontWeight.BOLD, color="black"), emocional_radiogroup2,
@@ -344,7 +345,7 @@ def iniciar_test(page: ft.Page, es_nameID, pro_nameID: int, test_id: int | None 
     def view_pop(e: ft.ViewPopEvent):
         print(f"Cerrando vista: {e.view}")
         page.views.pop() # Elimina la vista actual
-        if page.views: # Verifica si aún quedan vistas en la pila
+        if page.views:
             top_view = page.views[-1]
             page.go(top_view.route)
         else:

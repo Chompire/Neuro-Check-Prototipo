@@ -1,5 +1,5 @@
 import flet as ft
-from CRUD import preguntaREAD, preguntaUPDATE, testREAD, testUPDATE, estudiantesREAD, profesorREAD, resultados_detalladosCREATE
+from CRUD import preguntaREAD, preguntaUPDATE,preguntaDELETE, testREAD, testUPDATE, estudiantesREAD, profesorREAD, resultados_detalladosCREATE,testDELETE
 import datetime
 from INTER_Profesores import mostrar_menu_principal
 import time
@@ -26,7 +26,9 @@ def create_app_bar(page: ft.Page, title: str):
         ]
     )
 def resultado(page: ft.Page, test_id, porcentaje, puntaje, id_profesor):
+    select_test_id = None
     save_snackbar = ft.SnackBar(content = ft.Text(""), bgcolor=ft.Colors.GREEN)
+    
     def rehacer_test(e, test_id, pro_id):
         testUPDATE(test_id, {"test_status": 0})
         from test import iniciar_test
@@ -63,11 +65,37 @@ def resultado(page: ft.Page, test_id, porcentaje, puntaje, id_profesor):
         result = resultados_detalladosCREATE(detalles_data)
         mostrar_menu_principal(page, pro_nameID=id_profesor, det_ID=result)
         page.go(f"/resultados_detallados/det/{result}")
+
+    def eliminar_test(e, dialog):
+        nonlocal select_test_id
+        select_test_id = test_id
+        print(select_test_id)
+        if select_test_id:
+            print(f"Eliminando test con ID: {test_id}")
+            preguntaDELETE(ID_test=select_test_id)
+            testDELETE(select_test_id)
+            page.close(delete_alert)
+            mostrar_menu_principal(page, pro_nameID=id_profesor)
+            page.go("/inicio_profesor")
+            page.update()
+    
+    final_test_alert = ft.AlertDialog(modal=True,title=ft.Text("Está seguro que desea guardar los resultados del test?")),
+    
+    rework_alert = ft.AlertDialog(modal=True, title=ft.Text("Rehacer test"), content=ft.Text("¿Desea rehacer este test?"))
+    rework_alert.actions.append(ft.TextButton("Sí", on_click=lambda e: rehacer_test(e, test_id, id_profesor)))
+    rework_alert.actions.append(ft.TextButton("No", on_click=lambda e: page.close(rework_alert)))
+
+
+
+    delete_alert = ft.AlertDialog(modal=True, title=ft.Text("Eliminar test"), content=ft.Text("¿Desea eliminar este test?"))
+    delete_alert.actions.append(ft.TextButton("Sí", on_click=lambda e: eliminar_test(e, delete_alert)))
+    delete_alert.actions.append(ft.TextButton("No", on_click=lambda e: page.close(delete_alert)))
         
 
     guardar_button = ft.IconButton(icon=ft.Icons.SAVE, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE, on_click=lambda e: guardar_test(e, test_id))
-    rehacer_button = ft.IconButton(icon=ft.Icons.REFRESH, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.RED, on_click=lambda e: rehacer_test(e, test_id, id_profesor))
+    rehacer_button = ft.IconButton(icon=ft.Icons.REFRESH, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.RED, on_click=lambda e: page.open(rework_alert))
     info_button = ft.IconButton(icon=ft.Icons.INFO, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.GREEN, on_click=lambda e: page.go("/resultados_detallados"))
+    eliminar_button = ft.IconButton(icon=ft.Icons.DELETE,icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.RED, on_click=lambda e: page.open(delete_alert))
     porcentaje_val = ft.Text(f"{porcentaje}%",size=40, weight=ft.FontWeight.BOLD, color="black")
     
     return ft.View(
@@ -77,19 +105,31 @@ def resultado(page: ft.Page, test_id, porcentaje, puntaje, id_profesor):
             create_app_bar(page, "Resultados"),
             ft.Column(
                 scroll=ft.ScrollMode.AUTO,
-                alignment=ft.MainAxisAlignment.CENTER,
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 expand=True,               
                 controls=[
                     save_snackbar,
-                    ft.Row([ft.Text("Porcentaje de riesgo:", size=40, weight=ft.FontWeight.BOLD, color="black")]),
-                    ft.Column(
-                        width=600,
-                        controls=[ft.Row([guardar_button, rehacer_button, info_button], alignment=ft.MainAxisAlignment.END),
-                                      ft.Container(alignment=ft.alignment.center, border=ft.border.all(1, ft.Colors.BLACK),bgcolor=ft.Colors.WHITE, padding=10,content=porcentaje_val)
-                                      ]),
-                    ft.Row([ft.Text("Registro de fallas:", size=40, weight=ft.FontWeight.BOLD, color="black")]),
-                    ft.Row([ft.Text("Conclusión:", size=40, weight=ft.FontWeight.BOLD, color="black")]),
+                    ft.Row(alignment=ft.MainAxisAlignment.CENTER,
+                           vertical_alignment=ft.CrossAxisAlignment.START,
+                           controls=[
+                               ft.Column(
+                                   controls=[ft.Text("Porcentaje de riesgo:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                                             ft.Row( controls = [guardar_button, rehacer_button, info_button, eliminar_button]),
+                                             ft.Container( width=600, alignment=ft.alignment.center, border=ft.border.all(1, ft.Colors.BLACK),bgcolor=ft.Colors.WHITE, padding=10,content=porcentaje_val)]),
+                               ]),
+                    ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls= [
+                        ft.Column(                                   
+                                   controls=[ft.Text("Registro de posibles indicios de riesgo:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                                             ft.Container( width=600, alignment=ft.alignment.center, border=ft.border.all(1, ft.Colors.BLACK),bgcolor=ft.Colors.WHITE, padding=10,content=porcentaje_val)
+                                             ]),
+]),
+                    ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls= [
+                        ft.Column(                                   
+                                   controls=[ft.Text("Conclusión:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                                             ft.Container( width=600, alignment=ft.alignment.center, border=ft.border.all(1, ft.Colors.BLACK),bgcolor=ft.Colors.WHITE, padding=10,content=porcentaje_val)
+                                             ]),
+                    ]),
+                  
+                    
             ]
         )
     ]
@@ -126,7 +166,7 @@ def ver_resultados(page: ft.Page, ID_test: int):
                 emocional_res += 1
     puntaje = atencion_res + memoria_res + social_res + emocional_res
     porcentaje = (puntaje / total_preguntas_respondidas) * 100 if total_preguntas_respondidas > 0 else 0
-    print(f"{porcentaje}%")
+    print(f"{round(porcentaje, 2)}%")
 
 
     def route_change(e: ft.RouteChangeEvent):
@@ -160,6 +200,6 @@ def ver_resultados(page: ft.Page, ID_test: int):
 if __name__ == "__main__":
     def main_standalone(page: ft.Page):
         id_profesor_pie_test = 2
-        ver_resultados(page, 23)
+        ver_resultados(page, 1079)
 
     ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)

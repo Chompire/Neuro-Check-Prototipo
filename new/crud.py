@@ -1,7 +1,6 @@
 import flet as ft
 import pyodbc
-from DB import CONNECTION_STRING
-#-------------------profesorCRUD
+from db import CONNECTION_STRING    
 def profesorCREATE(datos_profesor: tuple):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
@@ -90,7 +89,7 @@ def cursoREAD():
         return []
     
 
-def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None):
+def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro_nameID: int | None = None):
     """Lee todos los estudiantes de la base de datos."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
@@ -105,6 +104,16 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None):
                     LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID WHERE e.es_nameID = ?"""
                     cursor.execute(sql_info, es_nameID)
                     return cursor.fetchone()
+                elif pro_nameID is not None:
+                    sql_info = """
+                    SELECT e.*,
+                    c.cur_nombre,
+                    p.pro_nombre_1, p.pro_apellido_pat
+                    FROM Estudiantes e
+                    LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
+                    LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID WHERE e.Pro_nameID = ?"""
+                    cursor.execute(sql_info, pro_nameID)
+                    return cursor.fetchall()
                 else:
                     sql_info = """
                     SELECT e.*,
