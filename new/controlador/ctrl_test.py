@@ -1,7 +1,7 @@
 from flet_mvc import FletController
 import flet as ft
 
-class Test(FletController):
+class TestController(FletController):
     def __init__(self, page, model):
         super().__init__(page, model)
         self.current_test_id = None # Para almacenar el ID del test actual

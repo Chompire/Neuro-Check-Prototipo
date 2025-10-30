@@ -7,25 +7,17 @@ class RealizarTestController(FletController):
     def __init__(self, page, model):
         super().__init__(page, model)
         self.selected_student = None
-        self.id_profesor = model.datos_profesor.pro_nameID if hasattr(model, 'datos_profesor') and model.datos_profesor else None
+        # El ID del profesor se obtiene del modelo después del login.
+        if hasattr(self.model, 'datos_profesor') and self.model.datos_profesor:
+            self.id_profesor = self.model.datos_profesor.pro_nameID
+        else:
+            self.id_profesor = None # Manejar el caso si los datos del profesor no están cargados
         self.selected_test_id = None
         
     def cargar_estudiantes(self, e=None):
+        print("id profesor:",self.id_profesor)
         self.view.estudiante_table.rows.clear()
         lista_estudiantes = db.estudiantesREAD()
-        print(self.id_profesor)
-
-        # Obtenemos el ID del profesor desde el modelo en el momento justo.
-        id_profesor = self.model.datos_profesor.pro_nameID if hasattr(self.model, 'datos_profesor') and self.model.datos_profesor else None
-        print(f"ID del profesor actual: {id_profesor}")
-        
-        if id_profesor is None:
-            # Si no hay profesor, no cargamos estudiantes. Opcional: mostrar mensaje.
-            self.page.update()
-            return
-
-        # Filtramos los estudiantes por el ID del profesor que ha iniciado sesión.
-        lista_estudiantes = db.estudiantesREAD(pro_nameID=id_profesor)
         
         for estudiante in lista_estudiantes:
             self.view.estudiante_table.rows.append(
@@ -67,6 +59,7 @@ class RealizarTestController(FletController):
         self.view.test_incompletos.rows.clear()
         lista_test_incompletos = db.testREAD(test_status=0)
         
+        
         if lista_test_incompletos:
             for test in lista_test_incompletos:
                 # Añadimos la fila a la tabla correcta (test_incompletos)
@@ -104,11 +97,9 @@ class RealizarTestController(FletController):
 
     def on_iniciar_test_click(self, e):
         fecha_inicio = datetime.now()
-
-        
         pro_id = self.id_profesor
         pro_id = self.model.datos_profesor.pro_nameID if hasattr(self.model, 'datos_profesor') and self.model.datos_profesor else None
-
+        pro_id = self.id_profesor # Usamos el ID del profesor ya establecido en el __init__
         test_data = (self.selected_es_id, pro_id, fecha_inicio, None)
         test_id = db.testCREATE(test_data)
         print (test_id)
@@ -124,7 +115,6 @@ class RealizarTestController(FletController):
             # Opcional: Mostrar un mensaje de error si no hay ningún test seleccionado
             self.page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecciona un test para reanudar."), open=True, bgcolor=ft.colors.RED_700)
             self.page.update()
-        self.selected_test_id = test_id
         if self.selected_test_id is not None:
             self.page.go(f"/test/{self.selected_test_id}")
 

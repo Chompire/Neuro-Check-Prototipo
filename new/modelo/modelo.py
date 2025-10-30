@@ -2,17 +2,22 @@ import flet as ft
 from flet_mvc import FletModel
 import crud as db
 
-class LoginAppModel(FletModel):
+class AppModel(FletModel):
     def cargar_profesor(self, rut: str, password: str):
         datos = db.profesorREAD(pro_rut=rut, pro_password=password)
         if datos:
             self.datos_profesor = datos
             return True
         else:
-            # Fracaso: El CRUD no encontró al usuario.
+            return False
+    def cargar_profesor_id(self, pro_nameID: int | None = None):
+        prof_id = db.profesorREAD(pro_nameID=pro_nameID)
+        if prof_id:
+            self.datos_profesor_id = prof_id
+            return prof_id
+        else:
             return False
         
-class EstudiantesAppModel(FletModel):
     def cargar_estudiantes(self, es_nameID: int | None = None):
         datos = db.estudiantesREAD(es_nameID=es_nameID)
         if datos:
@@ -27,17 +32,8 @@ class EstudiantesAppModel(FletModel):
             return True
         else:
             return False
-    def profesor_ident(self, pro_nameID: int | None = None):
-        prof_id = db.profesorREAD(pro_nameID=pro_nameID)
-        if prof_id:
-            self.datos_profesor = prof_id
-            return True
-        else:
-            return False
-
-
-
-class TestAppModel(FletModel):
+    
+        
     def crear_test(self, es_ID: int, pro_ID: int, test_fecha_inicio, test_fecha_termino):
         test_data = (es_ID, pro_ID, test_fecha_inicio, test_fecha_termino)
         test_id = db.testCREATE(test_data)

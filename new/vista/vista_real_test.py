@@ -5,6 +5,9 @@ from colors import color_Background,color_Docente
 
 class RealizarTestView(FletView):  # Heredamos de BaseView
     def __init__(self, controller, model):
+        self.estudiante_search = ft.TextField(bgcolor=color_Docente,
+            prefix_icon=ft.icons.SEARCH,
+            label="Buscar estudiante",)
         self.estudiante_table = ft.DataTable(
             border=ft.border.all(2, ft.Colors.BLACK),
             bgcolor="white",
@@ -87,7 +90,8 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                            controls=[ft.Column(controls=[
                                ft.Row(controls=[
                                    ft.Text("Seleccionar estudiante:", size=30, weight=ft.FontWeight.BOLD, color="black"),
-                                   self.next_button]), 
+                                   self.next_button]),
+                                   ft.Row(controls=[self.estudiante_search]),
                                    self.estudiante_table]),
                                     ]),
                     
