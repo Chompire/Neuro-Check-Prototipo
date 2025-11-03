@@ -1,6 +1,7 @@
 import flet as ft
 from flet_mvc import FletView # Importamos nuestra nueva clase base
-from colors import color_Background,color_Docente
+from colors import color_Background_Docente,color_Docente,color_Background_PIE
+
 
 class ResultadosView(FletView):
     def __init__(self, controller, model):
@@ -49,7 +50,7 @@ class ResultadosView(FletView):
         )
         view = ft.View(
             route="/resultados_detallados",
-            bgcolor=color_Background,
+            bgcolor=color_Background_Docente if model.datos_profesor.pro_cargo == 0 else color_Background_PIE, 
             controls=[
                 ft.Row(
                     alignment=ft.MainAxisAlignment.CENTER,

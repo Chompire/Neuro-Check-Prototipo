@@ -1,13 +1,30 @@
 import flet as ft
 from flet_mvc import FletView # Importamos nuestra nueva clase base
-from colors import color_Background,color_Docente
+from colors import color_Background_Docente,color_Docente,color_Background_PIE
 
 
 class RealizarTestView(FletView):  # Heredamos de BaseView
     def __init__(self, controller, model):
+        self.prev_button_test = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_test,bgcolor=color_Docente)
+        self.page_label_test = ft.Text("Página 1 de 1", color="black")
+        self.next_button_test = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_test,bgcolor=color_Docente)
+        self.pagination_controls_test = ft.Row([self.prev_button_test, self.page_label_test, self.next_button_test], alignment=ft.MainAxisAlignment.CENTER)
+
+        self.prev_button_est = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_est,bgcolor=color_Docente)
+        self.page_label_est = ft.Text("Página 1 de 1", color="black")
+        self.next_button_est = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_est,bgcolor=color_Docente)
+        self.pagination_controls_est = ft.Row([self.prev_button_est, self.page_label_est, self.next_button_est], alignment=ft.MainAxisAlignment.CENTER)
         self.estudiante_search = ft.TextField(bgcolor=color_Docente,
             prefix_icon=ft.icons.SEARCH,
-            label="Buscar estudiante",)
+            label="Buscar estudiante",
+            on_change=lambda e: controller.est_search(reset_page=True),
+            )
+        
+        self.test_search = ft.TextField(bgcolor=color_Docente,
+            prefix_icon=ft.icons.SEARCH,
+            label="Buscar estudiante",
+            on_change=lambda e: controller.test_search(reset_page=True),
+            )
         self.estudiante_table = ft.DataTable(
             border=ft.border.all(2, ft.Colors.BLACK),
             bgcolor="white",
@@ -79,7 +96,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
         view = ft.View(
             
             "/realizar_test",
-            bgcolor=color_Background,
+            bgcolor=color_Background_Docente if model.datos_profesor.pro_cargo == 0 else color_Background_PIE, 
             controls=
             [
                 ft.Column(
@@ -92,7 +109,9 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                                    ft.Text("Seleccionar estudiante:", size=30, weight=ft.FontWeight.BOLD, color="black"),
                                    self.next_button]),
                                    ft.Row(controls=[self.estudiante_search]),
-                                   self.estudiante_table]),
+                                   self.estudiante_table,
+                                   self.pagination_controls_est,
+                                   ]),
                                     ]),
                     
                     ft.Divider(color="black"),
@@ -100,8 +119,10 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                            controls=[ft.Column(controls=[
                                ft.Row(controls=[
                                    ft.Text("Terminar test incompleto:", size=30, weight=ft.FontWeight.BOLD, color="black"),
-                                   self.upload_button]), 
-                                   self.test_incompletos]),
+                                   self.upload_button]),
+                                   ft.Row(controls=[self.test_search]),
+                                   self.test_incompletos,
+                                   self.pagination_controls_test]),
                                     ]),
                 ],
             )

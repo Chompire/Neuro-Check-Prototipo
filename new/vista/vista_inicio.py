@@ -1,19 +1,16 @@
 import flet as ft
 from flet_mvc import FletView
 
-from colors import color_Docente, color_Background
+from colors import color_Docente, color_Background_Docente
 
 
 class InicioView(FletView):  # Heredamos de BaseView
     def __init__(self, controller, model):
-        # Creamos el control de texto y lo asignamos a un atributo de la instancia
         self.welcome_text = ft.Text(size=30, weight=ft.FontWeight.NORMAL, color="black")
-
         view = ft.View(
-            "/inicio_profesor",
-            bgcolor=color_Background,
-            controls=  # La ruta URL para esta vista
-            [
+            "/inicio_profesor", # La ruta URL para esta vista
+            bgcolor=color_Background_Docente,
+            controls=[
                 ft.Container(
                     expand=True,  # El contenido principal se expande
                     content=ft.Row(
@@ -49,7 +46,7 @@ class InicioView(FletView):  # Heredamos de BaseView
                                                     ),
                                                 ),
                                                 # La navegación se debe hacer a través del controlador
-                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background, on_click=lambda _: controller.page.go("/realizar_test"))
+                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_Docente, on_click=lambda _: controller.page.go("/realizar_test"))
                                             ]),
                                             width=600,
                                             padding=10,
@@ -69,7 +66,7 @@ class InicioView(FletView):  # Heredamos de BaseView
                                                 ft.ElevatedButton(
                                                     text="Entrar",
                                                     color="black",
-                                                    bgcolor=color_Background,
+                                                    bgcolor=color_Background_Docente,
                                                     on_click=lambda _: controller.page.go("/resultados_detallados")
                                                 )
                                             ]),

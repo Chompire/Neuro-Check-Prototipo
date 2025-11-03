@@ -1,56 +1,57 @@
 import flet as ft
 from flet_mvc import FletView
-from colors import color_Docente, color_Background
+from colors import color_Docente, color_Background_Docente, color_Background_PIE
+
 class TestView(FletView):
     def __init__(self, controller, model):
-        error_snack_bar = ft.SnackBar(content = ft.Text(""), bgcolor=ft.Colors.GREEN)
+        self.error_snack_bar = ft.SnackBar(content = ft.Text(""))
         preguntas_atencion = [
-        "1. ¿Tiene dificultad para recordar y seguir instrucciones de más de un paso?",
-        "2. ¿Olvida con frecuencia tareas, materiales o fechas importantes?",
-        "3. ¿Necesita repetición constante para retener información nueva (conceptos, definiciones)?",
-        "4. ¿Muestra dificultad para recordar la grafía o la forma visual de las palabras (memoria visual)?",
-        "5. ¿Le cuesta aprender y recordar series o listas (días, meses, tablas de multiplicar)?",
-        "6. ¿Parece tener dificultades para recuperar información ya aprendida (hechos o procedimientos)?",
-        "7. ¿Confunde o mezcla información cuando debe recordar secuencias o narrativas?",
-        "8. ¿Muestra una memoria a corto plazo funcional para el aprendizaje diario? (NO = dificultad)",
-        "9. ¿Muestra dificultad en la memoria de trabajo, por ejemplo, al realizar cálculos mentales?",
-        "10. ¿Recuerda sucesos personales o eventos pasados recientes sin dificultad? (NO = dificultad)"
-    ]
+            f"1. {controller.model.leer_preguntas(1)[0][1]}",
+            f"2. {controller.model.leer_preguntas(2)[0][1]}",
+            f"3. {controller.model.leer_preguntas(3)[0][1]}",
+            f"4. {controller.model.leer_preguntas(4)[0][1]}",
+            f"5. {controller.model.leer_preguntas(5)[0][1]}",
+            f"6. {controller.model.leer_preguntas(6)[0][1]}",
+            f"7. {controller.model.leer_preguntas(7)[0][1]}",
+            f"8. {controller.model.leer_preguntas(8)[0][1]}",
+            f"9. {controller.model.leer_preguntas(9)[0][1]}",
+            f"10. {controller.model.leer_preguntas(10)[0][1]}",
+        ]
         preguntas_memoria = [
-        "1. ¿Tiene dificultad para recordar y seguir instrucciones de más de un paso?",
-        "2. ¿Olvida con frecuencia tareas, materiales o fechas importantes?",
-        "3. ¿Necesita repetición constante para retener información nueva (conceptos, definiciones)?",
-        "4. ¿Muestra dificultad para recordar la grafía o la forma visual de las palabras (memoria visual)?",
-        "5. ¿Le cuesta aprender y recordar series o listas (días, meses, tablas de multiplicar)?",
-        "6. ¿Parece tener dificultades para recuperar información ya aprendida (hechos o procedimientos)?",
-        "7. ¿Confunde o mezcla información cuando debe recordar secuencias o narrativas?",
-        "8. ¿Muestra una memoria a corto plazo funcional para el aprendizaje diario? (NO = dificultad)",
-        "9. ¿Muestra dificultad en la memoria de trabajo, por ejemplo, al realizar cálculos mentales?",
-        "10. ¿Recuerda sucesos personales o eventos pasados recientes sin dificultad? (NO = dificultad)"
-    ]
+            f"1. {controller.model.leer_preguntas(11)[0][1]}",
+            f"2. {controller.model.leer_preguntas(12)[0][1]}",
+            f"3. {controller.model.leer_preguntas(13)[0][1]}",
+            f"4. {controller.model.leer_preguntas(14)[0][1]}",
+            f"5. {controller.model.leer_preguntas(15)[0][1]}",
+            f"6. {controller.model.leer_preguntas(16)[0][1]}",
+            f"7. {controller.model.leer_preguntas(17)[0][1]}",
+            f"8. {controller.model.leer_preguntas(18)[0][1]}",
+            f"9. {controller.model.leer_preguntas(19)[0][1]}",
+            f"10. {controller.model.leer_preguntas(20)[0][1]}",
+        ]
         preguntas_social = [
-            "1. ¿El alumno interactúa y se relaciona de manera apropiada con sus compañeros? (NO = dificultad)",
-            "2. ¿Prefiere el aislamiento o el juego en solitario de forma persistente y notable?",
-            "3. ¿Muestra dificultad para comprender y seguir las normas sociales y las reglas del grupo?",
-            "4. ¿Se muestra agresivo (verbal o físicamente) o irascible con frecuencia hacia sus pares?",
-            "5. ¿Tiene dificultades para resolver conflictos con sus compañeros de manera verbal y pacífica?",
-            "6. ¿Es capaz de trabajar en equipo, respetando turnos y compartiendo materiales? (NO = dificultad)",
-            "7. ¿Muestra empatía y reconoce los sentimientos de los demás? (NO = dificultad)",
-            "8. ¿Parece comprender o responder de forma inusual o limitada a las señales sociales (lenguaje corporal)?",
-            "9. ¿Muestra comportamientos que desafían o se oponen a las peticiones de los adultos de forma persistente?",
-            "10. ¿Busca constantemente la aprobación o atención excesiva del profesor o de sus pares?"
+            f"1. {controller.model.leer_preguntas(21)[0][1]}",
+            f"2. {controller.model.leer_preguntas(22)[0][1]}",
+            f"3. {controller.model.leer_preguntas(23)[0][1]}",
+            f"4. {controller.model.leer_preguntas(24)[0][1]}",
+            f"5. {controller.model.leer_preguntas(25)[0][1]}",
+            f"6. {controller.model.leer_preguntas(26)[0][1]}",
+            f"7. {controller.model.leer_preguntas(27)[0][1]}",
+            f"8. {controller.model.leer_preguntas(28)[0][1]}",
+            f"9. {controller.model.leer_preguntas(29)[0][1]}",
+            f"10. {controller.model.leer_preguntas(30)[0][1]}",
         ]
         preguntas_emocional = [
-            "1. ¿El alumno expresa sus emociones de manera adecuada a su edad y al contexto? (NO = dificultad)",
-            "2. ¿Se muestra excesivamente ansioso o preocupado por el rendimiento escolar o situaciones nuevas?",
-            "3. ¿Experimenta cambios de humor repentinos o intensos que interfieren con la actividad en clase?",
-            "4. ¿Muestra una baja autoestima o una actitud de autocrítica negativa constante?",
-            "5. ¿Suele llorar o entristecerse fácilmente sin una causa aparente o proporcional?",
-            "6. ¿Manifiesta síntomas somáticos relacionados con el estrés (dolores de cabeza o estómago recurrentes)?",
-            "7. ¿Parece tener dificultades para calmarse o regularse después de una molestia o frustración?",
-            "8. ¿Tiene miedos o fobias que limitan su participación en actividades escolares o sociales?",
-            "9. ¿Se muestra excesivamente dependiente del profesor o de otros adultos para realizar tareas?",
-            "10. ¿Muestra una motivación e interés general por el aprendizaje? (NO = dificultad)"
+            f"1. {controller.model.leer_preguntas(31)[0][1]}",
+            f"2. {controller.model.leer_preguntas(32)[0][1]}",
+            f"3. {controller.model.leer_preguntas(33)[0][1]}",
+            f"4. {controller.model.leer_preguntas(34)[0][1]}",
+            f"5. {controller.model.leer_preguntas(35)[0][1]}",
+            f"6. {controller.model.leer_preguntas(36)[0][1]}",
+            f"7. {controller.model.leer_preguntas(37)[0][1]}",
+            f"8. {controller.model.leer_preguntas(38)[0][1]}",
+            f"9. {controller.model.leer_preguntas(39)[0][1]}",
+            f"10. {controller.model.leer_preguntas(40)[0][1]}",
         ]
 
         # Crear 10 radio groups para cada categoría usando la función auxiliar
@@ -97,9 +98,9 @@ class TestView(FletView):
         finalizar_button = ft.ElevatedButton("Finalizar Test",bgcolor=ft.Colors.RED, color=ft.Colors.WHITE, on_click=controller.finalizar_test)  
         view = ft.View(
             "/test",
-            bgcolor=color_Background,
+            bgcolor=color_Background_Docente if model.datos_profesor.pro_cargo == 0 else color_Background_PIE, 
             controls=[
-                error_snack_bar,
+                self.error_snack_bar,
                 tabs_control,
                 ft.Row(
                     [save_button, finalizar_button],

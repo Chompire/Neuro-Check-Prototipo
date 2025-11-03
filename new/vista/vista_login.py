@@ -1,6 +1,6 @@
 import flet as ft
 from flet_mvc import FletView # Importamos nuestra nueva clase base
-from colors import color_Background, color_Docente
+from colors import color_Background_Docente, color_Docente
 
 class LoginView(FletView):    
     def __init__(self, controller, model):
@@ -38,7 +38,7 @@ class LoginView(FletView):
         )
         view = ft.View(
             "/",
-            bgcolor=color_Background,
+            bgcolor=color_Background_Docente,
             controls=
             [
                 ft.Stack(

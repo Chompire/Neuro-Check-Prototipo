@@ -1,6 +1,6 @@
 import flet as ft
 from flet_mvc import FletView
-from colors import color_Docente, color_Background
+from colors import color_Docente, color_Background_PIE
 
 class InicioPIEView(FletView):
     def __init__(self, controller, model):
@@ -8,7 +8,7 @@ class InicioPIEView(FletView):
 
         view = ft.View(
             "/inicio_pie",
-            bgcolor=color_Background,
+            bgcolor=color_Background_PIE,
             controls=[
                 ft.Container(
                     expand=True,
@@ -36,7 +36,7 @@ class InicioPIEView(FletView):
                                                     title=ft.Text("Realizar test", size=20, weight=ft.FontWeight.BOLD),
                                                     subtitle=ft.Text("Acceder a la selección de estudiantes para iniciar o reanudar un test.", size=15),
                                                 ),
-                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background, on_click=lambda _: controller.page.go("/realizar_test"))
+                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_PIE, on_click=lambda _: controller.page.go("/realizar_test"))
                                             ]),
                                             width=600, padding=10,
                                         )
@@ -50,7 +50,7 @@ class InicioPIEView(FletView):
                                                     title=ft.Text("Perfil", size=20, weight=ft.FontWeight.BOLD),
                                                     subtitle=ft.Text("Ver tu información personal y los resultados de los tests finalizados.", size=15),
                                                 ),
-                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background, on_click=lambda _: controller.page.go("/perfil_docente"))
+                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_PIE, on_click=lambda _: controller.page.go("/perfil_docente"))
                                             ]),
                                             width=600, padding=10
                                         )
@@ -64,7 +64,7 @@ class InicioPIEView(FletView):
                                                     title=ft.Text("Gestión de Docentes", size=20, weight=ft.FontWeight.BOLD),
                                                     subtitle=ft.Text("Añadir, editar o eliminar la información de los docentes del sistema.", size=15),
                                                 ),
-                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background, on_click=lambda _: controller.page.go("/modificacion_docente"))
+                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_PIE, on_click=lambda _: controller.page.go("/modificacion_docente"))
                                             ]),
                                             width=600, padding=10
                                         )

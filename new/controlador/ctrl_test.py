@@ -18,42 +18,46 @@ class TestController(FletController):
             ) for _ in range(count)
         ]
     @staticmethod
-    def crear_contenido_tab(preguntas, radiogroups):
+    def crear_contenido_tab(respuestas, radiogroups):
             controles = []
-            for i, pregunta in enumerate(preguntas):
-                controles.append(ft.Text(pregunta, size=20, weight=ft.FontWeight.BOLD, color="black"))
+            for i, respuesta in enumerate(respuestas):
+                controles.append(ft.Text(respuesta, size=20, weight=ft.FontWeight.BOLD, color="black"))
                 controles.append(radiogroups[i])
-            return ft.Column(controls=controles, spacing=10)
+            return ft.Column(controls=controles, spacing=10, scroll=ft.ScrollMode.AUTO)
+    
+    def cargar_preguntas(self, pre_id: int):
+        preguntas = self.model.leer_preguntas(pre_id)
+        print(preguntas)
+
 
     def cargar_respuestas_guardadas(self, test_id: int):
-        preguntas_existentes = self.model.leer_preguntas(test_id)
-        respuestas_por_tipo = {"Atención": [], "Memoria": [], "Social": [], "Emocional": []}
-        for _, pre_respuesta, pre_tipo in preguntas_existentes:
-            if pre_tipo in respuestas_por_tipo:
-                respuestas_por_tipo[pre_tipo].append(pre_respuesta)
-
-        # Mapear tipos a los grupos de radio buttons de la vista
+        respuestas_existentes = self.model.leer_respuestas(test_id)
         mapa_radiogroups = {
             "Atención": self.view.radiogroups_atencion,
             "Memoria": self.view.radiogroups_memoria,
             "Social": self.view.radiogroups_social,
             "Emocional": self.view.radiogroups_emocional,
         }
-        for tipo, respuestas in respuestas_por_tipo.items():
-            radiogroups = mapa_radiogroups.get(tipo)
-            if radiogroups:
-                for i, respuesta in enumerate(respuestas):
-                    if i < len(radiogroups):
-                        radiogroups[i].value = respuesta # Asigna la respuesta (puede ser 'si', 'no', o None)
+        for groups in mapa_radiogroups.values():
+            for rg in groups:
+                rg.value = None
+
+        for _, respuesta_combinada, tipo in respuestas_existentes:
+            if tipo in mapa_radiogroups:
+                radiogroups = mapa_radiogroups[tipo]
+                if respuesta_combinada:
+                    # Dividimos la cadena de respuestas para obtener las respuestas individuales
+                    respuestas_individuales = respuesta_combinada.split(',')
+                    for i, respuesta in enumerate(respuestas_individuales):
+                        if i < len(radiogroups):
+                            radiogroups[i].value = None if respuesta == 'None' else respuesta
+
         self.current_test_id = test_id 
         print(f"Respuestas cargadas para el test ID {test_id}")
         self.page.update()
 
 
     def guardar_respuestas(self, e: ft.ControlEvent):
-        """
-        Guarda todas las respuestas de los RadioGroups en la vista del test.
-        """
         if self.current_test_id is None:
             # Handle the case where test_id was not set (e.g., if the view was accessed incorrectly)
             self.page.snack_bar = ft.SnackBar(ft.Text("Error: No se pudo obtener el ID del test para guardar las respuestas."), open=True, bgcolor=ft.colors.RED)
@@ -61,38 +65,52 @@ class TestController(FletController):
             return
         
         test_id = self.current_test_id # Use the stored test_id
-        preguntas_existentes = self.model.leer_preguntas(test_id)  # Agrupar preguntas por tipo
-        preguntas_por_tipo = {"Atención": [], "Memoria": [], "Social": [], "Emocional": []}
-        for pre_id, _, pre_tipo in preguntas_existentes:
-            if pre_tipo in preguntas_por_tipo:
-                preguntas_por_tipo[pre_tipo].append(pre_id)
+        respuestas_existentes = self.model.leer_respuestas(test_id)
+        
         mapa_radiogroups = {
             "Atención": self.view.radiogroups_atencion,
             "Memoria": self.view.radiogroups_memoria,
             "Social": self.view.radiogroups_social,
             "Emocional": self.view.radiogroups_emocional,
         }
-        
-        for tipo, ids_preguntas in preguntas_por_tipo.items():
-            for i, id_pregunta in enumerate(ids_preguntas):
-                if i < len(mapa_radiogroups[tipo]):
-                    respuesta = mapa_radiogroups[tipo][i].value
-                    if respuesta is not None:
-                        self.model.actualizar_pregunta(id_pregunta, {"pre_respuesta": respuesta})
-                        print(f"Guardada respuesta '{respuesta}' para la pregunta ID {id_pregunta}")
+
+        for id_respuesta, _, tipo in respuestas_existentes:
+            if tipo in mapa_radiogroups:
+                # Recolectamos las 10 respuestas de los RadioGroups
+                respuestas = [rg.value for rg in mapa_radiogroups[tipo]]
+                # Las unimos en una sola cadena, manejando los valores None
+                respuesta_combinada = ",".join(str(r) for r in respuestas)
+                self.model.actualizar_respuesta(id_respuesta, {"res_respuesta": respuesta_combinada})
+                print(f"Guardada respuesta combinada para la categoría '{tipo}' en la respuesta ID {id_respuesta}")
         
         self.page.snack_bar = ft.SnackBar(ft.Text("Respuestas guardadas correctamente."), open=True, bgcolor=ft.colors.GREEN)
         self.page.update()
 
     def finalizar_test(self, e):
-        # Primero, guardar las respuestas actuales
+        # Primero, guardar el estado actual de las respuestas
         self.guardar_respuestas(e)
 
-        # Verificar si todas las preguntas están respondidas
-        preguntas = self.model.leer_preguntas(self.current_test_id)
-        if not all(p.pre_respuesta is not None for p in preguntas):
-            self.page.snack_bar = ft.SnackBar(ft.Text("Advertencia: No todas las preguntas fueron respondidas."), open=True, bgcolor=ft.colors.AMBER)
+        # Luego, verificar si todas las preguntas están completas
+        mapa_radiogroups = {
+            "Atención": self.view.radiogroups_atencion,
+            "Memoria": self.view.radiogroups_memoria,
+            "Social": self.view.radiogroups_social,
+            "Emocional": self.view.radiogroups_emocional,
+        }
+
+        todas_respondidas = True
+        for categoria, groups in mapa_radiogroups.items():
+            for rg in groups:
+                if rg.value is None:
+                    todas_respondidas = False
+                    break
+            if not todas_respondidas:
+                break
+
+        if todas_respondidas:
+            self.page.go(f"/resultados/{self.current_test_id}")
+        else:
+            self.view.error_snack_bar.content = ft.Text("Advertencia: No todas las preguntas fueron respondidas. Guardando progreso.")
+            self.view.error_snack_bar.bgcolor = ft.colors.YELLOW
+            self.view.error_snack_bar.open = True
             self.page.update()
-        
-        # Navegar a la vista de resultados
-        self.page.go(f"/resultados/{self.current_test_id}")

@@ -15,7 +15,7 @@ def profesorCREATE(datos_profesor: tuple):
                 cnxn.commit()
                 return True  # Retorna True si la operación fue exitosa
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"profesorCREATE Error de conexión o consulta: {ex.args[0]}")
         return False  # Retorna False si ocurrió un error
 
 def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_password: str | None = None, pro_email: str | None = None, lvl_curso: int | None = None):
@@ -49,7 +49,7 @@ def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_
                     cursor.execute(sql_info)
                     return cursor.fetchall()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"profesorREAD Error de conexión o consulta: {ex.args[0]}")
         return [] if pro_nameID is None and pro_rut is None else None
     
 def profesorUPDATE(pro_nameID: int, datos_profesor: dict):
@@ -63,7 +63,7 @@ def profesorUPDATE(pro_nameID: int, datos_profesor: dict):
                 cursor.execute(sql_update, params)
                 cnxn.commit()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"profesorUPDATE Error de conexión o consulta: {ex.args[0]}")
     
 def profesorDELETE(pro_nameID: int):
     try:
@@ -73,7 +73,7 @@ def profesorDELETE(pro_nameID: int):
                 cursor.execute(sql_delete, pro_nameID)
                 cnxn.commit()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"profesorDELETE Error de conexión o consulta: {ex.args[0]}")
 
 def cursoREAD():
     """Lee todos los cursos de la base de datos."""
@@ -85,7 +85,7 @@ def cursoREAD():
                 cursor.execute(sql_info)
                 return cursor.fetchall()  # Retorna una lista de tuplas (id, nombre)
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta de cursos: {ex.args[0]}")
+        print(f"cursoREAD Error de conexión o consulta de cursos: {ex.args[0]}")
         return []
     
 
@@ -125,7 +125,7 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro
                     cursor.execute(sql_info)
                     return cursor.fetchall()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta de estudiantes: {ex.args[0]}")
+        print(f"estudiantesREAD Error de conexión o consulta de estudiantes: {ex.args[0]}")
         return None if es_nameID is not None else []
 
 #-------------------testCRUD
@@ -140,10 +140,10 @@ def testCREATE(test_data: tuple):
                 cnxn.commit()
                 return test_id
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"testCREATE Error de conexión o consulta: {ex.args[0]}")
         return None
     
-def testREAD(test_ID: int | None = None , test_status: int | None = None):
+def testREAD(test_ID: int | None = None , test_status: int | None = None, pro_ID: int | None = None):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -151,6 +151,21 @@ def testREAD(test_ID: int | None = None , test_status: int | None = None):
                     sql_info = "SELECT * FROM Test WHERE test_id = ?"
                     cursor.execute(sql_info, test_ID)
                     return cursor.fetchone()
+                elif pro_ID is not None and test_status is not None:
+                    sql_info = """
+                        SELECT
+                            t.test_status, t.test_ID, test_fecha_inicio, test_fecha_termino,
+                            e.es_nombre_1, e.es_apellido_pat, e.es_rut, c.cur_nombre,
+                            p.pro_nombre_1, p.pro_apellido_pat, p.pro_rut,
+                            rd.det_porcentaje
+                            FROM Test t
+                            LEFT JOIN Estudiantes e ON t.es_ID = e.es_nameID
+                            LEFT JOIN Profesores p ON t.pro_ID = p.pro_nameID
+                            LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
+                            LEFT JOIN Resultados_detallados rd ON t.test_ID = rd.id_test
+                            WHERE t.pro_ID = ? AND t.test_status = ?"""
+                    cursor.execute(sql_info, pro_ID, test_status)
+                    return cursor.fetchall()
                 elif test_status is not None:
                     sql_info = """
                         SELECT
@@ -166,8 +181,23 @@ def testREAD(test_ID: int | None = None , test_status: int | None = None):
                             WHERE t.test_status = ?"""
                     cursor.execute(sql_info, test_status)
                     return cursor.fetchall()
+                elif pro_ID is not None:
+                    sql_info = """
+                        SELECT
+                            t.test_status, t.test_ID, test_fecha_inicio, test_fecha_termino,
+                            e.es_nombre_1, e.es_apellido_pat, e.es_rut, c.cur_nombre,
+                            p.pro_nombre_1, p.pro_apellido_pat, p.pro_rut,
+                            rd.det_porcentaje
+                            FROM Test t
+                            LEFT JOIN Estudiantes e ON t.es_ID = e.es_nameID
+                            LEFT JOIN Profesores p ON t.pro_ID = p.pro_nameID
+                            LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
+                            LEFT JOIN Resultados_detallados rd ON t.test_ID = rd.id_test
+                            WHERE t.pro_ID = ? AND t.test_status = 1""" # Solo tests completados (status=1)
+                    cursor.execute(sql_info, pro_ID)
+                    return cursor.fetchall()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"testREAD Error de conexión o consulta: {ex.args[0]}")
         return None if test_ID is not None else []
     
 def testUPDATE(test_ID: int, test_data: dict):
@@ -180,7 +210,7 @@ def testUPDATE(test_ID: int, test_data: dict):
                 cursor.execute(sql_update, params)
                 cnxn.commit()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"testUPDATE Error de conexión o consulta: {ex.args[0]}")
 
 def testDELETE(test_ID: int| None = None):
     try:
@@ -191,7 +221,7 @@ def testDELETE(test_ID: int| None = None):
                     cursor.execute(sql_delete, test_ID)
                     cnxn.commit()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"testDELETE Error de conexión o consulta: {ex.args[0]}")
 
 #-------------------resultados_detalladosCRUD
 
@@ -208,7 +238,7 @@ def resultados_detalladosCREATE(detalles_data: tuple):
                 cnxn.commit()
                 return det_id
     except pyodbc.Error as ex:
-        print(f"Error al crear resultado detallado: {ex.args[0]}")
+        print(f"resultados_detalladosCREATE Error al crear resultado detallado: {ex.args[0]}")
         return None
 
 def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = None):
@@ -225,58 +255,74 @@ def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = N
                     return [] # No se proporcionó ID, devolver lista vacía
                 return cursor.fetchall()
     except pyodbc.Error as ex:
-        print(f"Error al leer resultados detallados: {ex.args[0]}")
+        print(f"resultados_detalladosREAD Error al leer resultados detallados: {ex.args[0]}")
         return []
-    
-#-------------------preguntaCRUD
 
-def preguntaCREATE(pregunta_data: tuple):
+def preguntasREAD(pre_id: int | None = None, pre_cat: str | None = None):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                sql_add = "INSERT INTO Preguntas (pre_respuesta, pre_tipo, ID_test) OUTPUT INSERTED.pre_ID VALUES(?,?,?)"
-                cursor.execute(sql_add, pregunta_data)
-                pre_id= cursor.fetchone()[0]
-                cnxn.commit()
-                return pre_id
+                if pre_id is not None:
+                    sql_info = "SELECT pre_id, pre_text, pre_plus FROM Preguntas WHERE pre_id = ?"
+                    cursor.execute(sql_info, pre_id)
+                elif pre_cat is not None:
+                    sql_info = "SELECT pre_id, pre_text, pre_plus FROM Preguntas WHERE pre_cat = ? ORDER BY pre_id"
+                    cursor.execute(sql_info, pre_cat)
+                return cursor.fetchall()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"preguntasREAD Error de conexión o consulta: {ex.args[0]}")
         return False 
 
-def preguntaREAD(ID_test: int | None = None):
+        
+#-------------------respuestaCRUD
+
+def respuestaCREATE(respuesta_data: tuple):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_add = "INSERT INTO Respuestas (res_respuesta, res_tipo, ID_test) OUTPUT INSERTED.res_ID VALUES(?,?,?)"
+                cursor.execute(sql_add, respuesta_data)
+                res_id= cursor.fetchone()[0]
+                cnxn.commit()
+                return res_id
+    except pyodbc.Error as ex:
+        print(f"respuestaCREATE Error de conexión o consulta: {ex.args[0]}")
+        return False 
+
+def respuestaREAD(ID_test: int | None = None):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 if ID_test is not None:
                     # Devolvemos el ID para poder usarlo en las actualizaciones
-                    sql_info = "SELECT pre_ID, pre_respuesta, pre_tipo FROM Preguntas WHERE ID_test = ?"
+                    sql_info = "SELECT res_ID, res_respuesta, res_tipo FROM Respuestas WHERE ID_test = ?"
                     cursor.execute(sql_info, ID_test)
                     return cursor.fetchall()
     except pyodbc.Error as ex:
         return [] # Devolver lista vacía en caso de error
-def preguntaUPDATE(ID_pregunta: int, pregunta_data: dict):
+def respuestaUPDATE(ID_respuesta: int, respuesta_data: dict):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                set_clause = ", ".join([f"{key} = ?" for key in pregunta_data.keys()])
-                sql_update = f"UPDATE Preguntas SET {set_clause} WHERE pre_ID = ?"
-                params = list(pregunta_data.values()) + [ID_pregunta]
+                set_clause = ", ".join([f"{key} = ?" for key in respuesta_data.keys()])
+                sql_update = f"UPDATE Respuestas SET {set_clause} WHERE res_ID = ?"
+                params = list(respuesta_data.values()) + [ID_respuesta]
                 cursor.execute(sql_update, params)
                 cnxn.commit()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"respuestaUPDATE Error de conexión o consulta: {ex.args[0]}")
 
-def preguntaDELETE(ID_pregunta: int| None = None, ID_test: int | None = None):
+def respuestaDELETE(ID_respuesta: int| None = None, ID_test: int | None = None):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                if ID_pregunta is not None:
-                    sql_delete = "DELETE FROM Preguntas WHERE pre_ID = ?"
-                    cursor.execute(sql_delete, ID_pregunta)
+                if ID_respuesta is not None:
+                    sql_delete = "DELETE FROM Respuestas WHERE res_ID = ?"
+                    cursor.execute(sql_delete, ID_respuesta)
                     cnxn.commit()
                 elif ID_test is not None:
-                    sql_delete = "DELETE FROM Preguntas WHERE ID_test = ?"
+                    sql_delete = "DELETE FROM Respuestas WHERE ID_test = ?"
                     cursor.execute(sql_delete, ID_test)
                     cnxn.commit()
     except pyodbc.Error as ex:
-        print(f"Error de conexión o consulta: {ex.args[0]}")
+        print(f"respuestaDELETE Error de conexión o consulta: {ex.args[0]}")

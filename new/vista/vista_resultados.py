@@ -1,10 +1,15 @@
 import flet as ft
 from flet_mvc import FletView
-from colors import color_Background, color_Docente
+from colors import color_Background_Docente, color_Docente, color_Background_PIE
+
 
 class ResultadosView(FletView):
     def __init__(self, controller, model):
         # --- Controles dinámicos ---
+        self.porcentaje_atencion_val= ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
+        self.porcentaje_memoria_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
+        self.porcentaje_social_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
+        self.porcentaje_emocional_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
         self.porcentaje_val = ft.Text("0%", size=40, weight=ft.FontWeight.BOLD, color="black")
         self.save_snackbar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.colors.GREEN)
 
@@ -46,7 +51,7 @@ class ResultadosView(FletView):
 
         view = ft.View(
             "/resultados",
-            bgcolor=color_Background,
+            bgcolor=color_Background_Docente if model.datos_profesor.pro_cargo == 0 else color_Background_PIE, 
             controls=[
                 self.save_snackbar,
                 self.rework_alert,
@@ -70,6 +75,23 @@ class ResultadosView(FletView):
                             controls=[guardar_button, rehacer_button, eliminar_button],
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
+                        ft.Text("Registro de indicios:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                        ft.Container(
+                            alignment=ft.alignment.center,
+                            border=ft.border.all(1, ft.colors.BLACK),
+                            bgcolor=ft.colors.WHITE,
+                            padding=10,
+                            content=
+                            ft.Column(
+                                controls=[
+                                    ft.Row(wrap=True,controls=[ft.Text("Atención: ", size=20, weight=ft.FontWeight.BOLD, color="black"), self.porcentaje_atencion_val]),
+                                    ft.Row(wrap=True,controls=[ft.Text("Memoria: ", size=20, weight=ft.FontWeight.BOLD, color="black"),self.porcentaje_memoria_val]),
+                                    ft.Row(wrap=True,controls=[ft.Text("Social: ", size=20, weight=ft.FontWeight.BOLD, color="black"),self.porcentaje_social_val]),
+                                    ft.Row(wrap=True,controls=[ft.Text("Emocional: ", size=20, weight=ft.FontWeight.BOLD, color="black"),self.porcentaje_emocional_val])
+                                    ]
+                            )
+                        ),
+                        
                     ]
                 )
             ]

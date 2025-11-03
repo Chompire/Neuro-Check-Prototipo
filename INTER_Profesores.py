@@ -351,6 +351,7 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
         
         # --- Lógica de paginación para Estudiantes ---
         total_items_est = len(estudiantes_a_mostrar)
+        print("total_items_est: ", total_items_est)
         print("ROWS_PER_PAGE_EST: ", ROWS_PER_PAGE_EST)
         print("total_items_est: ", total_items_est)
         total_pages_est = (total_items_est + ROWS_PER_PAGE_EST - 1) // ROWS_PER_PAGE_EST
@@ -385,6 +386,7 @@ def seleccionar_estudiante(page: ft.Page, estudiante_data, profesor_data, test_d
         )
 
         # --- Lógica de paginación para Tests ---
+        print("test_a_mostrar: ", test_a_mostrar)
         total_items_test = len(test_a_mostrar)
         total_pages_test = (total_items_test + ROWS_PER_PAGE_TEST - 1) // ROWS_PER_PAGE_TEST
         start_index_test = current_page_tests

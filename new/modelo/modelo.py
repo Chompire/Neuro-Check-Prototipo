@@ -40,7 +40,9 @@ class AppModel(FletModel):
         else:
             return False
     
-        
+    def leer_estudiantes(self):
+        return db.estudiantesREAD()
+
     def crear_test(self, es_ID: int, pro_ID: int, test_fecha_inicio, test_fecha_termino):
         test_data = (es_ID, pro_ID, test_fecha_inicio, test_fecha_termino)
         test_id = db.testCREATE(test_data)
@@ -48,24 +50,31 @@ class AppModel(FletModel):
 
     def actualizar_test(self, test_ID: int, test_data: dict):
         db.testUPDATE(test_ID, test_data)
-    def leer_test(self, test_ID: int):
-        return db.testREAD(test_ID=test_ID)
+    def leer_test(self, test_ID: int | None = None, test_status: int | None = None, pro_ID: int | None = None):
+        return db.testREAD(test_ID=test_ID, test_status=test_status, pro_ID=pro_ID)
+
     def eliminar_test(self, test_ID: int):
         db.testDELETE(test_ID=test_ID)
-    def crear_pregunta(self, pre_respuesta: str, pre_tipo: int, ID_test: int):
-        pregunta_data = (pre_respuesta, pre_tipo, ID_test)
-        pre_id = db.preguntaCREATE(pregunta_data)
-        return pre_id
 
-    def leer_preguntas(self, ID_test: int):
-        return db.preguntaREAD(ID_test)
+    def leer_preguntas(self, pre_id: int | None = None, pre_cat: str | None = None):
+        if pre_cat:
+            return db.preguntasREAD(pre_cat=pre_cat)
+        elif pre_id:
+            return db.preguntasREAD(pre_id=pre_id)
 
+    def crear_respuesta(self, res_respuesta: str, res_tipo: int, ID_test: int):
+        respuesta_data = (res_respuesta, res_tipo, ID_test)
+        res_id = db.respuestaCREATE(respuesta_data)
+        return res_id
 
-    def actualizar_pregunta(self, ID_pregunta: int, pregunta_data: dict):
-        db.preguntaUPDATE(ID_pregunta, pregunta_data)
+    def leer_respuestas(self, ID_test: int):
+        return db.respuestaREAD(ID_test)
 
-    def eliminar_preguntas_por_test(self, ID_test: int):
-        db.preguntaDELETE(ID_test=ID_test)
+    def actualizar_respuesta(self, ID_respuesta: int, respuesta_data: dict):
+        db.respuestaUPDATE(ID_respuesta, respuesta_data)
+
+    def eliminar_respuestas_por_test(self, ID_test: int):
+        db.respuestaDELETE(ID_test=ID_test)
 
     def crear_resultado_detallado(self, det_nameES, det_apellidoES, lvl_curso, det_namePRO, det_apellidoPRO, det_porcentaje, det_puntaje, det_fecha, id_test):
         detalles_data = (det_nameES, det_apellidoES, lvl_curso, det_namePRO, det_apellidoPRO, det_porcentaje, det_puntaje, det_fecha, id_test)
