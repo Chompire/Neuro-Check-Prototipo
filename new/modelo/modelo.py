@@ -50,6 +50,7 @@ class AppModel(FletModel):
 
     def actualizar_test(self, test_ID: int, test_data: dict):
         db.testUPDATE(test_ID, test_data)
+        
     def leer_test(self, test_ID: int | None = None, test_status: int | None = None, pro_ID: int | None = None):
         return db.testREAD(test_ID=test_ID, test_status=test_status, pro_ID=pro_ID)
 
@@ -75,13 +76,20 @@ class AppModel(FletModel):
 
     def eliminar_respuestas_por_test(self, ID_test: int):
         db.respuestaDELETE(ID_test=ID_test)
+    def leer_cursos(self):
+        return db.cursoREAD()
 
-    def crear_resultado_detallado(self, det_nameES, det_apellidoES, lvl_curso, det_namePRO, det_apellidoPRO, det_porcentaje, det_puntaje, det_fecha, id_test):
-        detalles_data = (det_nameES, det_apellidoES, lvl_curso, det_namePRO, det_apellidoPRO, det_porcentaje, det_puntaje, det_fecha, id_test)
+
+    def crear_resultado_detallado(self, det_nameES, det_apellidoES, lvl_curso, det_namePRO, det_apellidoPRO, det_porcentaje, det_porcentaje_atencion, det_porcentaje_memoria, det_porcentaje_social, det_porcentaje_emocional, det_puntaje, det_fecha, id_test):
+        detalles_data = (det_nameES, det_apellidoES, lvl_curso, det_namePRO, det_apellidoPRO, det_porcentaje,det_porcentaje_atencion,det_porcentaje_memoria,det_porcentaje_social,det_porcentaje_emocional,det_puntaje, det_fecha, id_test)
         det_id = db.resultados_detalladosCREATE(detalles_data)
         return det_id
-    def leer_resultados_detallados(self, id_test: int):
-        return db.resultados_detalladosREAD(id_test)
+    
+    def leer_resultados_detallados(self, ID_test: int):
+        return db.resultados_detalladosREAD(ID_test)
+
+    def leer_resultados_detallados_by_det_id(self, det_id: int, pro_id: int):
+        return db.resultados_detalladosREAD(det_ID=det_id, pro_ID=pro_id)
     
     def leer_info_test(self, test_id: int) -> TestDetails | None:
         test_record = db.testREAD(test_ID=test_id)
@@ -101,3 +109,19 @@ class AppModel(FletModel):
                 pro_apellido_pat=profesor_record.pro_apellido_pat
             )
         return None
+    
+    # --- Métodos para gestión de docentes ---
+    def leer_profesores(self):
+        return db.profesorREAD()
+
+    def leer_profesor_por_rut(self, rut):
+        return db.profesorREAD(pro_rut=rut)
+
+    def crear_profesor(self, datos):
+        return db.profesorCREATE(datos)
+
+    def actualizar_profesor(self, prof_id, datos):
+        db.profesorUPDATE(prof_id, datos)
+
+    def eliminar_profesor(self, prof_id):
+        db.profesorDELETE(prof_id)

@@ -23,8 +23,6 @@ class RealizarTestController(FletController):
         
     def cargar_estudiantes(self, estudiantes_a_mostrar=None):
         self.view.estudiante_table.rows.clear()
-
-        # Si no se proporciona una lista, usar la lista completa de estudiantes.
         if estudiantes_a_mostrar is None:
             estudiantes_a_mostrar = self.estudiante_data
 
@@ -97,12 +95,9 @@ class RealizarTestController(FletController):
         self.page.update()
 
     def cargar_test_incompletos(self, test_a_mostrar=None):
+        test_a_mostrar = db.testREAD(test_status=0)
         self.view.test_incompletos.rows.clear()
-        if test_a_mostrar is None:
-            test_a_mostrar = self.test_data
-        
-        
-        
+       
         total_items = len(test_a_mostrar)
         total_pages = (total_items + self.numpage_incomplete - 1) // self.numpage_incomplete
         start_index = self.current_page_tests * self.numpage_incomplete
@@ -112,23 +107,22 @@ class RealizarTestController(FletController):
         self.view.prev_button_test.disabled = self.current_page_tests == 0
         self.view.next_button_test.disabled = self.current_page_tests >= total_pages - 1
         self.page.update()
-        
-        for test in test_pagina_actual:
-            # Añadimos la fila a la tabla correcta (test_incompletos)
-            self.view.test_incompletos.rows.append(
-                ft.DataRow(cells=[
-                    ft.DataCell(ft.Text(test.es_nombre_1)),
-                    ft.DataCell(ft.Text(test.es_apellido_pat)),
-                    ft.DataCell(ft.Text(test.es_rut)),
-                    ft.DataCell(ft.Text(test.cur_nombre)),
-                    ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}")),
-                    ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d'))),
-                    ft.DataCell(ft.Text("Incompleto")), # El estado es 0 (Incompleto)
-                ],
-                data=test,
-                on_select_changed=self.test_row_select,)
-            )
-            self.page.update()
+        if test_a_mostrar:
+            for test in test_pagina_actual:
+                self.view.test_incompletos.rows.append(
+                    ft.DataRow(cells=[
+                        ft.DataCell(ft.Text(test.es_nombre_1)),
+                        ft.DataCell(ft.Text(test.es_apellido_pat)),
+                        ft.DataCell(ft.Text(test.es_rut)),
+                        ft.DataCell(ft.Text(test.cur_nombre)),
+                        ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}")),
+                        ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d'))),
+                        ft.DataCell(ft.Text("Incompleto")), # El estado es 0 (Incompleto)
+                    ],
+                    data=test,
+                    on_select_changed=self.test_row_select,)
+                )
+                self.page.update()
 
     
     def next_page_test(self, e):
@@ -201,7 +195,7 @@ class RealizarTestController(FletController):
         pro_id = self.model.datos_profesor.pro_nameID if hasattr(self.model, 'datos_profesor') and self.model.datos_profesor else None
         test_data = (self.selected_es_id, pro_id, fecha_inicio, None)
         test_id = self.model.crear_test(*test_data)
-        print (test_id)
+        print(test_id)
         self.selected_test_id = test_id
         
         if self.selected_test_id is not None:
@@ -216,7 +210,7 @@ class RealizarTestController(FletController):
             print(f"Reanudando el test con ID: {self.selected_test_id}")
             self.page.go(f"/test/{self.selected_test_id}")
         else:
-            self.page.snack_bar = ft.SnackBar(ft.Text("Por favor, selecciona un test para reanudar."), open=True, bgcolor=ft.colors.RED_700)
+            self.view.feedback_snackbar.content = ft.Text("Por favor, selecciona un test para reanudar.")
+            self.view.feedback_snackbar.bgcolor = ft.colors.RED_700
+            self.view.feedback_snackbar.open = True
             self.page.update()
-        if self.selected_test_id is not None:
-            self.page.go(f"/test/{self.selected_test_id}")

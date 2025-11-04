@@ -127,6 +127,7 @@ def create_perfil_view(page: ft.Page, estudiantes_data, profesor_data, test_data
             row.selected = False
         e.control.selected = True
         test_id_seleccionado = e.control.data[1] # El test_ID está en el índice 1 de los datos de la fila
+        print(f"Test seleccionado: {test_id_seleccionado}")
         page.go(f"/resultados_detallados/test/{test_id_seleccionado}")
 
     test_completos =ft.DataTable(

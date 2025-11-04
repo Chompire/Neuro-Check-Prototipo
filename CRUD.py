@@ -192,7 +192,10 @@ def resultados_detalladosCREATE(detalles_data: tuple):
             with cnxn.cursor() as cursor:
                 sql_add = """INSERT INTO Resultados_detallados
                             (det_nameES, det_apellidoES,lvl_curso, det_namePRO, det_apellidoPRO, 
-                             det_porcentaje, det_puntaje, det_fecha, id_test) OUTPUT INSERTED.det_ID
+                             det_porcentaje, det_porcentaje_atencion, det_porcentaje_memoria, 
+                             det_porcentaje_social, det_porcentaje_emocional,
+                             det_puntaje, 
+                            det_fecha, id_test) OUTPUT INSERTED.det_ID
                             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
                 cursor.execute(sql_add, detalles_data)
                 det_id = cursor.fetchone()[0]

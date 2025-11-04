@@ -7,6 +7,8 @@ from vista.vista_test import TestView
 from vista.vista_resultados import ResultadosView
 from vista.vista_inicio_pie import InicioPIEView
 from vista.vista_perfil_docente import PerfilDocenteView
+from vista.vista_resultados_detallados import ResultadosDetalladosView
+from vista.vista_modificacion_docente import ModificacionDocenteView
 
 from controlador.ctrl_inicio import InicioController
 from controlador.ctrl_real_test import RealizarTestController
@@ -15,6 +17,9 @@ from controlador.ctrl_inicio_pie import InicioPIEController
 from controlador.ctrl_test import TestController
 from controlador.ctrl_resultados import ResultadosController
 from controlador.ctrl_perfil_docente import PerfilDocenteController
+from controlador.ctrl_modificacion_docente import ModificacionDocenteController
+from controlador.ctrl_resultados_detallados import ResultadosDetalladosController
+
 
 
 from colors import color_Docente, color_Background_Docente
@@ -73,10 +78,9 @@ def main(page, model: AppModel): # main ahora recibe el modelo
                     page.go("/inicio_pie")
                 else:
                     page.go("/inicio_profesor")
-        elif page.route == "/resultados_detallados":
-            page.go("/inicio_profesor")
-        elif page.route == "/inicio_profesor":            
-            page.go("/")
+        elif page.route.startswith("/resultados_detallados/"):
+            page.go("/perfil_docente")
+        
 
    
     login_controller = LoginController(page, model)
@@ -86,6 +90,8 @@ def main(page, model: AppModel): # main ahora recibe el modelo
     test_controller = TestController(page, model)
     perfil_docente_controller = PerfilDocenteController(page, model)
     resultados_controller = ResultadosController(page, model)
+    resultados_detallados_controller = ResultadosDetalladosController(page, model)
+    modificacion_docente_controller = ModificacionDocenteController(page, model)
     
     login_view = LoginView(login_controller, model)
     inicio_view = InicioView(inicio_controller, model)
@@ -94,6 +100,8 @@ def main(page, model: AppModel): # main ahora recibe el modelo
     test_view = TestView(test_controller, model)
     resultados_view = ResultadosView(resultados_controller, model)
     perfil_docente_view = PerfilDocenteView(perfil_docente_controller, model)
+    resultados_detallados_view = ResultadosDetalladosView(resultados_detallados_controller, model)
+    modificacion_docente_view = ModificacionDocenteView(modificacion_docente_controller, model)
     
     login_controller.view = login_view
     inicio_controller.view = inicio_view
@@ -102,6 +110,8 @@ def main(page, model: AppModel): # main ahora recibe el modelo
     test_controller.view = test_view
     resultados_controller.view = resultados_view
     perfil_docente_controller.view = perfil_docente_view
+    resultados_detallados_controller.view = resultados_detallados_view
+    modificacion_docente_controller.view = modificacion_docente_view
     
     def route_change(route):
         print(f"Cambiando a la ruta: {page.route}")
@@ -140,8 +150,8 @@ def main(page, model: AppModel): # main ahora recibe el modelo
         elif troute.match("/perfil_docente"):
             view_title.value = "Perfil Docente"
             perfil_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model)
-            perfil_docente_controller.cargar_datos_docente() # Cargar datos del docente
-            perfil_docente_controller.cargar_tests_completados() # Cargar tests del docente
+            perfil_docente_controller.cargar_datos_docente()
+            perfil_docente_controller.cargar_tests_completados() 
             current_view = perfil_docente_view.content
         
         elif troute.match("/test/:test_id"): # Cambia la ruta para aceptar un ID
@@ -155,13 +165,26 @@ def main(page, model: AppModel): # main ahora recibe el modelo
             resultados_view.content.appbar = create_appbar(page, view_title, view_pop, model)
             resultados_controller.calcular_resultados(int(troute.test_id))
             current_view = resultados_view.content
+        
+        elif troute.match("/resultados_detallados/:det_id"):
+            view_title.value = "Resultados detallados"
+            resultados_detallados_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            resultados_detallados_controller.cargar_resultados_detallados(int(troute.det_id))
+            current_view = resultados_detallados_view.content
 
+        elif troute.match("/modificacion_docente"):
+            view_title.value = "Gestión de Docentes"
+            modificacion_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            modificacion_docente_controller.load_profesores_to_table()
+            current_view = modificacion_docente_view.content
     
         if current_view:
             page.views.append(current_view)
             current_appbar = current_view.appbar
-            if current_appbar and hasattr(current_appbar, 'leading') and current_appbar.leading:
-                current_appbar.leading.visible = page.route != "/inicio_profesor"
+            if current_appbar and hasattr(current_appbar, 'leading'):
+                # Ocultar la flecha de "atrás" en las vistas de inicio
+                is_home_view = page.route in ["/inicio_profesor", "/inicio_pie"]
+                current_appbar.leading.visible = not is_home_view
 
         page.update()
 
@@ -176,7 +199,7 @@ def main(page, model: AppModel): # main ahora recibe el modelo
 if __name__ == "__main__":
     def main_standalone(page: ft.Page):
         model = AppModel()
-        test_profesor_data = model.cargar_profesor_id(2)
+        test_profesor_data = model.cargar_profesor_id(1)
         if test_profesor_data:
             model.datos_profesor = test_profesor_data
         main(page, model)

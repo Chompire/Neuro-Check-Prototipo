@@ -7,6 +7,7 @@ class LoginView(FletView):
         self.rut_field = ft.Ref[ft.TextField]()
         self.password_field = ft.Ref[ft.TextField]()
         self.mensaje_error = ft.Ref[ft.Text]()
+        self.feedback_snackbar = ft.SnackBar(content=ft.Text(""))
 
         titulo = ft.Text("Iniciar Sesión", size=20, weight=ft.FontWeight.BOLD)
         rut = ft.TextField(label="RUT (sin puntos ni guión)", width=300, ref=self.rut_field)
@@ -43,6 +44,7 @@ class LoginView(FletView):
             [
                 ft.Stack(
                     controls=[
+                        self.feedback_snackbar,
                         fondo,
                         contenido,
                     ],

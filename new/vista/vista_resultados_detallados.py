@@ -1,39 +1,21 @@
 import flet as ft
-from flet_mvc import FletView # Importamos nuestra nueva clase base
-from colors import color_Background_Docente,color_Docente,color_Background_PIE
+from flet_mvc import FletView
+from colors import color_Docente, color_Background_Docente, color_Background_PIE
 
-
-class ResultadosView(FletView):
+class ResultadosDetalladosView(FletView):
     def __init__(self, controller, model):
-        
-        self.det_id = None
-        self.test_id = None
-        self.puntaje_control = ft.Container(
-            content=ft.Column(
-                [
-                    ft.Text("Puntaje", weight=ft.FontWeight.BOLD, size=20, color="white"),
-                    ft.Text("N/A", size=50, weight=ft.FontWeight.BOLD, color="white"),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            border=ft.border.all(2, color_Docente),
-            border_radius=8,
-            padding=15,
-            bgcolor=color_Docente
-        )
-        self.porcentaje_control = ft.Container(
-            content=ft.Column(
-                [
-                    ft.Text("Porcentaje", weight=ft.FontWeight.BOLD, size=20, color="white"),
-                    ft.Text("N/A", size=50, weight=ft.FontWeight.BOLD, color="white"),
-                ],
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            ),
-            border=ft.border.all(2, color_Docente),
-            border_radius=8,
-            padding=15,
-            bgcolor=color_Docente
-        )
+        self.puntaje_val = ft.Text("N/A", size=50, weight=ft.FontWeight.BOLD, color="white")
+        self.porcentaje_val = ft.Text("0%", size=50, weight=ft.FontWeight.BOLD, color="white")
+        self.porcentaje_atencion_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
+        self.porcentaje_memoria_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
+        self.porcentaje_social_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
+        self.porcentaje_emocional_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
+        self.indicios_atencion_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD)
+        self.indicios_memoria_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD)
+        self.indicios_social_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD)
+        self.indicios_emocional_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD)
+        self.feedback_snackbar = ft.SnackBar(content=ft.Text(""))
+
         self.datatable = ft.DataTable(
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
@@ -46,32 +28,153 @@ class ResultadosView(FletView):
                 ft.DataColumn(ft.Text("Nombre")),
                 ft.DataColumn(ft.Text("Apellidos")),
                 ft.DataColumn(ft.Text("Curso")),
-            ]
+                ft.DataColumn(ft.Text("Fecha de test"))
+            ],
+            rows=[]
         )
-        # Determinar el color de fondo de forma segura
-        background_color = color_Background_Docente
-        if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo != 0:
-            background_color = color_Background_PIE
+        self.puntaje_control = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text("Puntaje", weight=ft.FontWeight.BOLD, size=20,color="white"),
+                self.puntaje_val
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            
+        ),
+        border=ft.border.all(2, color_Docente),
+        border_radius=8,
+        padding=15,
+        bgcolor=color_Docente,
+        shadow=ft.BoxShadow(
+            spread_radius=1,
+            blur_radius=10,
+            color=ft.colors.with_opacity(0.3, ft.colors.BLACK),
+            offset=ft.Offset(0, 4),
+            blur_style=ft.ShadowBlurStyle.NORMAL,
+        )
+        )
+        self.porcentaje_control = ft.Container(
+        content=ft.Column(
+            [
+                ft.Text("Porcentaje", weight=ft.FontWeight.BOLD, size=20,color="white"),
+                self.porcentaje_val
+            ],
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            
+        ),
+        border=ft.border.all(2, color_Docente),
+        border_radius=8,
+        padding=15,
+        bgcolor= color_Docente,
+        shadow=ft.BoxShadow(
+            spread_radius=1,
+            blur_radius=10,
+            color=ft.colors.with_opacity(0.3, ft.colors.BLACK),
+            offset=ft.Offset(0, 4),
+            blur_style=ft.ShadowBlurStyle.NORMAL,
+        )
+    )
+
         view = ft.View(
-            route="/resultados_detallados",
-            bgcolor=background_color, 
-            controls=[
-                ft.Row(
-                    alignment=ft.MainAxisAlignment.CENTER,
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                    controls=[
-                        ft.Column(
-                            expand=True,
-                            scroll=ft.ScrollMode.AUTO,
-                            controls=[
-                                ft.Text("Resultados detallados", size=30, weight=ft.FontWeight.BOLD, color="black"),
-                                self.puntaje_control,
-                                self.porcentaje_control
-                            ]
-                        )
+            "/resultados_detallado/:det_id",
+            scroll=ft.ScrollMode.AUTO,
+        bgcolor=color_Background_PIE if model.datos_profesor.pro_cargo == 1 else color_Background_Docente,
+        controls=[
+            self.feedback_snackbar,
+            ft.Column(
+                expand=True,
+                controls=[
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Column(
+                                scroll=ft.ScrollMode.AUTO,
+                                controls=[
+                                    ft.Text("Datos del alumno:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                                    self.datatable,
+                                ]
+                            )                    
                         ]
-                ),
-                self.datatable
-            ]
-        )
+                    ),
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[self.puntaje_control, self.porcentaje_control]),
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Column(
+                                scroll=ft.ScrollMode.AUTO,
+                                controls=[
+                                    ft.Text("Posibles indicios de riesgo:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                                    ft.Container(
+                                        alignment=ft.alignment.center_left,
+                                        border=ft.border.all(1, ft.Colors.BLACK),
+                                        bgcolor=ft.Colors.WHITE,
+                                        padding=10,
+                                        width=1000,
+                                        content=ft.ExpansionPanelList(
+                                            expand_icon_color=ft.colors.BLACK,
+                                            elevation=8,
+                                            divider_color=ft.colors.BLACK,
+                                            controls=[
+                                                ft.ExpansionPanel(
+                                                    header=ft.ListTile(title=ft.Text("Atención"), content_padding = 10),
+                                                    bgcolor=color_Docente,
+                                                    content=ft.Container(content=ft.Column([
+                                                        ft.ListTile(title=ft.Row([ft.Text("Porcentaje: "), self.porcentaje_atencion_val])),
+                                                        ft.ListTile(title=self.indicios_atencion_val)
+                                                    ]), padding=10)
+                                                ),
+                                                ft.ExpansionPanel(
+                                                    header=ft.ListTile(title=ft.Text("Memoria"), content_padding = 10),
+                                                    bgcolor=color_Docente,
+                                                    content=ft.Container(content=ft.Column([
+                                                        ft.ListTile(title=ft.Row([ft.Text("Porcentaje: "), self.porcentaje_memoria_val])),
+                                                        ft.ListTile(title=self.indicios_memoria_val)
+                                                    ]), padding=10)
+                                                ),
+                                                ft.ExpansionPanel(
+                                                    header=ft.ListTile(title=ft.Text("Social"), content_padding = 10),
+                                                    bgcolor=color_Docente,
+                                                    content=ft.Container(content=ft.Column([
+                                                        ft.ListTile(title=ft.Row([ft.Text("Porcentaje: "), self.porcentaje_social_val])),
+                                                        ft.ListTile(title=self.indicios_social_val)
+                                                    ]), padding=10)
+                                                ),
+                                                ft.ExpansionPanel(
+                                                    header=ft.ListTile(title=ft.Text("Emocional"), content_padding = 10),
+                                                    bgcolor=color_Docente,
+                                                    content=ft.Container(content=ft.Column([
+                                                        ft.ListTile(title=ft.Row([ft.Text("Porcentaje: "), self.porcentaje_emocional_val])),
+                                                        ft.ListTile(title=self.indicios_emocional_val)
+                                                    ]), padding=10)
+                                                )
+                                            ]
+                                        )
+                                    )
+                                ]
+                            )                    
+                        ]
+                    ),
+                    ft.Row(
+                        alignment=ft.MainAxisAlignment.CENTER,
+                        vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                        controls=[
+                            ft.Column(
+                                controls=[
+                                    ft.Container(width=600, alignment=ft.alignment.center_left, border=ft.border.all(1, ft.Colors.BLACK), bgcolor=ft.Colors.WHITE, padding=10)
+                                ]
+                            )
+                        ]
+                    ),
+                ]
+            )
+            
+        ]
+    ) 
+
         super().__init__(model, view, controller)
+        self.page = controller.page # Store page reference for snackbar

@@ -5,6 +5,10 @@ import crud as db
 class PerfilDocenteController(FletController):
     def __init__(self, page, model):
         super().__init__(page, model)
+        self.selected_test_id = None
+        self.res_det_id = None
+        
+        
         
     def cargar_datos_docente(self):
         """Carga los datos del profesor logueado en la tabla de la vista."""
@@ -35,13 +39,11 @@ class PerfilDocenteController(FletController):
         )
 
     def cargar_tests_completados(self):
-        """Carga los tests completados por el profesor logueado."""
         self.view.test_completos_table.rows.clear()
-        
         pro_id = self.model.datos_profesor.pro_nameID
-        tests = self.model.leer_test(pro_ID=pro_id, test_status=1)
+        test_dat = self.model.leer_test(pro_ID=pro_id, test_status=1)
 
-        if not tests:
+        if not test_dat:
             self.view.test_completos_table.rows.append(
                 ft.DataRow(
                     cells=[
@@ -56,7 +58,7 @@ class PerfilDocenteController(FletController):
                 )
             )
         else:
-            for test in tests:
+            for test in test_dat:
                 self.view.test_completos_table.rows.append(
                     ft.DataRow(cells=[
                         ft.DataCell(ft.Text(test.es_nombre_1)),
@@ -66,6 +68,23 @@ class PerfilDocenteController(FletController):
                         ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A")),
                         ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A")),
                         ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%")),
-                    ])
+                        
+                    ],
+                    data = test,
+                    on_select_changed=self.test_completos_row_select,
+                    )
                 )
+    def test_completos_row_select(self, e):
+        selected_test = e.control.data
+        for row in self.view.test_completos_table.rows:
+            row.selected = False
+
+        if selected_test:
+            e.control.selected = True
+            self.selected_test_id = selected_test.test_ID
+            self.res_det_id = self.model.leer_resultados_detallados(self.selected_test_id) # This returns a list of detailed results for a test_ID
+            print(f"Detalle de resultado ID seleccionado: {self.res_det_id}") # Accessing the det_ID from the first result
+            self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
+        
+
         self.page.update()

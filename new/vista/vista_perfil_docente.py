@@ -4,8 +4,13 @@ from colors import color_Background_Docente,color_Docente, color_Background_PIE
 class PerfilDocenteView(FletView):
     def __init__(self, controller, model):
         self.info_table = ft.DataTable(
-            heading_row_color= color_Docente,
-            data_row_color="white",
+            heading_row_color=color_Docente,
+            heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+            bgcolor="white",
+            data_text_style=ft.TextStyle(color="black"),
+            border=ft.border.all(2, ft.Colors.BLACK),
+            vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+            horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
             columns=[
                 ft.DataColumn(ft.Text("Nombres")),
                 ft.DataColumn(ft.Text("Apellidos")),
@@ -22,6 +27,10 @@ class PerfilDocenteView(FletView):
             border=ft.border.all(2, ft.Colors.BLACK),
             vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
             horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+            data_row_color={
+                ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
+                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),                
+            },
             columns=[
                 ft.DataColumn(ft.Text("Nombre Est.")),
                 ft.DataColumn(ft.Text("Apellido Est.")),
@@ -61,7 +70,7 @@ class PerfilDocenteView(FletView):
                         alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
                         ft.Column(controls=[
-                            ft.Row(controls=[ft.Text("Tests Completados:", size=30, weight=ft.FontWeight.BOLD, color="black")]),
+                            ft.Row(controls=[ft.Text("Mis tests:", size=30, weight=ft.FontWeight.BOLD, color="black")]),
                             self.test_completos_table
                             ])
                             ])

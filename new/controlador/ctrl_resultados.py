@@ -12,6 +12,7 @@ class ResultadosController(FletController):
         self.porcentaje_memoria = 0
         self.porcentaje_social = 0
         self.porcentaje_emocional = 0
+        self.resultados_detallados_id = None
 
         self.indicios_atencion = "Trastorno por Déficit de Atención con Hiperactividad (TDAH) (Tipo inatento, hiperactivo o combinado). Dificultades de Función Ejecutiva."
         self.indicios_memoria = "Dificultades Específicas del Aprendizaje (DEA) (dislexia, discalculia, si se asocia a fallas académicas). Déficit en Memoria Operativa o a Corto Plazo."
@@ -126,13 +127,9 @@ class ResultadosController(FletController):
         self.view.porcentaje_emocional_val.value = indi_text_emocional
         self.page.update()
 
-    def guardar_test(self, e):
-        """Guarda los resultados y marca el test como finalizado."""
-        if self.current_test_id is None: 
-            
+    def guardar_test(self, e):        
+        if self.current_test_id is None:             
             self.page.go("/resultados_detallados")
-
-
         # 1. Actualizar estado y fecha del test
         self.model.actualizar_test(self.current_test_id, {
             "test_status": 1,
@@ -148,19 +145,22 @@ class ResultadosController(FletController):
                 test_info.pro_nombre_1,
                 test_info.pro_apellido_pat,
                 self.porcentaje,
+                self.porcentaje_atencion,
+                self.porcentaje_memoria,
+                self.porcentaje_social,
+                self.porcentaje_emocional,
                 self.puntaje,
                 datetime.now().date(),
                 self.current_test_id
             )
-            self.model.crear_resultado_detallado(*detalles_data)
+            self.resultados_detallados_id = self.model.crear_resultado_detallado(*detalles_data)
 
         self.view.save_snackbar.content = ft.Text("Resultados guardados exitosamente.")
         self.view.save_snackbar.open = True
         self.page.update()
-        self.page.go("/realizar_test")
+        self.page.go(f"/resultados_detallados/{self.resultados_detallados_id}")
 
     def rehacer_test(self, e):
-        """Borra las respuestas y regresa a la pantalla del test."""
         if self.current_test_id is None: return
         
         respuestas = self.model.leer_respuestas(self.current_test_id)

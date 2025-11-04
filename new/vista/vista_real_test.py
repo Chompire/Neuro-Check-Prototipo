@@ -5,6 +5,7 @@ from colors import color_Background_Docente,color_Docente,color_Background_PIE
 
 class RealizarTestView(FletView):  # Heredamos de BaseView
     def __init__(self, controller, model):
+        self.feedback_snackbar = ft.SnackBar(content=ft.Text(""))
         self.prev_button_test = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_test,bgcolor=color_Docente)
         self.page_label_test = ft.Text("Página 1 de 1", color="black")
         self.next_button_test = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_test,bgcolor=color_Docente)
@@ -103,6 +104,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
             bgcolor=background_color,
             controls=
             [
+                self.feedback_snackbar,
                 ft.Column(
                 expand = True,
                 scroll=ft.ScrollMode.AUTO,
