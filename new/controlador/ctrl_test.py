@@ -12,8 +12,8 @@ class TestController(FletController):
         return [
             ft.RadioGroup(
                 content=ft.Row([
-                    ft.Radio(value="si", label="Sí"),
-                    ft.Radio(value="no", label="No"),
+                    ft.Radio(value="si", label="Sí", label_style=ft.TextStyle(color="black")),
+                    ft.Radio(value="no", label="No", label_style=ft.TextStyle(color="black")),
                 ])
             ) for _ in range(count)
         ]

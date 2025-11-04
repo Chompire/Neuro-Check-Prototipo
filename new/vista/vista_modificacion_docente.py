@@ -38,7 +38,7 @@ class ModificacionDocenteView(FletView):
             heading_row_color=color_Docente,
             columns=[
                 ft.DataColumn(ft.Text("Nombres")), ft.DataColumn(ft.Text("Apellidos")),
-                ft.DataColumn(ft.Text("RUT")), ft.DataColumn(ft.Text("Email")),
+                ft.DataColumn(ft.Text("RUT")),
                 ft.DataColumn(ft.Text("Cargo")), ft.DataColumn(ft.Text("Curso")),
                 ft.DataColumn(ft.Text("Estado")),
             ],
@@ -57,6 +57,7 @@ class ModificacionDocenteView(FletView):
         # --- Form Fields ---
         self.nombre1 = ft.TextField(label="Primer nombre", color="black", label_style=ft.TextStyle(color="black"))
         self.nombre2 = ft.TextField(label="Segundo nombre", color="black", label_style=ft.TextStyle(color="black"))
+        self.nombre3 = ft.TextField(label="Tercer nombre", color="black", label_style=ft.TextStyle(color="black"))
         self.apellido_pat = ft.TextField(label="Apellido paterno", color="black", label_style=ft.TextStyle(color="black"))
         self.apellido_mat = ft.TextField(label="Apellido materno", color="black", label_style=ft.TextStyle(color="black"))
         self.rut_field = ft.TextField(label="RUT", width=300, color="black", on_change=controller.formato_rut, label_style=ft.TextStyle(color="black"))
@@ -89,7 +90,6 @@ class ModificacionDocenteView(FletView):
             controls=[
                 self.feedback_snackbar, self.add_dialog, self.edit_dialog, self.delete_dialog,
                 ft.Column(
-                    expand=True,
                     scroll=ft.ScrollMode.AUTO,
                     controls=[
                         ft.Container(
@@ -102,9 +102,8 @@ class ModificacionDocenteView(FletView):
                         ft.Container(
                             content=ft.Column([
                                 ft.Text("Añadir / Editar Docente", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                                ft.Row([self.nombre1, self.nombre2]),
-                                ft.Row([self.apellido_pat, self.apellido_mat]),
-                                ft.Row([self.rut_field]),
+                                ft.Row([self.nombre1, self.nombre2, self.nombre3]),
+                                ft.Row([self.apellido_pat, self.apellido_mat, self.rut_field]),
                                 ft.Row([self.cargo_field, self.curso_field, self.estado_field]),
                                 ft.Row([self.add_button, self.edit_button, self.delete_button]),
                             ]),

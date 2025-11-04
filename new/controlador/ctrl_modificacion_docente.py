@@ -45,6 +45,7 @@ class ModificacionDocenteController(FletController):
             
             self.view.nombre1.value = selected_prof.pro_nombre_1 or ""
             self.view.nombre2.value = selected_prof.pro_nombre_2 or ""
+            self.view.nombre3.value = selected_prof.pro_nombre_3 or ""
             self.view.apellido_pat.value = selected_prof.pro_apellido_pat or ""
             self.view.apellido_mat.value = selected_prof.pro_apellido_mat or ""
             self.view.rut_field.value = selected_prof.pro_rut or ""
@@ -59,6 +60,7 @@ class ModificacionDocenteController(FletController):
     def clear_form_fields(self):
         self.view.nombre1.value = ""
         self.view.nombre2.value = ""
+        self.view.nombre3.value = ""
         self.view.apellido_pat.value = ""
         self.view.apellido_mat.value = ""
         self.view.rut_field.value = ""
@@ -89,7 +91,7 @@ class ModificacionDocenteController(FletController):
         estado_valor = 1 if self.view.estado_field.value == "Habilitado" else 0
         
         datos_nuevos = (
-            self.view.nombre1.value, self.view.nombre2.value, None,
+            self.view.nombre1.value, self.view.nombre2.value, self.view.nombre3.value,
             self.view.apellido_pat.value, self.view.apellido_mat.value,
             rut,
             cargo_valor, self.password_define, 
@@ -116,7 +118,7 @@ class ModificacionDocenteController(FletController):
         estado_valor = 1 if self.view.estado_field.value == "Habilitado" else 0
         cargo_valor = 1 if self.view.cargo_field.value == "Profesional PIE" else 0
         datos_actualizados = {
-            "pro_nombre_1": self.view.nombre1.value, "pro_nombre_2": self.view.nombre2.value,
+            "pro_nombre_1": self.view.nombre1.value, "pro_nombre_2": self.view.nombre2.value, "pro_nombre_3": self.view.nombre3.value,
             "pro_apellido_pat": self.view.apellido_pat.value, "pro_apellido_mat": self.view.apellido_mat.value,
             "pro_rut": self.view.rut_field.value,
             "pro_cargo": cargo_valor, "lvl_curso": self.view.curso_field.value, "pro_state": estado_valor,

@@ -53,7 +53,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler)
     )
 
 
-def main(page, model: AppModel): # main ahora recibe el modelo
+def main(page, model: AppModel):
     page.title = "NeuroCheck"
     view_title = ft.Text("", color="white", size=20)
 
@@ -91,7 +91,7 @@ def main(page, model: AppModel): # main ahora recibe el modelo
     login_controller = LoginController(page, model)
     inicio_controller = InicioController(page, model)
     inicio_pie_controller = InicioPIEController(page, model)
-    real_test_controller = RealizarTestController(page, model) # <--- CORRECCIÓN: Usar el modelo principal
+    real_test_controller = RealizarTestController(page, model)
     test_controller = TestController(page, model)
     perfil_docente_controller = PerfilDocenteController(page, model)
     resultados_controller = ResultadosController(page, model)
@@ -133,8 +133,8 @@ def main(page, model: AppModel): # main ahora recibe el modelo
             view_title.value = "Inicio Docente"
             inicio_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             if hasattr(model, 'datos_profesor') and model.datos_profesor:
-                nombre_profesor = f"{model.datos_profesor.pro_nombre_1}" # Accedemos al nombre desde el modelo
-                inicio_view.welcome_text.value = nombre_profesor # Actualizamos el texto de bienvenida
+                nombre_profesor = f"{model.datos_profesor.pro_nombre_1}"
+                inicio_view.welcome_text.value = nombre_profesor
             current_view = inicio_view.content
 
         elif troute.match("/inicio_pie"):
@@ -159,7 +159,7 @@ def main(page, model: AppModel): # main ahora recibe el modelo
             perfil_docente_controller.cargar_tests_completados() 
             current_view = perfil_docente_view.content
         
-        elif troute.match("/test/:test_id"): # Cambia la ruta para aceptar un ID
+        elif troute.match("/test/:test_id"):
             view_title.value = "Test"
             test_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             test_controller.cargar_respuestas_guardadas(int(troute.test_id))
@@ -187,7 +187,6 @@ def main(page, model: AppModel): # main ahora recibe el modelo
             page.views.append(current_view)
             current_appbar = current_view.appbar
             if current_appbar and hasattr(current_appbar, 'leading'):
-                # Ocultar la flecha de "atrás" en las vistas de inicio
                 is_home_view = page.route in ["/inicio_profesor", "/inicio_pie"]
                 current_appbar.leading.visible = not is_home_view
 
@@ -195,7 +194,10 @@ def main(page, model: AppModel): # main ahora recibe el modelo
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    page.go("/")
+    if model.datos_profesor.pro_cargo == 1:
+        page.go("/inicio_pie")
+    else:
+        page.go("/inicio_profesor") 
 
 
 
