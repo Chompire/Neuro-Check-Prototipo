@@ -92,11 +92,15 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                 width=150,
                 height=40)
 
-
+        # Determinar el color de fondo de forma segura
+        background_color = color_Background_Docente
+        if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo != 0:
+            background_color = color_Background_PIE
+            
         view = ft.View(
             
             "/realizar_test",
-            bgcolor=color_Background_Docente if model.datos_profesor.pro_cargo == 0 else color_Background_PIE, 
+            bgcolor=background_color,
             controls=
             [
                 ft.Column(

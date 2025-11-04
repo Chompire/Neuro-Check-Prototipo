@@ -49,9 +49,13 @@ class ResultadosView(FletView):
             tooltip="Eliminar test", on_click=lambda e: controller.abrir_dialogo('eliminar')
         )
 
+        # Determinar el color de fondo de forma segura
+        background_color = color_Background_Docente
+        if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo != 0:
+            background_color = color_Background_PIE
         view = ft.View(
             "/resultados",
-            bgcolor=color_Background_Docente if model.datos_profesor.pro_cargo == 0 else color_Background_PIE, 
+            bgcolor=background_color,
             controls=[
                 self.save_snackbar,
                 self.rework_alert,

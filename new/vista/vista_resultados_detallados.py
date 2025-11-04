@@ -48,9 +48,13 @@ class ResultadosView(FletView):
                 ft.DataColumn(ft.Text("Curso")),
             ]
         )
+        # Determinar el color de fondo de forma segura
+        background_color = color_Background_Docente
+        if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo != 0:
+            background_color = color_Background_PIE
         view = ft.View(
             route="/resultados_detallados",
-            bgcolor=color_Background_Docente if model.datos_profesor.pro_cargo == 0 else color_Background_PIE, 
+            bgcolor=background_color, 
             controls=[
                 ft.Row(
                     alignment=ft.MainAxisAlignment.CENTER,

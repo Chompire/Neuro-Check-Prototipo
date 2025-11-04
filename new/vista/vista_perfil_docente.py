@@ -33,9 +33,14 @@ class PerfilDocenteView(FletView):
             ],
             rows=[]
         )
+        # Determinar el color de fondo de forma segura
+        background_color = color_Background_Docente
+        if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo != 0:
+            background_color = color_Background_PIE
+
         view = ft.View(
             "/perfil_docente",
-            bgcolor=color_Background_Docente if model.datos_profesor.pro_cargo == 0 else color_Background_PIE,
+            bgcolor=background_color,
             controls=[
                 ft.Column(
                 scroll=ft.ScrollMode.AUTO,

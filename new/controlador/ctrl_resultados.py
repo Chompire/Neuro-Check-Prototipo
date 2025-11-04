@@ -130,7 +130,7 @@ class ResultadosController(FletController):
         """Guarda los resultados y marca el test como finalizado."""
         if self.current_test_id is None: 
             
-            return self.page.go("/realizar_test")
+            self.page.go("/resultados_detallados")
 
 
         # 1. Actualizar estado y fecha del test

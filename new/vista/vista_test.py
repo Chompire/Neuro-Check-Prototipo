@@ -96,9 +96,13 @@ class TestView(FletView):
         save_button = ft.ElevatedButton("Guardar respuestas", bgcolor=ft.Colors.RED, color=ft.Colors.WHITE,on_click=controller.guardar_respuestas)
     
         finalizar_button = ft.ElevatedButton("Finalizar Test",bgcolor=ft.Colors.RED, color=ft.Colors.WHITE, on_click=controller.finalizar_test)  
+        # Determinar el color de fondo de forma segura
+        background_color = color_Background_Docente
+        if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo != 0:
+            background_color = color_Background_PIE
         view = ft.View(
             "/test",
-            bgcolor=color_Background_Docente if model.datos_profesor.pro_cargo == 0 else color_Background_PIE, 
+            bgcolor=background_color,
             controls=[
                 self.error_snack_bar,
                 tabs_control,

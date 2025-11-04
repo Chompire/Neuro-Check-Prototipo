@@ -140,7 +140,7 @@ def main(page, model: AppModel): # main ahora recibe el modelo
         elif troute.match("/perfil_docente"):
             view_title.value = "Perfil Docente"
             perfil_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model)
-            perfil_docente_controller.cargar_datos_docente() # Cargar datos en la tabla
+            perfil_docente_controller.cargar_datos_docente() # Cargar datos del docente
             perfil_docente_controller.cargar_tests_completados() # Cargar tests del docente
             current_view = perfil_docente_view.content
         
@@ -176,9 +176,9 @@ def main(page, model: AppModel): # main ahora recibe el modelo
 if __name__ == "__main__":
     def main_standalone(page: ft.Page):
         model = AppModel()
-        test_profesor_data = model.cargar_profesor_id(1)
+        test_profesor_data = model.cargar_profesor_id(2)
         if test_profesor_data:
             model.datos_profesor = test_profesor_data
         main(page, model)
 
-    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)
+    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.WEB_BROWSER)
