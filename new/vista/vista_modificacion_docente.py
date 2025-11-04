@@ -55,26 +55,28 @@ class ModificacionDocenteView(FletView):
         )
 
         # --- Form Fields ---
-        self.nombre1 = ft.TextField(label="Primer nombre", color="black")
-        self.nombre2 = ft.TextField(label="Segundo nombre", color="black")
-        self.apellido_pat = ft.TextField(label="Apellido paterno", color="black")
-        self.apellido_mat = ft.TextField(label="Apellido materno", color="black")
-        self.rut_field = ft.TextField(label="RUT", width=300, color="black", on_change=controller.formato_rut)
-        self.mail_field = ft.TextField(label="Email", color="black")
+        self.nombre1 = ft.TextField(label="Primer nombre", color="black", label_style=ft.TextStyle(color="black"))
+        self.nombre2 = ft.TextField(label="Segundo nombre", color="black", label_style=ft.TextStyle(color="black"))
+        self.apellido_pat = ft.TextField(label="Apellido paterno", color="black", label_style=ft.TextStyle(color="black"))
+        self.apellido_mat = ft.TextField(label="Apellido materno", color="black", label_style=ft.TextStyle(color="black"))
+        self.rut_field = ft.TextField(label="RUT", width=300, color="black", on_change=controller.formato_rut, label_style=ft.TextStyle(color="black"))
         self.cargo_field = ft.Dropdown(
             label="Cargo", width=300,
             options=[ft.dropdown.Option("Profesional PIE"), ft.dropdown.Option("Docente")],
-            color="black"
+            color="black",
+            label_style=ft.TextStyle(color="black")
         )
         self.curso_field = ft.Dropdown(
             label="Curso", width=300,
             options=controller.lista_cursos(),
-            color="black"
+            color="black",
+            label_style=ft.TextStyle(color="black")
         )
         self.estado_field = ft.Dropdown(
             label="Estado", width=300,
             options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")],
-            color="black"
+            color="black",
+            label_style=ft.TextStyle(color="black")
         )
 
         self.add_button = ft.IconButton(icon=ft.icons.ADD, icon_color=ft.colors.WHITE, bgcolor=color_Docente, tooltip="Añadir nuevo", on_click=lambda e: controller.open_dialog(e, 'add'))
@@ -102,7 +104,7 @@ class ModificacionDocenteView(FletView):
                                 ft.Text("Añadir / Editar Docente", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.nombre1, self.nombre2]),
                                 ft.Row([self.apellido_pat, self.apellido_mat]),
-                                ft.Row([self.rut_field, self.mail_field]),
+                                ft.Row([self.rut_field]),
                                 ft.Row([self.cargo_field, self.curso_field, self.estado_field]),
                                 ft.Row([self.add_button, self.edit_button, self.delete_button]),
                             ]),

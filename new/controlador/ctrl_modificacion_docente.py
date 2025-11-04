@@ -18,7 +18,6 @@ class ModificacionDocenteController(FletController):
                             ft.DataCell(ft.Text(f"{prof.pro_nombre_1} {prof.pro_nombre_2 or ''}".strip())),
                             ft.DataCell(ft.Text(f"{prof.pro_apellido_pat} {prof.pro_apellido_mat}")),
                             ft.DataCell(ft.Text(prof.pro_rut)),
-                            ft.DataCell(ft.Text(prof.pro_email)),
                             ft.DataCell(ft.Text("Profesional PIE" if prof.pro_cargo else "Docente")),
                             ft.DataCell(ft.Text(prof.cur_nombre or "N/A")),
                             ft.DataCell(ft.Text("Habilitado" if prof.pro_state else "Inhabilitado")),
@@ -49,7 +48,6 @@ class ModificacionDocenteController(FletController):
             self.view.apellido_pat.value = selected_prof.pro_apellido_pat or ""
             self.view.apellido_mat.value = selected_prof.pro_apellido_mat or ""
             self.view.rut_field.value = selected_prof.pro_rut or ""
-            self.view.mail_field.value = selected_prof.pro_email or ""
             self.view.cargo_field.value = "Profesional PIE" if selected_prof.pro_cargo else "Docente"
             self.view.curso_field.value = selected_prof.lvl_curso
             self.view.estado_field.value = "Habilitado" if selected_prof.pro_state else "Inhabilitado"
@@ -64,7 +62,6 @@ class ModificacionDocenteController(FletController):
         self.view.apellido_pat.value = ""
         self.view.apellido_mat.value = ""
         self.view.rut_field.value = ""
-        self.view.mail_field.value = ""
         self.view.cargo_field.value = None
         self.view.curso_field.value = None
         self.view.estado_field.value = None
@@ -94,7 +91,7 @@ class ModificacionDocenteController(FletController):
         datos_nuevos = (
             self.view.nombre1.value, self.view.nombre2.value, None,
             self.view.apellido_pat.value, self.view.apellido_mat.value,
-            rut, self.view.mail_field.value,
+            rut,
             cargo_valor, self.password_define, 
             self.view.curso_field.value, estado_valor, None
         )
@@ -121,7 +118,7 @@ class ModificacionDocenteController(FletController):
         datos_actualizados = {
             "pro_nombre_1": self.view.nombre1.value, "pro_nombre_2": self.view.nombre2.value,
             "pro_apellido_pat": self.view.apellido_pat.value, "pro_apellido_mat": self.view.apellido_mat.value,
-            "pro_rut": self.view.rut_field.value, "pro_email": self.view.mail_field.value,
+            "pro_rut": self.view.rut_field.value,
             "pro_cargo": cargo_valor, "lvl_curso": self.view.curso_field.value, "pro_state": estado_valor,
         }
         self.model.actualizar_profesor(self.selected_prof_id, datos_actualizados)

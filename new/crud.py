@@ -8,9 +8,9 @@ def profesorCREATE(datos_profesor: tuple):
                 sql_add = """INSERT INTO Profesores(
                 pro_nombre_1,pro_nombre_2, pro_nombre_3,
                 pro_apellido_pat, pro_apellido_mat,
-                pro_rut, pro_email,pro_cargo,pro_password, 
+                pro_rut, pro_cargo,pro_password, 
                 lvl_curso,pro_state, pro_nacimiento)
-                VALUES(?,?,?,?,?,?,?,?,?,?,?,?);"""
+                VALUES(?,?,?,?,?,?,?,?,?,?,?);"""
                 cursor.execute(sql_add, datos_profesor)
                 cnxn.commit()
                 return True  # Retorna True si la operación fue exitosa
@@ -18,7 +18,7 @@ def profesorCREATE(datos_profesor: tuple):
         print(f"profesorCREATE Error de conexión o consulta: {ex.args[0]}")
         return False  # Retorna False si ocurrió un error
 
-def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_password: str | None = None, pro_email: str | None = None, lvl_curso: int | None = None):
+def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_password: str | None = None, lvl_curso: int | None = None):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -34,10 +34,6 @@ def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_
                 elif pro_rut is not None:
                     sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.pro_rut = ?"
                     cursor.execute(sql_info, pro_rut)
-                    return cursor.fetchone()
-                elif pro_email is not None:
-                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.pro_email = ?"
-                    cursor.execute(sql_info, pro_email)
                     return cursor.fetchone()
                 elif lvl_curso is not None:
                     sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.lvl_curso = ?"

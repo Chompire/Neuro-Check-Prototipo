@@ -9,7 +9,6 @@ from vista.vista_inicio_pie import InicioPIEView
 from vista.vista_perfil_docente import PerfilDocenteView
 from vista.vista_resultados_detallados import ResultadosDetalladosView
 from vista.vista_modificacion_docente import ModificacionDocenteView
-
 from controlador.ctrl_inicio import InicioController
 from controlador.ctrl_real_test import RealizarTestController
 from controlador.ctrl_login import LoginController
@@ -24,7 +23,7 @@ from controlador.ctrl_resultados_detallados import ResultadosDetalladosControlle
 
 from colors import color_Docente, color_Background_Docente
 
-def create_appbar(page, view_title_control, back_handler, model):
+def create_appbar(page, view_title_control, back_handler, model, logout_handler):
     back_button = ft.IconButton(
         icon=ft.Icons.ARROW_BACK,
         on_click=lambda _: back_handler(None), 
@@ -46,6 +45,7 @@ def create_appbar(page, view_title_control, back_handler, model):
                     ft.PopupMenuItem(
                         icon=ft.Icons.EXIT_TO_APP,
                         text="Cerrar sesión",
+                        on_click=logout_handler
                     ),
                 ])
             ]),
@@ -56,6 +56,11 @@ def create_appbar(page, view_title_control, back_handler, model):
 def main(page, model: AppModel): # main ahora recibe el modelo
     page.title = "NeuroCheck"
     view_title = ft.Text("", color="white", size=20)
+
+    def logout(e):
+        model.datos_profesor = None
+        page.views.clear()
+        page.go("/")
     
     def view_pop(view):
         if len(page.views) > 1:
@@ -126,15 +131,15 @@ def main(page, model: AppModel): # main ahora recibe el modelo
         
         elif troute.match("/inicio_profesor"):
             view_title.value = "Inicio Docente"
-            inicio_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            inicio_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             if hasattr(model, 'datos_profesor') and model.datos_profesor:
                 nombre_profesor = f"{model.datos_profesor.pro_nombre_1}" # Accedemos al nombre desde el modelo
                 inicio_view.welcome_text.value = nombre_profesor # Actualizamos el texto de bienvenida
             current_view = inicio_view.content
 
         elif troute.match("/inicio_pie"):
-            view_title.value = "Inicio PIE"
-            inicio_pie_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            view_title.value = "Inicio PIE"            
+            inicio_pie_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             if hasattr(model, 'datos_profesor') and model.datos_profesor:
                 nombre_profesor = f"{model.datos_profesor.pro_nombre_1}"
                 inicio_pie_view.welcome_text.value = nombre_profesor
@@ -142,39 +147,39 @@ def main(page, model: AppModel): # main ahora recibe el modelo
         
         elif troute.match("/realizar_test"):
             view_title.value = "Realizar test"
-            rel_test_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            rel_test_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             real_test_controller.cargar_estudiantes()
             real_test_controller.cargar_test_incompletos()
             current_view = rel_test_view.content
 
         elif troute.match("/perfil_docente"):
             view_title.value = "Perfil Docente"
-            perfil_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            perfil_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             perfil_docente_controller.cargar_datos_docente()
             perfil_docente_controller.cargar_tests_completados() 
             current_view = perfil_docente_view.content
         
         elif troute.match("/test/:test_id"): # Cambia la ruta para aceptar un ID
             view_title.value = "Test"
-            test_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            test_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             test_controller.cargar_respuestas_guardadas(int(troute.test_id))
             current_view = test_view.content
 
         elif troute.match("/resultados/:test_id"):
             view_title.value = "Resultados del Test"
-            resultados_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            resultados_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             resultados_controller.calcular_resultados(int(troute.test_id))
             current_view = resultados_view.content
         
         elif troute.match("/resultados_detallados/:det_id"):
             view_title.value = "Resultados detallados"
-            resultados_detallados_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            resultados_detallados_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             resultados_detallados_controller.cargar_resultados_detallados(int(troute.det_id))
             current_view = resultados_detallados_view.content
 
         elif troute.match("/modificacion_docente"):
             view_title.value = "Gestión de Docentes"
-            modificacion_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model)
+            modificacion_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             modificacion_docente_controller.load_profesores_to_table()
             current_view = modificacion_docente_view.content
     
@@ -190,10 +195,8 @@ def main(page, model: AppModel): # main ahora recibe el modelo
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    if model.datos_profesor.pro_cargo == 1:
-        page.go("/inicio_pie")
-    else:
-        page.go("/inicio_profesor") 
+    page.go("/")
+
 
 
 if __name__ == "__main__":
