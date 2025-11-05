@@ -59,16 +59,11 @@ class TestView(FletView):
         self.radiogroups_memoria = controller.create_radio_groups(10)
         self.radiogroups_social = controller.create_radio_groups(10)
         self.radiogroups_emocional = controller.create_radio_groups(10)
-        
-        # Crear el contenido para cada pestaña
-        
-
         atencion_content = controller.crear_contenido_tab(preguntas_atencion, self.radiogroups_atencion)
         memoria_content = controller.crear_contenido_tab(preguntas_memoria, self.radiogroups_memoria)
         social_content = controller.crear_contenido_tab(preguntas_social, self.radiogroups_social)
         emocional_content = controller.crear_contenido_tab(preguntas_emocional, self.radiogroups_emocional)
 
-        # Crear el control de pestañas
         tabs_control = ft.Tabs(
             selected_index=0,
             animation_duration=300,

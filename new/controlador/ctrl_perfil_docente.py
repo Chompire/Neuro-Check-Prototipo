@@ -11,7 +11,6 @@ class PerfilDocenteController(FletController):
         
         
     def cargar_datos_docente(self):
-        """Carga los datos del profesor logueado en la tabla de la vista."""
         self.view.info_table.rows.clear()
         
         doc_info = self.model.datos_profesor

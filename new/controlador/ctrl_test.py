@@ -8,7 +8,6 @@ class TestController(FletController):
 
     @staticmethod
     def create_radio_groups(count: int):
-        """Crea una lista de RadioGroup."""
         return [
             ft.RadioGroup(
                 content=ft.Row([
@@ -28,7 +27,6 @@ class TestController(FletController):
     def cargar_preguntas(self, pre_id: int):
         preguntas = self.model.leer_preguntas(pre_id)
         print(preguntas)
-
 
     def cargar_respuestas_guardadas(self, test_id: int):
         respuestas_existentes = self.model.leer_respuestas(test_id)
