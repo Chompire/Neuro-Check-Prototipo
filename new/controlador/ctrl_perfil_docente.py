@@ -7,6 +7,7 @@ class PerfilDocenteController(FletController):
         super().__init__(page, model)
         self.selected_test_id = None
         self.res_det_id = None
+        self.pro_id = None
         
         
         
@@ -36,6 +37,10 @@ class PerfilDocenteController(FletController):
                 ft.DataCell(ft.Text(doc_info.cur_nombre or "N/A")),
             ])
         )
+
+        # Si el profesor es PIE, cargar los cursos designados
+        self.cargar_conteo_encuestas_por_curso(doc_info.pro_nameID)
+
 
     def cargar_tests_completados(self):
         self.view.test_completos_table.rows.clear()
@@ -82,8 +87,31 @@ class PerfilDocenteController(FletController):
             e.control.selected = True
             self.selected_test_id = selected_test.test_ID
             self.res_det_id = self.model.leer_resultados_detallados(self.selected_test_id) # This returns a list of detailed results for a test_ID
-            print(f"Detalle de resultado ID seleccionado: {self.res_det_id}") # Accessing the det_ID from the first result
+          
             self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
         
 
         self.page.update()
+
+    def cargar_conteo_encuestas_por_curso(self, pro_id):
+        """Cuenta los resultados detallados por curso para un profesor específico."""
+        self.view.cursos_designados_table.rows.clear()
+        all_results = self.model.leer_resultados_detallados_by_det_id(pro_id=pro_id)
+        conteo = {}
+        if all_results:
+            for resultado in all_results:
+                curso = resultado.lvl_curso
+                año = resultado.cur_año
+                state = resultado.cur_state
+                print(f"Curso: {curso}")    
+                conteo[curso] = conteo.get(curso, 0) + 1
+        
+        for curso, num_encuestas in conteo.items():
+            self.view.cursos_designados_table.rows.append(
+                ft.DataRow(cells=[
+                    ft.DataCell(ft.Text(curso)),
+                    ft.DataCell(ft.Text(año)),
+                    ft.DataCell(ft.Text(str(num_encuestas))),
+                    ft.DataCell(ft.Text("Habilitado" if state == 1 else "Deshabilitado")),
+                ])
+            )

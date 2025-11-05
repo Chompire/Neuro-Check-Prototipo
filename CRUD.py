@@ -77,12 +77,11 @@ def profesorDELETE(pro_nameID: int):
         print(f"Error de conexión o consulta: {ex.args[0]}")
 
 def cursoREAD():
-    """Lee todos los cursos de la base de datos."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 # Selecciona solo los cursos habilitados (cur_state = 1)
-                sql_info = "SELECT cur_nameID, cur_nombre FROM Curso WHERE cur_state = 1 ORDER BY cur_nombre"
+                sql_info = "SELECT * FROM Curso WHERE cur_state = 1 ORDER BY cur_nombre"
                 cursor.execute(sql_info)
                 return cursor.fetchall()  # Retorna una lista de tuplas (id, nombre)
     except pyodbc.Error as ex:
@@ -91,7 +90,6 @@ def cursoREAD():
     
 
 def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None):
-    """Lee todos los estudiantes de la base de datos."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:

@@ -9,6 +9,8 @@ from vista.vista_inicio_pie import InicioPIEView
 from vista.vista_perfil_docente import PerfilDocenteView
 from vista.vista_resultados_detallados import ResultadosDetalladosView
 from vista.vista_modificacion_docente import ModificacionDocenteView
+from vista.vista_export_pdf import ExportPDFView
+
 from controlador.ctrl_inicio import InicioController
 from controlador.ctrl_real_test import RealizarTestController
 from controlador.ctrl_login import LoginController
@@ -18,6 +20,8 @@ from controlador.ctrl_resultados import ResultadosController
 from controlador.ctrl_perfil_docente import PerfilDocenteController
 from controlador.ctrl_modificacion_docente import ModificacionDocenteController
 from controlador.ctrl_resultados_detallados import ResultadosDetalladosController
+from controlador.ctrl_export_pdf import ExportPDFController
+
 
 
 
@@ -85,6 +89,8 @@ def main(page, model: AppModel):
                     page.go("/inicio_profesor")
         elif page.route.startswith("/resultados_detallados/"):
             page.go("/perfil_docente")
+        elif page.route.startswith("/export_pdf/"):
+            page.go("/resultados_detallados/")
         
 
    
@@ -97,6 +103,8 @@ def main(page, model: AppModel):
     resultados_controller = ResultadosController(page, model)
     resultados_detallados_controller = ResultadosDetalladosController(page, model)
     modificacion_docente_controller = ModificacionDocenteController(page, model)
+    export_pdf_controller = ExportPDFController(page, model)
+
     
     login_view = LoginView(login_controller, model)
     inicio_view = InicioView(inicio_controller, model)
@@ -107,7 +115,10 @@ def main(page, model: AppModel):
     perfil_docente_view = PerfilDocenteView(perfil_docente_controller, model)
     resultados_detallados_view = ResultadosDetalladosView(resultados_detallados_controller, model)
     modificacion_docente_view = ModificacionDocenteView(modificacion_docente_controller, model)
+    export_pdf_view = ExportPDFView(export_pdf_controller, model)
     
+    
+
     login_controller.view = login_view
     inicio_controller.view = inicio_view
     inicio_pie_controller.view = inicio_pie_view
@@ -117,6 +128,8 @@ def main(page, model: AppModel):
     perfil_docente_controller.view = perfil_docente_view
     resultados_detallados_controller.view = resultados_detallados_view
     modificacion_docente_controller.view = modificacion_docente_view
+    export_pdf_controller.view = export_pdf_view
+    
     
     def route_change(route):
         print(f"Cambiando a la ruta: {page.route}")
@@ -181,7 +194,14 @@ def main(page, model: AppModel):
             view_title.value = "Gestión de Docentes"
             modificacion_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             modificacion_docente_controller.load_profesores_to_table()
+            modificacion_docente_controller.load_cursos_to_table()
             current_view = modificacion_docente_view.content
+        elif troute.match("/export_pdf/:res_det_id"):
+            view_title.value = "Exportar PDF"
+            export_pdf_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
+            export_pdf_controller.cargar_alumno(int(troute.res_det_id))
+            current_view = export_pdf_view.content
+        
     
         if current_view:
             page.views.append(current_view)

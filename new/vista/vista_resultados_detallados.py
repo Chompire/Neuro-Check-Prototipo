@@ -16,6 +16,7 @@ class ResultadosDetalladosView(FletView):
         self.indicios_emocional_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD)
         self.feedback_snackbar = ft.SnackBar(content=ft.Text(""))
 
+        
         self.result_test_table_atencion = ft.DataTable(
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
@@ -210,68 +211,79 @@ class ResultadosDetalladosView(FletView):
                 ]
             ),
         ]
-
-        # Añadir el contenedor de comentarios solo si el usuario es un profesional PIE
         if model.datos_profesor.pro_cargo == 1:
-            tabs_control = ft.Tabs(
-                selected_index=0,
-                animation_duration=300,
+            self.PDF_button = ft.ElevatedButton(
+            text="Exportar a PDF",
+            icon=ft.Icons.PICTURE_AS_PDF,
+            icon_color=ft.Colors.WHITE,
+            color=ft.Colors.WHITE,
+            bgcolor=color_Docente,
+            on_click= lambda _: self.page.go(f"/export_pdf/{controller.current_det_id}"))
+            tabs_control = ft.Column(controls = [self.PDF_button,
+                ft.Tabs(
+                    indicator_color=color_Docente,
+                    divider_color= ft.Colors.TRANSPARENT,
+                    unselected_label_color = ft.Colors.BLACK,
+                    label_color=color_Docente,
+                    overlay_color = {
+                        
+                    ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
+                    ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),  
+                    },
+                    
+                    selected_index=0,
+                    animation_duration=300,
                 tabs=[
                     ft.Tab(
                         text="Atención",
-                        content=ft.Column(
-                            [self.result_test_table_atencion],
-                            scroll=ft.ScrollMode.AUTO,
-                            expand=True
-                        ),
+                        content=
+                        ft.Container(
+                            padding=20,
+                            content=
+                                ft.Column(
+                                    [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_atencion])],
+                                ),
+                        )
                     ),
                     ft.Tab(
                         text="Memoria",
-                        content=ft.Column(
-                            [self.result_test_table_memoria],
-                            scroll=ft.ScrollMode.AUTO,
-                            expand=True
+                        content=
+                        ft.Container(
+                        padding=20,
+                        content=
+                            ft.Column(
+                            [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_memoria])],
                         ),
+                        )
                     ),
                     ft.Tab(
                         text="Social",
-                        content=ft.Column(
-                            [self.result_test_table_social],
-                            scroll=ft.ScrollMode.AUTO,
-                            expand=True
+                        content=
+                        ft.Container(
+                        padding=20,
+                        content=
+                        ft.Column(
+                            [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_social])]
                         ),
+                        )
                     ),
                     ft.Tab(
                         text="Emocional",
-                        content=ft.Column(
-                            [self.result_test_table_emocional],
-                            scroll=ft.ScrollMode.AUTO,
-                            expand=True
+                        content=
+                        ft.Container(
+                        padding=20,
+                        content=
+                        ft.Column(
+                            [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_emocional])],
                         ),
+                        )
                     ),
-                ],
-                expand=1,
-            )
-            pie_comment_section = ft.Row(
-                alignment=ft.MainAxisAlignment.CENTER,
-                vertical_alignment=ft.CrossAxisAlignment.CENTER,
-                controls=[
-                    ft.Column(
-                        controls=[
-                            ft.Text("Respuestas del profesor:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                            ft.Container(
-                                width=1000, 
-                                alignment=ft.alignment.center_left, 
-                                border=ft.border.all(1, ft.Colors.BLACK), 
-                                bgcolor=ft.Colors.WHITE, 
-                                padding=10,
-                                content=tabs_control
-                            )
-                        ]
-                    )
                 ]
+                )
+                ],
             )
-            main_column_controls.append(pie_comment_section)
+            
+            main_column_controls.append(tabs_control)
 
         view = ft.View(
             "/resultados_detallado/:det_id",
@@ -280,7 +292,6 @@ class ResultadosDetalladosView(FletView):
         controls=[
             self.feedback_snackbar,
             ft.Column(
-                expand=True,
                 controls=main_column_controls
             )
             
@@ -288,4 +299,4 @@ class ResultadosDetalladosView(FletView):
     ) 
 
         super().__init__(model, view, controller)
-        self.page = controller.page # Store page reference for snackbar
+        self.page = controller.page

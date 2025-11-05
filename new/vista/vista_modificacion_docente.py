@@ -84,13 +84,36 @@ class ModificacionDocenteView(FletView):
         self.edit_button = ft.IconButton(icon=ft.icons.EDIT, icon_color=ft.colors.WHITE, bgcolor="#007bff", visible=False, tooltip="Editar", on_click=lambda e: controller.open_dialog(e, 'edit'))
         self.delete_button = ft.IconButton(icon=ft.icons.DELETE, icon_color=ft.colors.WHITE, bgcolor="#dc3545", visible=False, tooltip="Eliminar", on_click=lambda e: controller.open_dialog(e, 'delete'))
 
+        # --- Course Management UI ---
+        self.course_data_table = ft.DataTable(
+            heading_row_color=color_Docente,
+            columns=[
+                ft.DataColumn(ft.Text("Nombre Curso")), ft.DataColumn(ft.Text("Año")), ft.DataColumn(ft.Text("Estado")),
+            ],
+            heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+            data_text_style=ft.TextStyle(color="black"),
+            border=ft.border.all(1, ft.colors.BLACK),
+            vertical_lines=ft.border.BorderSide(1, ft.colors.BLACK),
+            horizontal_lines=ft.border.BorderSide(1, ft.colors.BLACK),
+            data_row_color={
+                ft.ControlState.HOVERED: ft.colors.with_opacity(0.6, color_Docente),
+                ft.ControlState.SELECTED: ft.colors.with_opacity(0.5, color_Docente),
+            },
+            rows=[]
+        )
+        self.course_name_field = ft.TextField(label="Nombre del Curso", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
+        self.course_year_field = ft.TextField(label="Año", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
+        self.course_state_field = ft.Dropdown(label="Estado del Curso", width=300, options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")], color="black", label_style=ft.TextStyle(color="black"))
+        self.update_course_button = ft.ElevatedButton("Actualizar Curso", on_click=controller.update_curso, visible=False, bgcolor=color_Docente, color=ft.colors.WHITE)
+
         view = ft.View(
             "/modificacion_docente",
+            scroll=ft.ScrollMode.AUTO,
             bgcolor=color_Background_PIE,
             controls=[
                 self.feedback_snackbar, self.add_dialog, self.edit_dialog, self.delete_dialog,
                 ft.Column(
-                    scroll=ft.ScrollMode.AUTO,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
                         ft.Container(
                             content=ft.Column([
@@ -108,7 +131,20 @@ class ModificacionDocenteView(FletView):
                                 ft.Row([self.add_button, self.edit_button, self.delete_button]),
                             ]),
                             padding=10, border=ft.border.all(2, ft.colors.BLACK), border_radius=8, bgcolor=ft.colors.WHITE
+                        ),
+                        ft.Container(
+                            content=ft.Column([
+                                ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                self.course_data_table,
+                                ft.Divider(),
+                                ft.Text("Editar Curso Seleccionado", weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Row([self.course_name_field, self.course_year_field, self.course_state_field]),
+                                ft.Row([self.update_course_button]),
+                            ]),
+                            padding=10, border=ft.border.all(2, ft.colors.BLACK), border_radius=8, bgcolor=ft.colors.WHITE,
+                            margin=ft.margin.only(top=20)
                         )
+                        
                     ]
                 )
             ]

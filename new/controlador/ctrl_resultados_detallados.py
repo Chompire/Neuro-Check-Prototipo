@@ -19,6 +19,14 @@ class ResultadosDetalladosController(FletController):
         self.indicios_memoria = "Dificultades Específicas del Aprendizaje (DEA) (dislexia, discalculia, si se asocia a fallas académicas). Déficit en Memoria Operativa o a Corto Plazo."
         self.indicios_social = "Déficit en Habilidades Sociales. Trastorno del Espectro Autista (TEA). Problemas de Conducta (incluyendo Trastorno Negativista Desafiante - TND)."
         self.indicios_emocional = "Trastorno de Ansiedad Generalizada o Específico. Depresión Infantil o Dificultad de Adaptación. Dificultad en Regulación Emocional."
+
+    def get_indicios_text(self, porcentaje, indicios_base):
+        if porcentaje >= 70:
+            return f"Indicios severos de: {indicios_base}"
+        elif porcentaje >= 40:
+            return f"Indicios moderados de: {indicios_base}"
+        return "Sin indicios."
+
     def cargar_resultados_detallados(self, det_id):
         self.current_det_id = det_id
         resultados_detallados = self.model.leer_resultados_detallados_by_det_id(det_id, self.model.datos_profesor.pro_nameID)
@@ -46,24 +54,16 @@ class ResultadosDetalladosController(FletController):
             self.view.porcentaje_social_val.value = f"{resultados_detallados[0].det_porcentaje_social:.2f}%"
             self.view.porcentaje_emocional_val.value = f"{resultados_detallados[0].det_porcentaje_emocional:.2f}%"
 
-            
+            self.view.indicios_atencion_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_atencion, self.indicios_atencion)
+            self.view.indicios_memoria_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_memoria, self.indicios_memoria)
+            self.view.indicios_social_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_social, self.indicios_social)
+            self.view.indicios_emocional_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_emocional, self.indicios_emocional)
 
-            def get_indicios_text(porcentaje, indicios_base):
-                if porcentaje >= 70:
-                    return f"Indicios severos de: {indicios_base}"
-                elif porcentaje >= 40:
-                    return f"Indicios moderados de: {indicios_base}"
-                return "Sin indicios."
-                self.page.update()
+            self.view.puntaje_val.value = f"{resultados_detallados[0].det_puntaje}/{total_preguntas}"
+            self.view.porcentaje_val.value = f"{resultados_detallados[0].det_porcentaje:.2f}%"
 
-        self.view.indicios_atencion_val.value = get_indicios_text(resultados_detallados[0].det_porcentaje_atencion, self.indicios_atencion)
-        self.view.indicios_memoria_val.value = get_indicios_text(resultados_detallados[0].det_porcentaje_memoria, self.indicios_memoria)
-        self.view.indicios_social_val.value = get_indicios_text(resultados_detallados[0].det_porcentaje_social, self.indicios_social)
-        self.view.indicios_emocional_val.value = get_indicios_text(resultados_detallados[0].det_porcentaje_emocional, self.indicios_emocional)
-
-        self.view.puntaje_val.value = f"{resultados_detallados[0].det_puntaje}/{total_preguntas}"
-        self.view.porcentaje_val.value = f"{resultados_detallados[0].det_porcentaje:.2f}%"
-
+            self.page.update()
+        
     def cargar_respuestas(self, test_id: int):
         self.current_test_id = test_id
 
@@ -74,11 +74,11 @@ class ResultadosDetalladosController(FletController):
             "Social": self.view.result_test_table_social,
             "Emocional": self.view.result_test_table_emocional,
         }
+        
 
         # Limpiamos todas las tablas antes de llenarlas
         for tabla in mapa_tablas.values():
             tabla.rows.clear()
-
         # Obtenemos todas las respuestas guardadas para el test
         respuestas_guardadas = self.model.leer_respuestas(test_id)
 
@@ -95,15 +95,15 @@ class ResultadosDetalladosController(FletController):
 
             # Llenamos la tabla con las preguntas y respuestas de la categoría
             for i, pregunta_info in enumerate(preguntas_db):
-                pregunta_texto = pregunta_info[1] # El texto de la pregunta
-                respuesta_texto = "No respondida"
+                pregunta_texto = pregunta_info[1]
                 color_respuesta = ft.colors.GREY
 
                 if i < len(respuestas_usuario):
                     respuesta = respuestas_usuario[i].lower()
                     respuesta_texto = "Sí" if respuesta == 'si' else "No"
                     color_respuesta = ft.colors.RED if respuesta == 'si' else ft.colors.GREEN
-                
+                    
+            
                 tabla_destino.rows.append(
                     ft.DataRow(cells=[
                         ft.DataCell(ft.Text(pregunta_texto)),

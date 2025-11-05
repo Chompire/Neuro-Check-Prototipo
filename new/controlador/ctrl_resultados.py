@@ -138,6 +138,7 @@ class ResultadosController(FletController):
 
         test_info = self.model.leer_info_test(self.current_test_id)
         if test_info:
+            
             detalles_data = (
                 test_info.es_nombre_1,
                 test_info.es_apellido_pat,

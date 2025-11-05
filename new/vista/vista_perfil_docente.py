@@ -42,6 +42,26 @@ class PerfilDocenteView(FletView):
             ],
             rows=[]
         )
+        self.cursos_designados_table = None # Inicializar como None
+        if model.datos_profesor.pro_cargo == 1:
+            self.cursos_designados_table= ft.DataTable(
+                heading_row_color=color_Docente,
+                heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
+                bgcolor="white",
+                data_text_style=ft.TextStyle(color="black"),
+                border=ft.border.all(2, ft.Colors.BLACK),
+                vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+                horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+                columns=[
+                    ft.DataColumn(ft.Text("Curso")),
+                    ft.DataColumn(ft.Text("Año")),
+                    ft.DataColumn(ft.Text("Numero de encuestas")),
+                    ft.DataColumn(ft.Text("Estado")),
+                ],
+                rows=[]
+            )
+        
+
         # Determinar el color de fondo de forma segura
         background_color = color_Background_Docente
         if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo != 0:
@@ -62,8 +82,10 @@ class PerfilDocenteView(FletView):
                                 scroll=ft.ScrollMode.AUTO,
                                 controls=[
                                 ft.Text("Datos del docente:", size=30, weight=ft.FontWeight.BOLD, color="black"),
-                                self.info_table
+                                self.info_table,
+                                self.cursos_designados_table if self.cursos_designados_table is not None else ft.Container(),
                                 ])]),
+                                
                     
                     ft.Divider(color="black"),
                     ft.Row(
@@ -79,4 +101,5 @@ class PerfilDocenteView(FletView):
             ]
 
         )
+        
         super().__init__(model, view, controller)

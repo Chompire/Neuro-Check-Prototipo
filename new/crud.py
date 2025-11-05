@@ -71,18 +71,59 @@ def profesorDELETE(pro_nameID: int):
     except pyodbc.Error as ex:
         print(f"profesorDELETE Error de conexión o consulta: {ex.args[0]}")
 
+def prof_pie_READ(prof_ID: int):
+    """Lee los cursos a cargo de un profesional PIE y los detalles de esos cursos."""
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                # Esta consulta asume que 'cursos_a_cargo' es una cadena de IDs separados por comas.
+                # SQL Server no tiene una función SPLIT_STRING simple en todas las versiones,
+                # por lo que la lógica de división se manejará en Python.
+                sql_info = "SELECT cursos_a_cargo FROM Prof_PIE WHERE prof_ID = ?"
+                cursor.execute(sql_info, prof_ID)
+                return cursor.fetchone()
+    except pyodbc.Error as ex:
+        print(f"prof_pie_READ Error de conexión o consulta: {ex.args[0]}")
+        return None
+
 def cursoREAD():
     """Lee todos los cursos de la base de datos."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                # Selecciona solo los cursos habilitados (cur_state = 1)
-                sql_info = "SELECT cur_nameID, cur_nombre FROM Curso WHERE cur_state = 1 ORDER BY cur_nombre"
+                # Selecciona todos los datos de los cursos, ordenados por nombre.
+                sql_info = "SELECT cur_nameID, cur_nombre, cur_año, cur_state FROM Curso ORDER BY cur_nombre"
                 cursor.execute(sql_info)
-                return cursor.fetchall()  # Retorna una lista de tuplas (id, nombre)
+                return cursor.fetchall()  # Retorna una lista de tuplas (id, nombre, año, estado)
     except pyodbc.Error as ex:
         print(f"cursoREAD Error de conexión o consulta de cursos: {ex.args[0]}")
         return []
+
+def cursoCREATE(nombre: str, año: int):
+    """Crea un nuevo curso en la base de datos con estado habilitado por defecto."""
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_add = "INSERT INTO Curso (cur_nombre, cur_año, cur_state) VALUES (?, ?, 1)"
+                cursor.execute(sql_add, nombre, año)
+                cnxn.commit()
+                return True
+    except pyodbc.Error as ex:
+        print(f"cursoCREATE Error de conexión o consulta: {ex.args[0]}")
+        return False
+
+def cursoUPDATE(curso_id: int, datos_curso: dict):
+    """Actualiza los datos de un curso, como su estado."""
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                set_clause = ", ".join([f"{key} = ?" for key in datos_curso.keys()])
+                sql_update = f"UPDATE Curso SET {set_clause} WHERE cur_nameID = ?"
+                params = list(datos_curso.values()) + [curso_id]
+                cursor.execute(sql_update, params)
+                cnxn.commit()
+    except pyodbc.Error as ex:
+        print(f"cursoUPDATE Error de conexión o consulta: {ex.args[0]}")
     
 
 def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro_nameID: int | None = None):
@@ -252,13 +293,26 @@ def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = N
                         WHERE rd.det_id = ? AND t.pro_ID = ?
                     """
                     cursor.execute(sql_info, det_ID, pro_ID)
+                    return cursor.fetchall()
                 elif test_ID is not None:
                     sql_info = "SELECT * FROM Resultados_detallados WHERE id_test = ?"
                     cursor.execute(sql_info, test_ID)
+                    return cursor.fetchall()
                 elif det_ID is not None:
                     sql_info = "SELECT * FROM Resultados_detallados WHERE det_id = ?"
                     cursor.execute(sql_info, det_ID)
-                return cursor.fetchall()
+                    return cursor.fetchall()
+                elif pro_ID is not None:
+                    # Lógica que faltaba: buscar todos los resultados de un profesor.
+                    sql_info = """
+                        SELECT rd.*, c.cur_año, c.cur_state FROM Resultados_detallados rd
+                        JOIN Test t ON rd.id_test = t.test_ID
+                        LEFT JOIN Curso c ON rd.lvl_curso = c.cur_nombre
+                        WHERE t.pro_ID = ? ORDER BY cur_nombre
+                    """
+                    cursor.execute(sql_info, pro_ID)
+                    return cursor.fetchall()
+                return [] # Si no se proporciona ningún argumento, devuelve una lista vacía.
     except pyodbc.Error as ex:
         print(f"resultados_detalladosREAD Error al leer resultados detallados: {ex.args[0]}")
         return []

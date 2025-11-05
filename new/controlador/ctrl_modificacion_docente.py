@@ -1,11 +1,14 @@
 from flet_mvc import FletController
 import flet as ft
+import re
+from datetime import datetime
 
 class ModificacionDocenteController(FletController):
     def __init__(self, page, model):
         super().__init__(page, model)
         self.selected_prof_id = None
         self.password_define = "neurocheck2025"
+        self.selected_course_id = None
 
     def load_profesores_to_table(self, id_to_select=None):
         self.view.data_table.rows.clear()
@@ -28,6 +31,24 @@ class ModificacionDocenteController(FletController):
                     )
                 )
         self.page.update()
+
+    def load_cursos_to_table(self, id_to_select=None):
+        self.view.course_data_table.rows.clear()
+        cursos = self.model.leer_cursos()
+        if cursos:
+            for curso in cursos:
+                self.view.course_data_table.rows.append(
+                    ft.DataRow(
+                        cells=[
+                            ft.DataCell(ft.Text(curso.cur_nombre)),
+                            ft.DataCell(ft.Text(str(curso.cur_año))),
+                            ft.DataCell(ft.Text("Habilitado" if curso.cur_state else "Inhabilitado")),
+                        ],
+                        data=curso,
+                        selected=True if id_to_select is not None and curso.cur_nameID == id_to_select else False,
+                        on_select_changed=self.on_course_row_select,
+                    )
+                )
 
     def on_row_select(self, e):
         selected_prof = e.control.data
@@ -67,6 +88,33 @@ class ModificacionDocenteController(FletController):
         self.view.cargo_field.value = None
         self.view.curso_field.value = None
         self.view.estado_field.value = None
+
+    def on_course_row_select(self, e):
+        selected_course = e.control.data
+        is_currently_selected = e.control.selected
+
+        for row in self.view.course_data_table.rows:
+            row.selected = False
+
+        if not is_currently_selected:
+            e.control.selected = True
+            self.view.update_course_button.visible = True
+            self.selected_course_id = selected_course.cur_nameID
+
+            self.view.course_name_field.value = selected_course.cur_nombre
+            self.view.course_year_field.value = str(selected_course.cur_año)
+            self.view.course_state_field.value = "Habilitado" if selected_course.cur_state else "Inhabilitado"
+        else:
+            for row in self.view.course_data_table.rows:
+                row.selected = False
+                self.view.course_name_field.value = ""
+                self.view.course_year_field.value = ""
+                self.view.course_state_field.value = None
+                self.view.update_course_button.visible = False
+                self.selected_course_id = None
+                
+        self.page.update()
+
 
     def reset_selection_state(self):
         for row in self.view.data_table.rows:
@@ -127,6 +175,42 @@ class ModificacionDocenteController(FletController):
         self.view.show_feedback("Profesor actualizado con éxito.", ft.colors.GREEN)
         self.load_profesores_to_table(id_to_select=self.selected_prof_id)
         self.close_dialog(e, 'edit')
+
+    def update_curso(self, e):
+        if self.selected_course_id is None: return
+
+        nuevo_estado_str = self.view.course_state_field.value
+        nuevo_estado_val = 1 if nuevo_estado_str == "Habilitado" else 0
+
+        datos_actualizados = {"cur_state": nuevo_estado_val}
+        self.model.actualizar_curso(self.selected_course_id, datos_actualizados)
+
+        # Lógica para crear el siguiente curso si se inhabilita
+        if nuevo_estado_val == 0:
+            nombre_curso_actual = self.view.course_name_field.value
+            match = re.search(r'\d+', nombre_curso_actual)
+            if match:
+                nivel_actual = int(match.group())
+                siguiente_nivel = nivel_actual + 1
+                nombre_siguiente_curso = nombre_curso_actual.replace(str(nivel_actual), str(siguiente_nivel), 1)
+                año_actual = datetime.now().year
+
+                self.model.crear_curso(nombre_siguiente_curso, año_actual)
+                self.view.show_feedback(f"Curso '{nombre_siguiente_curso}' para el {año_actual} creado.", ft.colors.BLUE)
+
+        self.view.show_feedback("Estado del curso actualizado.", ft.colors.GREEN)
+        self.load_cursos_to_table(id_to_select=self.selected_course_id)
+        self.view.curso_field.options = self.lista_cursos()
+        self.page.update()
+
+    def open_course_dialog(self, e):
+        self.load_cursos_to_table()
+        self.view.course_dialog.open = True
+        self.page.update()
+
+    def close_course_dialog(self, e):
+        self.view.course_dialog.open = False
+        self.page.update()
 
     def delete_profesor(self, e):
         if self.selected_prof_id:

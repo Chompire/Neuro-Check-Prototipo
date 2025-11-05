@@ -32,6 +32,13 @@ class AppModel(FletModel):
             return True
         else:
             return False
+    def leer_estudiante_por_id(self, es_nameID: int | None = None):
+        datos = db.estudiantesREAD(es_nameID=es_nameID)
+        if datos:
+            self.datos_estudiante = datos
+            return datos
+        else:
+            return False
     def cargar_test_incompletos(self, test_status: int | None = None):
         datos = db.testREAD(test_status=test_status)
         if datos:
@@ -70,15 +77,24 @@ class AppModel(FletModel):
 
     def leer_respuestas(self, ID_test: int):
         return db.respuestaREAD(ID_test)
-
+    def leer_cursos_pie(self, prof_id: int):
+        """Lee los cursos a cargo de un profesional PIE desde la base de datos."""
+        return db.prof_pie_READ(prof_id)
+    
     def actualizar_respuesta(self, ID_respuesta: int, respuesta_data: dict):
         db.respuestaUPDATE(ID_respuesta, respuesta_data)
 
     def eliminar_respuestas_por_test(self, ID_test: int):
         db.respuestaDELETE(ID_test=ID_test)
+
     def leer_cursos(self):
         return db.cursoREAD()
 
+    def crear_curso(self, nombre, año):
+        return db.cursoCREATE(nombre, año)
+
+    def actualizar_curso(self, curso_id, datos):
+        db.cursoUPDATE(curso_id, datos)
 
     def crear_resultado_detallado(self, det_nameES, det_apellidoES, lvl_curso, det_namePRO, det_apellidoPRO, det_porcentaje, det_porcentaje_atencion, det_porcentaje_memoria, det_porcentaje_social, det_porcentaje_emocional, det_puntaje, det_fecha, id_test):
         detalles_data = (det_nameES, det_apellidoES, lvl_curso, det_namePRO, det_apellidoPRO, det_porcentaje,det_porcentaje_atencion,det_porcentaje_memoria,det_porcentaje_social,det_porcentaje_emocional,det_puntaje, det_fecha, id_test)
@@ -88,8 +104,13 @@ class AppModel(FletModel):
     def leer_resultados_detallados(self, ID_test: int):
         return db.resultados_detalladosREAD(ID_test)
 
-    def leer_resultados_detallados_by_det_id(self, det_id: int, pro_id: int):
-        return db.resultados_detalladosREAD(det_ID=det_id, pro_ID=pro_id)
+    def leer_resultados_detallados_by_det_id(self, det_id: int | None = None, pro_id: int| None = None):
+        if pro_id is None:
+            return db.resultados_detalladosREAD(det_ID=det_id)
+        elif det_id is None:
+            return db.resultados_detalladosREAD(pro_ID=pro_id)
+        else:
+            return db.resultados_detalladosREAD(det_ID=det_id, pro_ID=pro_id)
     
     def leer_info_test(self, test_id: int) -> TestDetails | None:
         test_record = db.testREAD(test_ID=test_id)
