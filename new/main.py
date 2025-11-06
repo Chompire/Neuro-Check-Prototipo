@@ -198,7 +198,9 @@ def main(page, model: AppModel):
             current_view = modificacion_docente_view.content
         elif troute.match("/export_pdf/:res_det_id"):
             view_title.value = "Exportar PDF"
+            
             export_pdf_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
+            export_pdf_controller.generar_pdf(int(troute.res_det_id))
             export_pdf_controller.cargar_alumno(int(troute.res_det_id))
             current_view = export_pdf_view.content
         

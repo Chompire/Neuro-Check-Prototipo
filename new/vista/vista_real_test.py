@@ -49,6 +49,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                     ],
                     rows=[] # Inicializamos las filas vacías
         )
+        
         self.test_incompletos =ft.DataTable(
                 heading_row_color= color_Docente,
                 heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
