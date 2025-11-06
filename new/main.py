@@ -124,14 +124,19 @@ def main(page, model: AppModel):
         print(f"Cambiando a la ruta: {page.route}")
         page.views.clear() 
         troute = ft.TemplateRoute(page.route)
-        current_view = None
 
-        if troute.match("/"):
+        # Si la ruta no es la de login y no hay sesión, redirigir a login.
+        if not troute.match("/") and not model.datos_profesor:
+            page.go("/")
+            return
+
+        if troute.match("/"): # Ruta de Login
             view_title.value = "Inicio de Sesión"
             login_view.content.appbar = None 
+            model.datos_profesor = None
             current_view = login_view.content
         
-        elif troute.match("/inicio_profesor"):
+        elif troute.match("/inicio_profesor"): # Rutas protegidas
             view_title.value = "Inicio Docente"
             inicio_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
             if hasattr(model, 'datos_profesor') and model.datos_profesor:
@@ -203,10 +208,8 @@ def main(page, model: AppModel):
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    if model.datos_profesor.pro_cargo == 1:
-        page.go("/inicio_pie")
-    else:
-        page.go("/inicio_profesor") 
+    page.go("/")
+
 
 
 
@@ -218,4 +221,4 @@ if __name__ == "__main__":
             model.datos_profesor = test_profesor_data
         main(page, model)
 
-    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)
+    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.WEB_BROWSER)
