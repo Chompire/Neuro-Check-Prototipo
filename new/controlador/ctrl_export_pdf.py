@@ -231,46 +231,61 @@ class ExportPDFController(FletController):
 
         pdf.set_font("Arial", '', 9)
         pdf.set_text_color(0, 0, 0)
-        cell_height_indicios = 5 # Altura base de cada línea para multi_cell de indicios
+        cell_height_indicios = 5 
 
         # --------------------------
-        # Función Auxiliar para Filas Dinámicas
+        # Función Auxiliar con Verificación de Salto de Página
         # --------------------------
         def draw_dynamic_row(category_name, porcentaje_val, indicios_val):
+            # Altura mínima estimada para el texto envuelto (ej: 4 líneas)
+            estimated_min_height = 4 * cell_height_indicios 
+            page_break_margin = 15 # Margen inferior establecido en FPDF
+
+            # ** 1. VERIFICACIÓN DE ESPACIO ANTES DE DIBUJAR **
+            if pdf.get_y() + estimated_min_height > (pdf.h - page_break_margin):
+                 pdf.add_page()
+                 # Redibujar el encabezado de la tabla si deseas mantener la claridad
+                 pdf.set_text_color(255, 255, 255)
+                 pdf.set_font("Arial", 'B', 10)
+                 pdf.cell(col_width, 8, "Categoría", 1, 0, 'C', fill=True)
+                 pdf.cell(col_width, 8, "Porcentaje de Riesgo", 1, 0, 'C', fill=True)
+                 pdf.cell(col_width, 8, "Indicios Detectados", 1, 1, 'C', fill=True)
+                 pdf.set_font("Arial", '', 9)
+                 pdf.set_text_color(0, 0, 0)
+
+
+            # Comienza la lógica de cálculo de altura dinámica
             x_start = pdf.get_x() 
             y_start = pdf.get_y()
 
-            # 1. Dibujar la celda más larga (Indicios) para determinar la altura
+            # 2. Dibujar la celda más larga (Indicios) para determinar la altura
             pdf.set_xy(x_start + col_width * 2, y_start) 
-            # Alineación 'L' (Izquierda) es más apropiada para texto descriptivo largo
+            # Borde 1, alineación 'L' (Izquierda) para texto descriptivo
             pdf.multi_cell(col_width, cell_height_indicios, indicios_val, 1, 'L') 
             y_end = pdf.get_y()
             row_height = y_end - y_start
 
-            # 2. Dibujar las celdas restantes usando la altura calculada
+            # 3. Dibujar las celdas restantes usando la altura calculada
             pdf.set_xy(x_start, y_start) 
             pdf.cell(col_width, row_height, category_name, 1, 0, 'C') 
             pdf.cell(col_width, row_height, porcentaje_val, 1, 0, 'C') 
 
-            # 3. Mover el cursor a la posición Y final
+            # 4. Mover el cursor a la posición Y final
             pdf.set_y(y_end)
 
 
         # --------------------------
-        # Fila 1 a 4: Categorías
+        # Fila 1 a 4: Categorías (Usando la función mejorada)
         # --------------------------
         draw_dynamic_row("Atención", self.view.porcentaje_atencion.value, self.view.indicios_atencion.value)
         draw_dynamic_row("Memoria", self.view.porcentaje_memoria.value, self.view.indicios_memoria.value)
-        # Asumiendo que el view tiene estas variables, ya que estaban en tu código anterior
         draw_dynamic_row("Social", self.view.porcentaje_social.value, self.view.indicios_social.value)
+        
+        # Fila Emocional que estaba causando el error
         draw_dynamic_row("Emocional", self.view.porcentaje_emocional.value, self.view.indicios_emocional.value)
 
-        # --------------------------
-        # Fila "Total" (si la necesitas, añádela aquí)
-        # --------------------------
-        # if hasattr(self.view, 'porcentaje_total'):
-        #     draw_dynamic_row("Total", self.view.porcentaje_total.value, self.view.indicios_total.value)
-        
+        # ... (Lógica de la sección de Conclusiones/Observaciones, que debería ir aquí si existe) ...
+
         pdf.ln(10)
         
         # --- Guardar el PDF ---
