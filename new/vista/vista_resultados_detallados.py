@@ -225,8 +225,7 @@ class ResultadosDetalladosView(FletView):
                     divider_color= ft.Colors.TRANSPARENT,
                     unselected_label_color = ft.Colors.BLACK,
                     label_color=color_Docente,
-                    overlay_color = {
-                        
+                    overlay_color = {                        
                     ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
                     ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),  
                     },

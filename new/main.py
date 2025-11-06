@@ -10,7 +10,6 @@ from vista.vista_perfil_docente import PerfilDocenteView
 from vista.vista_resultados_detallados import ResultadosDetalladosView
 from vista.vista_modificacion_docente import ModificacionDocenteView
 from vista.vista_export_pdf import ExportPDFView
-
 from controlador.ctrl_inicio import InicioController
 from controlador.ctrl_real_test import RealizarTestController
 from controlador.ctrl_login import LoginController
@@ -21,10 +20,6 @@ from controlador.ctrl_perfil_docente import PerfilDocenteController
 from controlador.ctrl_modificacion_docente import ModificacionDocenteController
 from controlador.ctrl_resultados_detallados import ResultadosDetalladosController
 from controlador.ctrl_export_pdf import ExportPDFController
-
-
-
-
 from colors import color_Docente, color_Background_Docente
 
 def create_appbar(page, view_title_control, back_handler, model, logout_handler):
@@ -116,8 +111,6 @@ def main(page, model: AppModel):
     resultados_detallados_view = ResultadosDetalladosView(resultados_detallados_controller, model)
     modificacion_docente_view = ModificacionDocenteView(modificacion_docente_controller, model)
     export_pdf_view = ExportPDFView(export_pdf_controller, model)
-    
-    
 
     login_controller.view = login_view
     inicio_controller.view = inicio_view
@@ -200,7 +193,6 @@ def main(page, model: AppModel):
             view_title.value = "Exportar PDF"
             
             export_pdf_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout)
-            export_pdf_controller.generar_pdf(int(troute.res_det_id))
             export_pdf_controller.cargar_alumno(int(troute.res_det_id))
             current_view = export_pdf_view.content
         
@@ -231,4 +223,4 @@ if __name__ == "__main__":
             model.datos_profesor = test_profesor_data
         main(page, model)
 
-    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.WEB_BROWSER)
+    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)

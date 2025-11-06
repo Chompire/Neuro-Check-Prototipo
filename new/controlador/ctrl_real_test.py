@@ -23,6 +23,8 @@ class RealizarTestController(FletController):
         
     def cargar_estudiantes(self, estudiantes_a_mostrar=None):
         self.view.estudiante_table.rows.clear()
+        self.view.next_button.visible = False
+        self.selected_es_id = None
         if estudiantes_a_mostrar is None:
             estudiantes_a_mostrar = self.estudiante_data
 
@@ -97,6 +99,8 @@ class RealizarTestController(FletController):
     def cargar_test_incompletos(self, test_a_mostrar=None):
         test_a_mostrar = db.testREAD(test_status=0)
         self.view.test_incompletos.rows.clear()
+        self.view.upload_button.visible = False
+        self.selected_test_id = None
        
         total_items = len(test_a_mostrar)
         total_pages = (total_items + self.numpage_incomplete - 1) // self.numpage_incomplete
