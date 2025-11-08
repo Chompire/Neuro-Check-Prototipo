@@ -131,6 +131,18 @@ class AppModel(FletModel):
             )
         return None
     
+    def crear_documento_pdf(self, nombre, extension, contenido):
+        return db.documentoPDFCREATE(nombre, extension, contenido) # Ahora devuelve el ID
+
+    def leer_lista_documentos_pdf(self):
+        return db.documentosPDF_READ_LIST()
+
+    def leer_contenido_documento_pdf(self, pdf_id: int):
+        return db.documentoPDF_READ_CONTENT(pdf_id)
+
+    def leer_documento_por_nombre(self, nombre_archivo: str):
+        return db.documentoPDF_READ_BY_NAME(nombre_archivo)
+
     # --- Métodos para gestión de docentes ---
     def leer_profesores(self):
         return db.profesorREAD()

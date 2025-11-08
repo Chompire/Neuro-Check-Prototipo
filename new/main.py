@@ -86,7 +86,6 @@ def main(page, model: AppModel):
             page.go("/perfil_docente")
         elif page.route.startswith("/export_pdf/"):
             page.go("/resultados_detallados/")
-   
     login_controller = LoginController(page, model)
     inicio_controller = InicioController(page, model)
     inicio_pie_controller = InicioPIEController(page, model)
@@ -123,9 +122,9 @@ def main(page, model: AppModel):
     def route_change(route):
         print(f"Cambiando a la ruta: {page.route}")
         page.views.clear() 
+        current_view = None
         troute = ft.TemplateRoute(page.route)
-
-        # Si la ruta no es la de login y no hay sesión, redirigir a login.
+            
         if not troute.match("/") and not model.datos_profesor:
             page.go("/")
             return
@@ -208,7 +207,13 @@ def main(page, model: AppModel):
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    page.go("/")
+    if model.datos_profesor.pro_cargo == 1:
+        page.go("/inicio_pie")
+    elif model.datos_profesor.pro_cargo == 2:
+        page.go("/inicio_profesor")
+    else:
+        page.go("/")
+    
 
 
 

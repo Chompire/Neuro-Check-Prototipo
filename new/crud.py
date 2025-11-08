@@ -385,3 +385,63 @@ def respuestaDELETE(ID_respuesta: int| None = None, ID_test: int | None = None):
                     cnxn.commit()
     except pyodbc.Error as ex:
         print(f"respuestaDELETE Error de conexión o consulta: {ex.args[0]}")
+
+#-------------------documentosPDFCRUD
+
+def documentoPDFCREATE(nombre: str, extension: str, contenido: bytes):
+    """
+    Inserta un nuevo documento PDF en la base de datos.
+    """
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_add = "INSERT INTO DocumentosPDF (pdf_nombre, pdf_extension, pdf_contenido) OUTPUT INSERTED.pdf_id VALUES (?, ?, ?)"
+                cursor.execute(sql_add, nombre, extension, contenido)
+                pdf_id = cursor.fetchone()[0]
+                cnxn.commit()
+                return pdf_id
+    except pyodbc.Error as ex:
+        print(f"documentoPDFCREATE Error de conexión o consulta: {ex.args[0]}")
+        return None
+
+def documentosPDF_READ_LIST():
+    """
+    Lee la lista de todos los documentos PDF almacenados, sin el contenido.
+    """
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_info = "SELECT pdf_id, pdf_nombre, pdf_extension, pdf_fecha FROM DocumentosPDF ORDER BY pdf_fecha DESC"
+                cursor.execute(sql_info)
+                return cursor.fetchall()
+    except pyodbc.Error as ex:
+        print(f"documentosPDF_READ_LIST Error de conexión o consulta: {ex.args[0]}")
+        return []
+
+def documentoPDF_READ_CONTENT(pdf_id: int):
+    """
+    Lee el contenido binario de un documento PDF específico.
+    """
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_info = "SELECT pdf_nombre, pdf_extension, pdf_contenido FROM DocumentosPDF WHERE pdf_id = ?"
+                cursor.execute(sql_info, pdf_id)
+                return cursor.fetchone()
+    except pyodbc.Error as ex:
+        print(f"documentoPDF_READ_CONTENT Error de conexión o consulta: {ex.args[0]}")
+        return None
+
+def documentoPDF_READ_BY_NAME(pdf_nombre: str):
+    """
+    Lee el contenido binario de un documento PDF específico por su nombre.
+    """
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_info = "SELECT pdf_id, pdf_nombre, pdf_extension, pdf_contenido FROM DocumentosPDF WHERE pdf_nombre = ?"
+                cursor.execute(sql_info, pdf_nombre)
+                return cursor.fetchone()
+    except pyodbc.Error as ex:
+        print(f"documentoPDF_READ_BY_NAME Error de conexión o consulta: {ex.args[0]}")
+        return None

@@ -212,14 +212,23 @@ class ResultadosDetalladosView(FletView):
             ),
         ]
         if model.datos_profesor.pro_cargo == 1:
-            self.PDF_button = ft.ElevatedButton(
-            text="Exportar a PDF",
-            icon=ft.Icons.PICTURE_AS_PDF,
-            icon_color=ft.Colors.WHITE,
-            color=ft.Colors.WHITE,
-            bgcolor=color_Docente,
-            on_click= lambda _: self.page.go(f"/export_pdf/{controller.current_det_id}"))
-            tabs_control = ft.Column(controls = [self.PDF_button,
+            self.generate_pdf_button = ft.ElevatedButton(
+                text="Generar y Guardar PDF",
+                icon=ft.icons.SAVE,
+                icon_color=ft.colors.WHITE,
+                color=ft.colors.WHITE,
+                bgcolor=color_Docente,
+                on_click=controller.generar_y_guardar_pdf
+            )
+            self.view_pdf_button = ft.ElevatedButton(
+                text="Ver PDF",
+                icon=ft.icons.PICTURE_AS_PDF,
+                icon_color=ft.colors.WHITE,
+                color=ft.colors.WHITE,
+                bgcolor=ft.colors.BLUE_GREY,
+                on_click=lambda _: controller.page.go(f"/export_pdf/{controller.current_det_id}")
+            )
+            tabs_control = ft.Column(controls = [ft.Row([self.generate_pdf_button, self.view_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
                 ft.Tabs(
                     indicator_color=color_Docente,
                     divider_color= ft.Colors.TRANSPARENT,
