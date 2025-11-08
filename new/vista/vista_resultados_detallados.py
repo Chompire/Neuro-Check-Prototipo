@@ -218,7 +218,7 @@ class ResultadosDetalladosView(FletView):
                 icon_color=ft.colors.WHITE,
                 color=ft.colors.WHITE,
                 bgcolor=color_Docente,
-                on_click=controller.generar_y_guardar_pdf
+                on_click=controller.generar_y_navegar_pdf
             )
             self.view_pdf_button = ft.ElevatedButton(
                 text="Ver PDF",
