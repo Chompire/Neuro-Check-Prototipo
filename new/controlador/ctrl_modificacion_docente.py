@@ -22,7 +22,7 @@ class ModificacionDocenteController(FletController):
                             ft.DataCell(ft.Text(f"{prof.pro_apellido_pat} {prof.pro_apellido_mat}")),
                             ft.DataCell(ft.Text(prof.pro_rut)),
                             ft.DataCell(ft.Text("Profesional PIE" if prof.pro_cargo else "Docente")),
-                            ft.DataCell(ft.Text(prof.cur_nombre or "N/A")),
+                            ft.DataCell(ft.Text("N/A")), # Ya no se muestra el curso
                             ft.DataCell(ft.Text("Habilitado" if prof.pro_state else "Inhabilitado")),
                         ],
                         data=prof,
@@ -71,7 +71,6 @@ class ModificacionDocenteController(FletController):
             self.view.apellido_mat.value = selected_prof.pro_apellido_mat or ""
             self.view.rut_field.value = selected_prof.pro_rut or ""
             self.view.cargo_field.value = "Profesional PIE" if selected_prof.pro_cargo else "Docente"
-            self.view.curso_field.value = selected_prof.lvl_curso
             self.view.estado_field.value = "Habilitado" if selected_prof.pro_state else "Inhabilitado"
         else:
             self.clear_form_fields()
@@ -86,7 +85,6 @@ class ModificacionDocenteController(FletController):
         self.view.apellido_mat.value = ""
         self.view.rut_field.value = ""
         self.view.cargo_field.value = None
-        self.view.curso_field.value = None
         self.view.estado_field.value = None
 
     def on_course_row_select(self, e):
@@ -142,8 +140,8 @@ class ModificacionDocenteController(FletController):
             self.view.nombre1.value, self.view.nombre2.value, self.view.nombre3.value,
             self.view.apellido_pat.value, self.view.apellido_mat.value,
             rut,
-            cargo_valor, self.password_define, 
-            self.view.curso_field.value, estado_valor, None
+            cargo_valor, self.password_define,
+            estado_valor, None
         )
 
         if self.model.crear_profesor(datos_nuevos):
@@ -169,7 +167,7 @@ class ModificacionDocenteController(FletController):
             "pro_nombre_1": self.view.nombre1.value, "pro_nombre_2": self.view.nombre2.value, "pro_nombre_3": self.view.nombre3.value,
             "pro_apellido_pat": self.view.apellido_pat.value, "pro_apellido_mat": self.view.apellido_mat.value,
             "pro_rut": self.view.rut_field.value,
-            "pro_cargo": cargo_valor, "lvl_curso": self.view.curso_field.value, "pro_state": estado_valor,
+            "pro_cargo": cargo_valor, "pro_state": estado_valor,
         }
         self.model.actualizar_profesor(self.selected_prof_id, datos_actualizados)
         self.view.show_feedback("Profesor actualizado con éxito.", ft.colors.GREEN)
@@ -200,7 +198,6 @@ class ModificacionDocenteController(FletController):
 
         self.view.show_feedback("Estado del curso actualizado.", ft.colors.GREEN)
         self.load_cursos_to_table(id_to_select=self.selected_course_id)
-        self.view.curso_field.options = self.lista_cursos()
         self.page.update()
 
     def open_course_dialog(self, e):
@@ -230,12 +227,6 @@ class ModificacionDocenteController(FletController):
         dialog = getattr(self.view, f"{tipo}_dialog")
         dialog.open = False
         self.page.update()
-
-    def lista_cursos(self):
-        cursos = self.model.leer_cursos()
-        if cursos:
-            return [ft.dropdown.Option(key=curso.cur_nameID, text=curso.cur_nombre) for curso in cursos]
-        return []
 
     def formato_rut(self, e: ft.ControlEvent):
         """Formatea automáticamente el RUT en el TextField mientras el usuario escribe."""

@@ -51,7 +51,6 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler)
         ]
     )
 
-
 def main(page, model: AppModel):
     page.title = "NeuroCheck"
     view_title = ft.Text("", color="white", size=20)
@@ -209,8 +208,6 @@ def main(page, model: AppModel):
     page.on_view_pop = view_pop
     if model.datos_profesor.pro_cargo == 1:
         page.go("/inicio_pie")
-    elif model.datos_profesor.pro_cargo == 2:
-        page.go("/inicio_profesor")
     else:
         page.go("/")
     

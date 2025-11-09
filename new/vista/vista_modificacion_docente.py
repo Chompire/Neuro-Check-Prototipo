@@ -67,12 +67,6 @@ class ModificacionDocenteView(FletView):
             color="black",
             label_style=ft.TextStyle(color="black")
         )
-        self.curso_field = ft.Dropdown(
-            label="Curso", width=300,
-            options=controller.lista_cursos(),
-            color="black",
-            label_style=ft.TextStyle(color="black")
-        )
         self.estado_field = ft.Dropdown(
             label="Estado", width=300,
             options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")],
@@ -127,7 +121,7 @@ class ModificacionDocenteView(FletView):
                                 ft.Text("Añadir / Editar Docente", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.nombre1, self.nombre2, self.nombre3]),
                                 ft.Row([self.apellido_pat, self.apellido_mat, self.rut_field]),
-                                ft.Row([self.cargo_field, self.curso_field, self.estado_field]),
+                                ft.Row([self.cargo_field, self.estado_field]),
                                 ft.Row([self.add_button, self.edit_button, self.delete_button]),
                             ]),
                             padding=10, border=ft.border.all(2, ft.colors.BLACK), border_radius=8, bgcolor=ft.colors.WHITE

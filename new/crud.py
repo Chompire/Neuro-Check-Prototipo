@@ -8,9 +8,9 @@ def profesorCREATE(datos_profesor: tuple):
                 sql_add = """INSERT INTO Profesores(
                 pro_nombre_1,pro_nombre_2, pro_nombre_3,
                 pro_apellido_pat, pro_apellido_mat,
-                pro_rut, pro_cargo,pro_password, 
-                lvl_curso,pro_state, pro_nacimiento)
-                VALUES(?,?,?,?,?,?,?,?,?,?,?);"""
+                pro_rut, pro_cargo,pro_password,
+                pro_state, pro_nacimiento)
+                VALUES(?,?,?,?,?,?,?,?,?,?);"""
                 cursor.execute(sql_add, datos_profesor)
                 cnxn.commit()
                 return True  # Retorna True si la operación fue exitosa
@@ -23,25 +23,26 @@ def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 if pro_nameID is not None:
-                    # Corregido: Usar la tabla 'Curso' y las columnas 'cur_nameID', 'cur_nombre'
-                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.pro_nameID = ?"
+                    # Se elimina la unión con la tabla Curso
+                    sql_info = "SELECT p.* FROM Profesores p WHERE p.pro_nameID = ?"
                     cursor.execute(sql_info, pro_nameID)
                     return cursor.fetchone()
                 elif pro_rut is not None and pro_password is not None:
-                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.pro_rut = ? AND pro_password = ?"
+                    sql_info = "SELECT p.* FROM Profesores p WHERE p.pro_rut = ? AND pro_password = ?"
                     cursor.execute(sql_info, pro_rut, pro_password)
                     return cursor.fetchone()
                 elif pro_rut is not None:
-                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.pro_rut = ?"
+                    sql_info = "SELECT p.* FROM Profesores p WHERE p.pro_rut = ?"
                     cursor.execute(sql_info, pro_rut)
                     return cursor.fetchone()
                 elif lvl_curso is not None:
-                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID WHERE p.lvl_curso = ?"
-                    cursor.execute(sql_info, lvl_curso)
-                    return cursor.fetchall()
+                    # Esta lógica ya no es aplicable al eliminar lvl_curso de Profesores
+                    # Se podría implementar una búsqueda en Prof_PIE si es necesario
+                    print("profesorREAD: La búsqueda por lvl_curso ya no está soportada directamente en Profesores.")
+                    return []
                 else:
-                    # Corregido: Usar la tabla 'Curso' y las columnas 'cur_nameID', 'cur_nombre'
-                    sql_info = "SELECT p.*, c.cur_nombre FROM Profesores p LEFT JOIN Curso c ON p.lvl_curso = c.cur_nameID"
+                    sql_info = "SELECT p.* FROM Profesores p"
+                    cursor.execute(sql_info, lvl_curso)
                     cursor.execute(sql_info)
                     return cursor.fetchall()
     except pyodbc.Error as ex:
