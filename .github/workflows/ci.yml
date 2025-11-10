@@ -38,6 +38,11 @@ jobs:
       - name: Install dependencies
         run: poetry install --no-interaction
 
-      # 5. (Opcional) Ejecuta un linter para comprobar la calidad y el estilo del código.
+      # 5. (Opcional) Ejecuta el formateador para comprobar el estilo del código.
+      # El --check asegura que el job falle si el código no está formateado, sin cambiar los archivos.
+      - name: Format with ruff
+        run: poetry run ruff format --check .
+
+      # 6. (Opcional) Ejecuta el linter para comprobar la calidad del código.
       - name: Lint with ruff
-        run: poetry run ruff check . --fix
+        run: poetry run ruff check .
