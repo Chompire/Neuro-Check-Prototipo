@@ -5,9 +5,9 @@
 ### uv
 
 Run as a desktop app:
-```
-```
-uv run flet run
+
+```bash
+uv run flet run src/main.py
 ```
 
 Run as a web app:

@@ -270,7 +270,6 @@ def main(page, model: AppModel):
     page.go("/")
 
 # La función que será el punto de entrada para ft.app
-
-
 # La llamada a ft.app() debe estar en el scope global del módulo
-ft.app(target=main, assets_dir="assets", view=ft.AppView.WEB_BROWSER)
+if __name__ == "__main__":
+    ft.app(target=main, assets_dir="assets", view=ft.AppView.WEB_BROWSER)

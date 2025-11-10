@@ -3,7 +3,7 @@
 ## Run the app
 
 ### uv
-```
+
 Run as a desktop app:
 
 ```
