@@ -40,4 +40,4 @@ jobs:
 
       # 5. (Opcional) Ejecuta un linter para comprobar la calidad y el estilo del código.
       - name: Lint with ruff
-        run: poetry run ruff check .
+        run: poetry run ruff check . --fix
