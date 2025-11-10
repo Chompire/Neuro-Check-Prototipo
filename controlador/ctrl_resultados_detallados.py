@@ -302,7 +302,10 @@ class ResultadosDetalladosController(FletController):
         # --- Guardar el PDF en la BD ---
         file_name = f"informe_estudiante_{self.current_det_id}.pdf"
         pdf_output_bytes = pdf.output(dest="S").encode("latin-1")
-        self.model.crear_documento_pdf(file_name, ".pdf", pdf_output_bytes)
+        pdf_id = self.model.crear_documento_pdf(file_name, ".pdf", pdf_output_bytes)
 
-        # --- Navegar a la vista de exportación ---
-        self.page.go(f"/export_pdf/{self.current_det_id}")
+        if pdf_id:
+            # --- Navegar a la vista de exportación solo si el PDF se guardó correctamente ---
+            self.page.go(f"/export_pdf/{self.current_det_id}")
+        else:
+            print("Error: No se pudo guardar el PDF en la base de datos.")

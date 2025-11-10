@@ -55,7 +55,7 @@ jobs:
         echo "GITHUB_REPOSITORY: ${GITHUB_REPOSITORY}, USER: ${GITHUB_REPOSITORY%/*}, PROJECT_BASE_URL: ${GITHUB_REPOSITORY#*/}"
         flutter config --no-analytics
         # CORRECCIÓN APLICADA: Se añade --module-name main para asegurar que encuentre el punto de entrada
-        flet build web --module-name main --base-url ${GITHUB_REPOSITORY#*/} --route-url-strategy hash
+        flet build web --module-name main --base-url /${GITHUB_REPOSITORY#*/}/ --route-url-strategy hash
 
     - name: Upload Artifact
       uses: actions/upload-pages-artifact@v3
