@@ -471,47 +471,35 @@ def documentoPDFCREATE(nombre: str, extension: str, contenido: bytes):
         print(f"documentoPDFCREATE Error de conexión o consulta: {ex.args[0]}")
         return None
 
-def documentosPDF_READ_LIST():
+def documentoPDF_READ(pdf_id: int | None = None, pdf_nombre: str | None = None, include_content: bool = False):
     """
-    Lee la lista de todos los documentos PDF almacenados, sin el contenido.
+    Lee documentos PDF de la base de datos.
+    - Si se proporciona pdf_id o pdf_nombre, lee un documento específico.
+    - Si no, lee una lista de todos los documentos (sin contenido por defecto).
+    - 'include_content' determina si se incluye el contenido binario.
     """
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                sql_info = "SELECT pdf_id, pdf_nombre, pdf_extension, pdf_fecha FROM DocumentosPDF ORDER BY pdf_fecha DESC"
-                cursor.execute(sql_info)
-                return cursor.fetchall()
-    except pyodbc.Error as ex:
-        print(f"documentosPDF_READ_LIST Error de conexión o consulta: {ex.args[0]}")
-        return []
+                select_clause = "SELECT pdf_id, pdf_nombre, pdf_extension, pdf_fecha"
+                if include_content:
+                    select_clause += ", pdf_contenido"
 
-def documentoPDF_READ_CONTENT(pdf_id: int):
-    """
-    Lee el contenido binario de un documento PDF específico.
-    """
-    try:
-        with pyodbc.connect(CONNECTION_STRING) as cnxn:
-            with cnxn.cursor() as cursor:
-                sql_info = "SELECT pdf_nombre, pdf_extension, pdf_contenido FROM DocumentosPDF WHERE pdf_id = ?"
-                cursor.execute(sql_info, pdf_id)
-                return cursor.fetchone()
+                if pdf_id is not None:
+                    sql_info = f"{select_clause} FROM DocumentosPDF WHERE pdf_id = ?"
+                    cursor.execute(sql_info, pdf_id)
+                    return cursor.fetchone()
+                elif pdf_nombre is not None:
+                    sql_info = f"{select_clause} FROM DocumentosPDF WHERE pdf_nombre = ?"
+                    cursor.execute(sql_info, pdf_nombre)
+                    return cursor.fetchone()
+                else: # Leer lista
+                    sql_info = f"{select_clause} FROM DocumentosPDF ORDER BY pdf_fecha DESC"
+                    cursor.execute(sql_info)
+                    return cursor.fetchall()
     except pyodbc.Error as ex:
-        print(f"documentoPDF_READ_CONTENT Error de conexión o consulta: {ex.args[0]}")
-        return None
-
-def documentoPDF_READ_BY_NAME(pdf_nombre: str):
-    """
-    Lee el contenido binario de un documento PDF específico por su nombre.
-    """
-    try:
-        with pyodbc.connect(CONNECTION_STRING) as cnxn:
-            with cnxn.cursor() as cursor:
-                sql_info = "SELECT pdf_id, pdf_nombre, pdf_extension, pdf_contenido FROM DocumentosPDF WHERE pdf_nombre = ?"
-                cursor.execute(sql_info, pdf_nombre)
-                return cursor.fetchone()
-    except pyodbc.Error as ex:
-        print(f"documentoPDF_READ_BY_NAME Error de conexión o consulta: {ex.args[0]}")
-        return None
+        print(f"documentoPDF_READ Error de conexión o consulta: {ex.args[0]}")
+        return None if pdf_id is not None or pdf_nombre is not None else []
 
 #-------------------notificacionesCRUD
 
@@ -557,6 +545,30 @@ def notificacionUPDATE_leida(noti_ID: int, leida: bool = True):
     except pyodbc.Error as ex:
         print(f"notificacionUPDATE_leida Error: {ex.args[0]}")
 
+def notificacionesDELETE(prof_id: int | None = None, not_status: int | None = None, noti_ID: int | None = None):
+    """Elimina notificaciones basándose en los criterios proporcionados."""
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_delete = "DELETE FROM Notificaciones WHERE 1=1"
+                params = []
+                if prof_id is not None:
+                    sql_delete += " AND id_profesor_pie = ?"
+                    params.append(prof_id)
+                if not_status is not None:
+                    sql_delete += " AND not_status = ?"
+                    params.append(not_status)
+                if noti_ID is not None:
+                    sql_delete += " AND noti_ID = ?"
+                    params.append(noti_ID)
+                
+                cursor.execute(sql_delete, params)
+                cnxn.commit()
+                return True
+    except pyodbc.Error as ex:
+        print(f"notificacionesDELETE Error: {ex.args[0]}")
+        return False
+
 def obtener_pie_por_curso(curso_id: int):
     """
     Busca el ID (pro_nameID) de un profesor PIE asignado a un curso específico.
@@ -566,9 +578,6 @@ def obtener_pie_por_curso(curso_id: int):
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 curso_id_str = str(curso_id)
-                # Usamos CHARINDEX para buscar el curso_id dentro de la cadena 'cursos_a_cargo'.
-                # CONCAT(',', ?, ',') asegura que buscamos el ID completo (ej: ',123,')
-                # dentro de la cadena de cursos también delimitada por comas (ej: ',1,2,123,4,').
                 sql_query = """
                     SELECT P.pro_nameID
                     FROM Profesores P

@@ -38,7 +38,26 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
         prof_id = model.datos_profesor.pro_nameID
         notificaciones = model.leer_notificaciones(prof_id=prof_id, solo_no_leidas=True)
         has_unread = bool(notificaciones)
+    popup_items = []
+    if model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+        popup_items.append(
+            ft.PopupMenuItem(
+                content=ft.Row([
+                    ft.Icon(ft.Icons.NOTIFICATIONS),
+                    ft.Text("Notificaciones"),
+                    ft.CircleAvatar(radius=4, bgcolor=ft.Colors.RED, visible=has_unread),
+                ]),
+                on_click=lambda _: page.go("/notificaciones")
+            )
+        )
 
+    popup_items.append(
+        ft.PopupMenuItem(
+            icon=ft.Icons.EXIT_TO_APP,
+            text="Cerrar sesión",
+            on_click=logout_handler
+        )
+    )
     return ft.AppBar(
         leading=back_button,
         leading_width=40,
@@ -51,28 +70,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
         actions=[
             ft.Row([
                 view_title_control, # El control de título dinámico
-                ft.Stack(
-                    [
-                        ft.IconButton(
-                            icon=ft.Icons.NOTIFICATIONS,
-                            on_click=lambda _: page.go("/notificaciones")
-                        ), 
-                        ft.CircleAvatar(
-                            radius=4,
-                            bgcolor=ft.Colors.RED,
-                            top=10,
-                            right=12,
-                            visible=has_unread,
-                        ),
-                    ]
-                ) if model.datos_profesor and model.datos_profesor.pro_cargo == 1 else ft.Container(),
-                ft.PopupMenuButton(items=[
-                    ft.PopupMenuItem(
-                        icon=ft.Icons.EXIT_TO_APP,
-                        text="Cerrar sesión",
-                        on_click=logout_handler
-                    ),
-                ])
+                ft.PopupMenuButton(items=popup_items)
             ]),
         ]
     )
@@ -118,6 +116,10 @@ def main(page, model: AppModel):
                     page.go("/inicio_pie")
                 else:
                     page.go("/inicio_profesor")
+        elif page.route == "/notificaciones":
+            if hasattr(model, 'datos_profesor') and model.datos_profesor:
+                if model.datos_profesor.pro_cargo == 1:
+                    page.go("/inicio_pie")
             
     login_controller = LoginController(page, model)
     inicio_controller = InicioController(page, model)
