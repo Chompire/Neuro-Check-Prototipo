@@ -11,6 +11,7 @@ from vista.vista_resultados_detallados import ResultadosDetalladosView
 from vista.vista_modificacion_docente import ModificacionDocenteView
 from vista.vista_export_pdf import ExportPDFView
 from vista.vista_mis_tests import MisTestsView
+from vista.vista_notificaciones import NotificacionesView
 from controlador.ctrl_inicio import InicioController
 from controlador.ctrl_real_test import RealizarTestController
 from controlador.ctrl_login import LoginController
@@ -22,6 +23,7 @@ from controlador.ctrl_modificacion_docente import ModificacionDocenteController
 from controlador.ctrl_resultados_detallados import ResultadosDetalladosController
 from controlador.ctrl_export_pdf import ExportPDFController
 from controlador.ctrl_mis_tests import MisTestsController
+from controlador.ctrl_notificaciones import NotificacionesController
 from colors import color_Docente
 
 def create_appbar(page, view_title_control, back_handler, model, logout_handler, route_change_handler):
@@ -31,33 +33,12 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
         visible=False 
     )
 
-    def on_notification_click(e):
-        not_data = e.control.data
-        test_id = not_data['test_id']
-        not_id = not_data['not_id']
-        model.marcar_notificacion_leida(not_id)
-        res_det = model.leer_resultados_detallados(ID_test=test_id)
-        if res_det:
-            page.go(f"/resultados_detallados/{res_det[0].det_id}")
-        else:
-            # Fallback si aún no se han generado los detalles
-            page.go(f"/resultados/{test_id}")
-
-    # Lógica para construir el menú de notificaciones
-    notification_items = []
     has_unread = False
     if model.datos_profesor and model.datos_profesor.pro_cargo == 1: # Solo para PIE
-        notificaciones = model.leer_notificaciones(solo_no_leidas=True)
-        if notificaciones:
-            for notif in notificaciones:
-                # Asumimos que si hay notificaciones, el punto rojo debe aparecer.
-                has_unread = True
-                notification_items.append(
-                    ft.PopupMenuItem(
-                        text=notif.mensaje,
-                        data={'test_id': notif.id_test, 'not_id': notif.not_ID},
-                        on_click=on_notification_click
-                    ))
+        prof_id = model.datos_profesor.pro_nameID
+        notificaciones = model.leer_notificaciones(prof_id=prof_id, solo_no_leidas=True)
+        has_unread = bool(notificaciones)
+
     return ft.AppBar(
         leading=back_button,
         leading_width=40,
@@ -72,10 +53,10 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
                 view_title_control, # El control de título dinámico
                 ft.Stack(
                     [
-                        ft.PopupMenuButton(
+                        ft.IconButton(
                             icon=ft.Icons.NOTIFICATIONS,
-                            items=notification_items if notification_items else [ft.PopupMenuItem(text="No hay notificaciones")]
-                        ),
+                            on_click=lambda _: page.go("/notificaciones")
+                        ), 
                         ft.CircleAvatar(
                             radius=4,
                             bgcolor=ft.Colors.RED,
@@ -127,7 +108,8 @@ def main(page, model: AppModel):
                 else:
                     page.go("/inicio_profesor")
         elif page.route.startswith("/resultados_detallados/"):
-            page.go("/mis_tests")
+            # Al volver de resultados detallados, ir a mis tests
+            page.go("/mis_tests") 
         elif page.route.startswith("/export_pdf/"):
             page.go("/resultados_detallados/")
         elif page.route == "/mis_tests":
@@ -148,6 +130,7 @@ def main(page, model: AppModel):
     modificacion_docente_controller = ModificacionDocenteController(page, model)
     export_pdf_controller = ExportPDFController(page, model)
     mis_tests_controller = MisTestsController(page, model)
+    notificaciones_controller = NotificacionesController(page, model)
     
     login_view = LoginView(login_controller, model)
     inicio_view = InicioView(inicio_controller, model)
@@ -160,6 +143,7 @@ def main(page, model: AppModel):
     modificacion_docente_view = ModificacionDocenteView(modificacion_docente_controller, model)
     export_pdf_view = ExportPDFView(export_pdf_controller, model)
     mis_tests_view = MisTestsView(mis_tests_controller, model)
+    notificaciones_view = NotificacionesView(notificaciones_controller, model)
 
     login_controller.view = login_view
     inicio_controller.view = inicio_view
@@ -172,6 +156,7 @@ def main(page, model: AppModel):
     modificacion_docente_controller.view = modificacion_docente_view
     export_pdf_controller.view = export_pdf_view
     mis_tests_controller.view = mis_tests_view
+    notificaciones_controller.view = notificaciones_view
     def route_change(route):
         print(f"Cambiando a la ruta: {page.route}")
         page.views.clear() 
@@ -258,6 +243,12 @@ def main(page, model: AppModel):
                 mis_tests_controller.cargar_test_profesores()
             current_view = mis_tests_view.content
 
+        elif troute.match("/notificaciones"):
+            view_title.value = "Notificaciones"
+            notificaciones_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            notificaciones_controller.cargar_notificaciones()
+            current_view = notificaciones_view.content
+
 
         if current_view:
             page.views.append(current_view)
@@ -287,4 +278,4 @@ if __name__ == "__main__":
             model.datos_profesor = test_profesor_data
         main(page, model)
 
-    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.FLET_APP)
+    ft.app(target=main_standalone, assets_dir="assets", view=ft.AppView.WEB_BROWSER)

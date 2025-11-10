@@ -156,6 +156,17 @@ class ResultadosController(FletController):
             )
             self.resultados_detallados_id = self.model.crear_resultado_detallado(*detalles_data)
 
+            # --- INICIO: Crear notificación para el rol PIE ---
+            try:
+                # Leemos el test para obtener el ID del estudiante
+                test_record = self.model.leer_test(test_ID=self.current_test_id)
+                estudiante_id = test_record[1] # es_ID está en la segunda posición
+                if self.resultados_detallados_id and estudiante_id:
+                    self.model.crear_notificacion_a_pie(estudiante_id, self.resultados_detallados_id)
+            except Exception as e:
+                print(f"Error al intentar crear la notificación: {e}")
+            # --- FIN: Crear notificación ---
+
         self.view.save_snackbar.content = ft.Text("Resultados guardados exitosamente.")
         self.view.save_snackbar.open = True
         self.page.update()

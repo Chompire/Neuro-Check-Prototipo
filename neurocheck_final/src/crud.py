@@ -175,7 +175,7 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro
             with cnxn.cursor() as cursor:
                 if es_nameID is not None:
                     sql_info = """
-                    SELECT e.*,
+                    SELECT e.*, c.cur_nameID,
                     c.cur_nombre,
                     p.pro_nombre_1, p.pro_apellido_pat
                     FROM Estudiantes e
@@ -515,29 +515,32 @@ def documentoPDF_READ_BY_NAME(pdf_nombre: str):
 
 #-------------------notificacionesCRUD
 
-def notificacionCREATE(mensaje: str, id_resultados_detallados: int):
+def notificacionCREATE(prof_id_destino: int, mensaje: str, id_resultados_detallados: int):
     """Crea una nueva notificación en la base de datos."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                sql_add = "INSERT INTO Notificaciones (not_mensaje, not_status, id_resultados_detallados, noti_fecha_creacion) VALUES (?, 0, ?, GETDATE())"
-                cursor.execute(sql_add, mensaje, id_resultados_detallados)
+                # Asumiendo que la tabla Notificaciones tiene una columna 'id_profesor_pie'
+                sql_add = "INSERT INTO Notificaciones (id_profesor_pie, not_mensaje, not_status, id_resultados_detallados, noti_fecha_creacion) VALUES (?, ?, 0, ?, GETDATE())"
+                cursor.execute(sql_add, prof_id_destino, mensaje, id_resultados_detallados)
                 cnxn.commit()
                 return True
     except pyodbc.Error as ex:
         print(f"notificacionCREATE Error: {ex.args[0]}")
         return False
 
-def notificacionesREAD(solo_no_leidas: bool = False):
+def notificacionesREAD(prof_id: int, solo_no_leidas: bool = False):
     """Lee todas las notificaciones."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                sql_info = "SELECT noti_ID, not_mensaje, not_status, id_resultados_detallados, noti_fecha_creacion FROM Notificaciones"
+                # Asumiendo que la tabla Notificaciones tiene una columna 'id_profesor_pie'
+                sql_info = "SELECT noti_ID, not_mensaje, not_status, id_resultados_detallados, noti_fecha_creacion FROM Notificaciones WHERE id_profesor_pie = ?"
+                params = [prof_id]
                 if solo_no_leidas:
-                    sql_info += " WHERE not_status = 0"
+                    sql_info += " AND not_status = 0"
                 sql_info += " ORDER BY noti_fecha_creacion DESC"
-                cursor.execute(sql_info)
+                cursor.execute(sql_info, params)
                 return cursor.fetchall()
     except pyodbc.Error as ex:
         print(f"notificacionesREAD Error: {ex.args[0]}")
@@ -553,3 +556,31 @@ def notificacionUPDATE_leida(noti_ID: int, leida: bool = True):
                 cnxn.commit()
     except pyodbc.Error as ex:
         print(f"notificacionUPDATE_leida Error: {ex.args[0]}")
+
+def obtener_pie_por_curso(curso_id: int):
+    """
+    Busca el ID (pro_nameID) de un profesor PIE asignado a un curso específico.
+    Asume que 'cursos_a_cargo' en Prof_PIE es una cadena de IDs de curso separados por comas.
+    """
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                curso_id_str = str(curso_id)
+                # Usamos CHARINDEX para buscar el curso_id dentro de la cadena 'cursos_a_cargo'.
+                # CONCAT(',', ?, ',') asegura que buscamos el ID completo (ej: ',123,')
+                # dentro de la cadena de cursos también delimitada por comas (ej: ',1,2,123,4,').
+                sql_query = """
+                    SELECT P.pro_nameID
+                    FROM Profesores P
+                    JOIN Prof_PIE PP ON P.pro_nameID = PP.prof_ID
+                    WHERE P.pro_cargo = 1 -- Cargo 1 es para PIE
+                      AND CHARINDEX(CONCAT(',', ?, ','), CONCAT(',', PP.cursos_a_cargo, ',')) > 0
+                """
+                cursor.execute(sql_query, curso_id_str)
+                result = cursor.fetchone()
+                if result:
+                    return result.pro_nameID # Retorna el pro_nameID del profesor PIE
+                return None
+    except pyodbc.Error as ex:
+        print(f"obtener_pie_por_curso Error: {ex.args[0]}")
+        return None

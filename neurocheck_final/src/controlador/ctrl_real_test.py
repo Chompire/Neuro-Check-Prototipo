@@ -215,6 +215,6 @@ class RealizarTestController(FletController):
             self.page.go(f"/test/{self.selected_test_id}")
         else:
             self.view.feedback_snackbar.content = ft.Text("Por favor, selecciona un test para reanudar.")
-            self.view.feedback_snackbar.bgcolor = ft.colors.RED_700
+            self.view.feedback_snackbar.bgcolor = ft.Colors.RED_700
             self.view.feedback_snackbar.open = True
             self.page.update()

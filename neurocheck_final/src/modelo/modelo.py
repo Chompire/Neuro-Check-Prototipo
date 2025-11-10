@@ -193,8 +193,37 @@ class AppModel(FletModel):
     def crear_notificacion(self, prof_id_destino, mensaje, test_id):
         return db.notificacionCREATE(prof_id_destino, mensaje, test_id)
 
-    def leer_notificaciones(self, solo_no_leidas=False):
-        return db.notificacionesREAD(solo_no_leidas)
+    def leer_notificaciones(self, prof_id: int, solo_no_leidas=False):
+        return db.notificacionesREAD(prof_id=prof_id, solo_no_leidas=solo_no_leidas)
 
     def marcar_notificacion_leida(self, not_id):
         db.notificacionUPDATE_leida(not_id, leida=True)
+
+    def crear_notificacion_a_pie(self, estudiante_id: int, id_resultado_detallado: int):
+        """
+        Crea una notificación para el profesor PIE asignado al curso del estudiante.
+        """
+        try:
+            # 1. Obtener el curso_id y nombre del estudiante
+            estudiante_data = self.leer_estudiante_por_id(es_nameID=estudiante_id)
+            if not estudiante_data:
+                print(f"Error: No se encontró el estudiante con ID {estudiante_id}")
+                return
+
+            curso_id = estudiante_data.lvl_curso # El ID del curso está en la columna lvl_curso de la tabla Estudiantes
+            nombre_estudiante = f"{estudiante_data.es_nombre_1} {estudiante_data.es_apellido_pat}"
+
+            # 2. Encontrar al profesor PIE (pro_cargo = 1) para ese curso
+            profesor_pie_id = db.obtener_pie_por_curso(curso_id)
+
+            if not profesor_pie_id:
+                print(f"Advertencia: No se encontró un profesor PIE para el curso ID {curso_id}. No se creará la notificación.")
+                return
+
+            # 3. Crear el mensaje y la notificación
+            mensaje = f"Test de '{nombre_estudiante}' completado."
+            self.crear_notificacion(profesor_pie_id, mensaje, id_resultado_detallado)
+
+        except Exception as e:
+            print(f"Error en la base de datos al crear notificación: {e}")
+            raise

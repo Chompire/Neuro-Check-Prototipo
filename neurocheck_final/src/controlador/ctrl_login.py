@@ -18,7 +18,7 @@ class LoginController(FletController):
 
     def show_error_feedback(self, message: str):
         self.view.feedback_snackbar.content = ft.Text(message)
-        self.view.feedback_snackbar.bgcolor = ft.colors.RED_700
+        self.view.feedback_snackbar.bgcolor = ft.Colors.RED_700
         self.view.feedback_snackbar.open = True
         self.page.update()
 

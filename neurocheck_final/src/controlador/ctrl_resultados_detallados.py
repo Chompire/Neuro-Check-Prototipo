@@ -107,12 +107,12 @@ class ResultadosDetalladosController(FletController):
             # Llenamos la tabla con las preguntas y respuestas de la categoría
             for i, pregunta_info in enumerate(preguntas_db):
                 pregunta_texto = pregunta_info[1]
-                color_respuesta = ft.colors.GREY
+                color_respuesta = ft.Colors.GREY
 
                 if i < len(respuestas_usuario):
                     respuesta = respuestas_usuario[i].lower()
                     respuesta_texto = "Sí" if respuesta == 'si' else "No"
-                    color_respuesta = ft.colors.RED if respuesta == 'si' else ft.colors.GREEN
+                    color_respuesta = ft.Colors.RED if respuesta == 'si' else ft.Colors.GREEN
                     
             
                 tabla_destino.rows.append(

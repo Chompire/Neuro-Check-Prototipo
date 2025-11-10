@@ -143,7 +143,7 @@ class ModificacionDocenteController(FletController):
                     ft.Checkbox(
                         label=curso.cur_nombre,
                         data=curso.cur_nameID,
-                        check_color=ft.colors.RED,
+                        check_color=ft.Colors.RED,
                         label_style=ft.TextStyle(color="black")
                     )
                 )
@@ -167,7 +167,7 @@ class ModificacionDocenteController(FletController):
                     ft.Checkbox(
                         label=curso.cur_nombre,
                         data=curso.cur_nameID,
-                        check_color=ft.colors.RED,
+                        check_color=ft.Colors.RED,
                         label_style=ft.TextStyle(color="black")
                     )
                 )
@@ -195,11 +195,11 @@ class ModificacionDocenteController(FletController):
     def add_profesor(self, e):
         rut = self.view.rut_field.value.strip()
         if not self.validar_rut(rut):
-            self.show_feedback("Error: El RUT ingresado no es válido.", ft.colors.RED)
+            self.show_feedback("Error: El RUT ingresado no es válido.", ft.Colors.RED)
             return
 
         if self.model.leer_profesor_por_rut(rut):
-            self.show_feedback("Error: El RUT ya está registrado.", ft.colors.RED)
+            self.show_feedback("Error: El RUT ya está registrado.", ft.Colors.RED)
             return
 
         cargo_valor = 1 if self.view.cargo_field.value == "Profesional PIE" else 0
@@ -224,12 +224,12 @@ class ModificacionDocenteController(FletController):
                 cursos_str = ",".join(cursos_seleccionados)
                 self.model.crear_asignacion_pie(new_prof.pro_nameID, cursos_str)
 
-            self.show_feedback("Profesor agregado con éxito.", ft.colors.GREEN)
+            self.show_feedback("Profesor agregado con éxito.", ft.Colors.GREEN)
             self.load_profesores_to_table()
             self.clear_form_fields()
             self.reset_selection_state()
         else:
-            self.show_feedback("Error al agregar profesor.", ft.colors.RED)
+            self.show_feedback("Error al agregar profesor.", ft.Colors.RED)
         
         self.close_dialog(e, 'add')
 
@@ -238,7 +238,7 @@ class ModificacionDocenteController(FletController):
 
         rut = self.view.rut_field.value.strip()
         if not self.validar_rut(rut):
-            self.show_feedback("Error: El RUT ingresado no es válido.", ft.colors.RED)
+            self.show_feedback("Error: El RUT ingresado no es válido.", ft.Colors.RED)
             return
 
         estado_valor = 1 if self.view.estado_field.value == "Habilitado" else 0
@@ -263,7 +263,7 @@ class ModificacionDocenteController(FletController):
             self.model.eliminar_asignacion_pie(self.selected_prof_id)
 
 
-        self.show_feedback("Profesor actualizado con éxito.", ft.colors.GREEN)
+        self.show_feedback("Profesor actualizado con éxito.", ft.Colors.GREEN)
         self.load_profesores_to_table(id_to_select=self.selected_prof_id)
         self.close_dialog(e, 'edit')
 
@@ -287,9 +287,9 @@ class ModificacionDocenteController(FletController):
                 año_actual = datetime.now().year
 
                 self.model.crear_curso(nombre_siguiente_curso, año_actual)
-                self.show_feedback(f"Curso '{nombre_siguiente_curso}' para el {año_actual} creado.", ft.colors.BLUE)
+                self.show_feedback(f"Curso '{nombre_siguiente_curso}' para el {año_actual} creado.", ft.Colors.BLUE)
 
-        self.show_feedback("Estado del curso actualizado.", ft.colors.GREEN)
+        self.show_feedback("Estado del curso actualizado.", ft.Colors.GREEN)
         self.load_cursos_to_table(id_to_select=self.selected_course_id)
         self.page.update()
 
@@ -308,7 +308,7 @@ class ModificacionDocenteController(FletController):
             self.model.eliminar_asignacion_pie(self.selected_prof_id)
 
             self.model.eliminar_profesor(self.selected_prof_id)
-            self.show_feedback("Profesor eliminado con éxito.", ft.colors.GREEN)
+            self.show_feedback("Profesor eliminado con éxito.", ft.Colors.GREEN)
             self.load_profesores_to_table()
             self.clear_form_fields()
             self.reset_selection_state()

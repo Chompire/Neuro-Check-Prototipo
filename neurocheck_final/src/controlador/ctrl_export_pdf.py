@@ -12,7 +12,7 @@ class ExportPDFController(FletController):
     def cargar_alumno(self, res_det_id: int):
         self.res_det_id = res_det_id
         self.view.feedback_text.value = "Cargando PDF desde la base de datos..."
-        self.view.feedback_text.color = ft.colors.BLUE
+        self.view.feedback_text.color = ft.Colors.BLUE
         self.view.contenedor_pdf.content.controls.clear()
         self.page.update()
 
@@ -22,7 +22,7 @@ class ExportPDFController(FletController):
 
         if not pdf_document:
             self.view.feedback_text.value = f"Error: No se encontró el PDF '{file_name_to_find}' en la base de datos."
-            self.view.feedback_text.color = ft.colors.RED
+            self.view.feedback_text.color = ft.Colors.RED
             self.page.update()
             return
 
@@ -45,10 +45,10 @@ class ExportPDFController(FletController):
                 )
             doc.close()
             self.view.feedback_text.value = "PDF cargado correctamente."
-            self.view.feedback_text.color = ft.colors.GREEN
+            self.view.feedback_text.color = ft.Colors.GREEN
         except Exception as ex:
-            self.view.contenedor_pdf.content.controls.append(ft.Text(f"Error al mostrar el PDF: {ex}", color=ft.colors.RED))
+            self.view.contenedor_pdf.content.controls.append(ft.Text(f"Error al mostrar el PDF: {ex}", color=ft.Colors.RED))
             self.view.feedback_text.value = "Error al renderizar el PDF."
-            self.view.feedback_text.color = ft.colors.RED
+            self.view.feedback_text.color = ft.Colors.RED
 
         self.page.update()
