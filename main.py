@@ -272,12 +272,15 @@ def main(page, model: AppModel):
     else:
         page.go("/inicio_profesor")
 
-if __name__ == "__main__":
-    def main_standalone(page: ft.Page):
-        model = AppModel()
-        test_profesor_data = model.cargar_profesor_id(1)
-        if test_profesor_data:
-            model.datos_profesor = test_profesor_data
-        main(page, model)
+# La función que será el punto de entrada para ft.app
+def main_app(page: ft.Page):
+    model = AppModel()
+    # Para pruebas locales, puedes cargar un profesor por defecto.
+    # En producción (web), el flujo comenzará desde el login.
+    # test_profesor_data = model.cargar_profesor_id(1)
+    # if test_profesor_data:
+    #     model.datos_profesor = test_profesor_data
+    main(page, model)
 
-    ft.app(target=main_standalone, assets_dir="assets", view=ft.AppView.WEB_BROWSER)
+# La llamada a ft.app() debe estar en el scope global del módulo
+ft.app(target=main_app, assets_dir="assets", view=ft.AppView.WEB_BROWSER)
