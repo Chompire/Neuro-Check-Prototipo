@@ -267,20 +267,10 @@ def main(page, model: AppModel):
     page.on_route_change = route_change
     page.on_view_pop = view_pop
     page.on_resize = on_resize
-    if model.datos_profesor.pro_cargo == 1:
-        page.go("/inicio_pie")
-    else:
-        page.go("/inicio_profesor")
+    page.go("/")
 
 # La función que será el punto de entrada para ft.app
-def main_app(page: ft.Page):
-    model = AppModel()
-    # Para pruebas locales, puedes cargar un profesor por defecto.
-    # En producción (web), el flujo comenzará desde el login.
-    # test_profesor_data = model.cargar_profesor_id(1)
-    # if test_profesor_data:
-    #     model.datos_profesor = test_profesor_data
-    main(page, model)
+
 
 # La llamada a ft.app() debe estar en el scope global del módulo
-ft.app(target=main_app, assets_dir="assets", view=ft.AppView.WEB_BROWSER)
+ft.app(target=main, assets_dir="assets", view=ft.AppView.WEB_BROWSER)

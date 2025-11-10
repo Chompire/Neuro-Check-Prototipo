@@ -3,9 +3,9 @@
 ## Run the app
 
 ### uv
-
-Run as a desktop app:
 ```
+Run as a desktop app:
+
 ```
 uv run flet run
 ```
