@@ -6,7 +6,6 @@ on:
     branches: 
       - master
       - main
-  # Runs on pull request events that target one of the below branches
   pull_request:
     branches: 
       - master
