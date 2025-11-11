@@ -245,7 +245,7 @@ def testREAD(test_ID: int | None = None , test_status: int | None = None, pro_ID
                     sql_info = """
                         SELECT
                             t.test_status, t.test_ID, test_fecha_inicio, test_fecha_termino,
-                            t.test_status, t.test_ID, t.pro_ID, test_fecha_inicio, test_fecha_termino,
+                            t.test_status, t.test_ID, t.pro_ID, c.cur_nameID, test_fecha_inicio, test_fecha_termino,
                             e.es_nombre_1, e.es_apellido_pat, e.es_rut, c.cur_nombre,
                             p.pro_nombre_1, p.pro_apellido_pat, p.pro_rut,
                             rd.det_porcentaje
@@ -277,7 +277,7 @@ def testREAD(test_ID: int | None = None , test_status: int | None = None, pro_ID
                     sql_info = """
                         SELECT
                             t.test_status, t.test_ID, test_fecha_inicio, test_fecha_termino,
-                            t.test_status, t.test_ID, t.pro_ID, test_fecha_inicio, test_fecha_termino,
+                            t.test_status, t.test_ID, t.pro_ID, c.cur_nameID, test_fecha_inicio, test_fecha_termino,
                             e.es_nombre_1, e.es_apellido_pat, e.es_rut, c.cur_nombre,
                             p.pro_nombre_1, p.pro_apellido_pat, p.pro_rut,
                             rd.det_porcentaje

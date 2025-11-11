@@ -57,10 +57,13 @@ class MisTestsController(FletController):
         # Obtener los cursos a cargo del profesional PIE actual
         current_pro_id = self.model.datos_profesor.pro_nameID
         curso_dat = self.model.leer_cursos_pie(self.model.datos_profesor.pro_nameID)
-        print(curso_dat)
-
-        # Convertir la cadena de IDs de cursos (ej: "1,5,8") en una lista de enteros [1, 5, 8]
-        cursos_pie_ids = [int(cid) for cid in curso_dat[0].split(',') if cid.isdigit()]
+        
+        # Si no hay cursos asignados, no hay nada que mostrar.
+        if not curso_dat or not curso_dat[0]:
+            return
+        
+        # Convertir la cadena de IDs de cursos (ej: "1,5,8") en un conjunto de enteros para una búsqueda más eficiente
+        cursos_pie_ids = {int(cid) for cid in curso_dat[0].split(',') if cid.isdigit()}
 
         # Filtrar y mostrar los tests
         for test in test_dat:

@@ -13,9 +13,9 @@ class LoginView(FletView):
         rut = ft.TextField(label="RUT (sin puntos ni guión)", width=300, ref=self.rut_field, on_change=lambda e: controller.formato_rut(e))
         password = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, width=300, ref=self.password_field)
         boton_login = ft.ElevatedButton("Entrar", on_click=lambda e: controller.handle_login_click(e), width=100, height=30)
-        fondo = ft.Container(ft.Image(src="/fondo.png", width= 1920, height= 1080,fit=ft.ImageFit.CONTAIN), expand=True)
-        mensaje = ft.Text(ref=self.mensaje_error, color="black")    
-        logo = ft.Image(src="/NEURO CHECK ICON.png",
+        self.fondo = ft.Container(expand=True,content=ft.Image(src="login-fondo.png", fit=ft.ImageFit.COVER, width= 1920, height= 1080,))
+        mensaje = ft.Text(ref=self.mensaje_error, color="black")
+        logo = ft.Image(src="neuro-check-icon.png",
             width=120,
             height=120,
             fit=ft.ImageFit.CONTAIN
@@ -45,7 +45,7 @@ class LoginView(FletView):
                 ft.Stack(
                     controls=[
                         self.feedback_snackbar,
-                        fondo,
+                        self.fondo,
                         contenido,
                     ],
                     expand=True,

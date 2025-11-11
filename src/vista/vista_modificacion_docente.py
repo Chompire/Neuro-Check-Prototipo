@@ -4,7 +4,6 @@ from colors import color_Docente, color_Background_PIE
 
 class ModificacionDocenteView(FletView):
     def __init__(self, controller, model):
-        self.controller = controller
         self.feedback_snackbar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.Colors.GREEN)
 
         # --- Dialogs ---

@@ -1,4 +1,5 @@
 import flet as ft
+import os
 from modelo.modelo import AppModel
 from vista.vista_inicio import InicioView
 from vista.vista_real_test import RealizarTestView
@@ -24,7 +25,8 @@ from controlador.ctrl_resultados_detallados import ResultadosDetalladosControlle
 from controlador.ctrl_export_pdf import ExportPDFController
 from controlador.ctrl_mis_tests import MisTestsController
 from controlador.ctrl_notificaciones import NotificacionesController
-from colors import color_Docente
+from colors import color_Docente, color_Background_Docente, color_Background_PIE
+
 
 def create_appbar(page, view_title_control, back_handler, model, logout_handler, route_change_handler):
     back_button = ft.IconButton(
@@ -178,6 +180,11 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/inicio_profesor"): # Rutas protegidas
             view_title.value = "Inicio Docente"
             inicio_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            # Actualizar el color de fondo dinámicamente
+            if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+                inicio_view.content.bgcolor = color_Background_PIE
+            else:
+                inicio_view.content.bgcolor = color_Background_Docente
             if hasattr(model, 'datos_profesor') and model.datos_profesor:
                 nombre_profesor = f"{model.datos_profesor.pro_nombre_1}"
                 inicio_view.welcome_text.value = nombre_profesor
@@ -186,6 +193,11 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/inicio_pie"):
             view_title.value = "Inicio PIE"            
             inicio_pie_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            # Actualizar el color de fondo dinámicamente
+            if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+                inicio_pie_view.content.bgcolor = color_Background_PIE
+            else:
+                inicio_pie_view.content.bgcolor = color_Background_Docente
             if hasattr(model, 'datos_profesor') and model.datos_profesor:
                 nombre_profesor = f"{model.datos_profesor.pro_nombre_1}"
                 inicio_pie_view.welcome_text.value = nombre_profesor
@@ -194,6 +206,11 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/realizar_test"):
             view_title.value = "Realizar test"
             rel_test_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            # Actualizar el color de fondo dinámicamente según el rol del usuario
+            if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+                rel_test_view.content.bgcolor = color_Background_PIE
+            else:
+                rel_test_view.content.bgcolor = color_Background_Docente
             real_test_controller.cargar_estudiantes()
             real_test_controller.cargar_test_incompletos()
             current_view = rel_test_view.content
@@ -201,25 +218,45 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/perfil_docente"):
             view_title.value = "Perfil Docente"
             perfil_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+                perfil_docente_view.content.bgcolor = color_Background_PIE
+            else:
+                perfil_docente_view.content.bgcolor = color_Background_Docente
             perfil_docente_controller.cargar_datos_docente()
-            mis_tests_controller.cargar_tests_completados() 
             current_view = perfil_docente_view.content
         
         elif troute.match("/test/:test_id"):
             view_title.value = "Test"
             test_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            # Actualizar el color de fondo dinámicamente
+            if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+                test_view.content.bgcolor = color_Background_PIE
+            else:
+                test_view.content.bgcolor = color_Background_Docente
             test_controller.cargar_respuestas_guardadas(int(troute.test_id))
             current_view = test_view.content
 
         elif troute.match("/resultados/:test_id"):
             view_title.value = "Resultados del Test"
             resultados_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            # Actualizar el color de fondo dinámicamente
+            if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+                resultados_view.content.bgcolor = color_Background_PIE
+            else:
+                resultados_view.content.bgcolor = color_Background_Docente
             resultados_controller.calcular_resultados(int(troute.test_id))
             current_view = resultados_view.content
         
         elif troute.match("/resultados_detallados/:det_id"):
             view_title.value = "Resultados detallados"
             resultados_detallados_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+                resultados_detallados_view.content.bgcolor = color_Background_PIE
+            else:
+                resultados_detallados_view.content.bgcolor = color_Background_Docente
+            is_pie = hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1
+            resultados_detallados_view.pie_controls_container.visible = is_pie
+
             resultados_detallados_controller.cargar_resultados_detallados(int(troute.det_id))
             current_view = resultados_detallados_view.content
 
@@ -240,8 +277,17 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/mis_tests"):
             view_title.value = "Mis tests"
             mis_tests_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            # Actualizar el color de fondo dinámicamente
+            if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+                mis_tests_view.content.bgcolor = color_Background_PIE
+            else:
+                mis_tests_view.content.bgcolor = color_Background_Docente
+            
+            # Controlar la visibilidad de la tabla de tests de otros profesores
             mis_tests_controller.cargar_tests_completados()
             if model.datos_profesor.pro_cargo == 1:
+                mis_tests_view.tests_profesores_title.visible = True
+                mis_tests_view.test_profesores_table.visible = True
                 mis_tests_controller.cargar_test_profesores()
             current_view = mis_tests_view.content
 
@@ -251,14 +297,12 @@ def main(page: ft.Page, model: AppModel):
             notificaciones_controller.cargar_notificaciones()
             current_view = notificaciones_view.content
 
-
         if current_view:
             page.views.append(current_view)
             current_appbar = current_view.appbar
             if current_appbar and hasattr(current_appbar, 'leading'):
                 is_home_view = page.route in ["/inicio_profesor", "/inicio_pie"]
                 current_appbar.leading.visible = not is_home_view
-
         page.update()
 
     def on_resize(e):
@@ -269,10 +313,12 @@ def main(page: ft.Page, model: AppModel):
     page.on_resize = on_resize
     page.go("/")
     page.update()
-
-# La función que será el punto de entrada para ft.app
 if __name__ == "__main__":
     def main_standalone(page: ft.Page):
         model = AppModel()
         main(page, model)
-    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.WEB_BROWSER, port=8080, host="192.168.1.85")
+
+    # Construye la ruta absoluta al directorio de assets
+    assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "assets"))
+
+    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER, host="localhost", port=8080)

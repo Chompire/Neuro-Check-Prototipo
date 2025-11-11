@@ -1,16 +1,17 @@
 import flet as ft
 from flet_mvc import FletView
 
-from colors import color_Docente, color_Background_Docente
+from colors import color_Docente, color_Background_Docente, color_Background_PIE
 
 
 class InicioView(FletView):  # Heredamos de BaseView
     def __init__(self, controller, model):
         self.welcome_text = ft.Text(size=30, weight=ft.FontWeight.NORMAL, color="black")
+
         view = ft.View(
             "/inicio_profesor",
             scroll=ft.ScrollMode.AUTO,
-            bgcolor=color_Background_Docente,
+            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
             controls=[
                 ft.ResponsiveRow(
                     alignment=ft.MainAxisAlignment.CENTER, # Centra el contenido horizontalmente

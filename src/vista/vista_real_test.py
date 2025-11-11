@@ -93,16 +93,11 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                 on_click=controller.on_reanudar_test_click,
                 width=150,
                 height=40)
-
-        # Determinar el color de fondo de forma segura
-        background_color = color_Background_Docente
-        if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo != 0:
-            background_color = color_Background_PIE
-            
+        
         view = ft.View(
-            
             "/realizar_test",
-            bgcolor=background_color,
+            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
+            scroll=ft.ScrollMode.AUTO,
             controls=
             [
                 self.feedback_snackbar,

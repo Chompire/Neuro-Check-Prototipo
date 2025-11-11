@@ -11,6 +11,7 @@ class PerfilDocenteView(FletView):
             border=ft.border.all(2, ft.Colors.BLACK),
             vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
             horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+            width= 800,
             columns=[
                 ft.DataColumn(ft.Text("Nombres")),
                 ft.DataColumn(ft.Text("Apellidos")),
@@ -28,6 +29,7 @@ class PerfilDocenteView(FletView):
             border=ft.border.all(2, ft.Colors.BLACK),
             vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
             horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
+            width= 800,
             columns=[
                 ft.DataColumn(ft.Text("Curso")),
                 ft.DataColumn(ft.Text("Año")),
@@ -36,30 +38,23 @@ class PerfilDocenteView(FletView):
             ],
             rows=[]
         )
-        
-
-        # Determinar el color de fondo de forma segura
-        background_color = color_Background_Docente
-        if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo != 0:
-            background_color = color_Background_PIE
 
         view = ft.View(
             "/perfil_docente",
-            bgcolor=background_color,
+            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
             scroll=ft.ScrollMode.AUTO,
             controls=[
-                ft.Column(
+                ft.Column(                    
                 controls=[
                     ft.Row(
                         alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
-                            ft.Column(controls=[
+                            ft.Column(spacing=5,controls=[
                                 ft.Text("Datos del docente:", size=30, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.info_table], scroll=ft.ScrollMode.AUTO),
                                 ft.Row([self.cursos_designados_table], scroll=ft.ScrollMode.AUTO),
                                 ])
                         ]),
-                    ft.Divider(color="black"),
                     
                 ]),            
         

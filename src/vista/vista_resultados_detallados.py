@@ -216,94 +216,70 @@ class ResultadosDetalladosView(FletView):
             ),
         ]
         
-        # Determinar el color de fondo y si se muestran los controles de PIE de forma segura
-        is_pie = hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1
-        background_color = color_Background_PIE if is_pie else color_Background_Docente
-        if is_pie:
-            self.generate_pdf_button = ft.ElevatedButton(
-                text="Generar y Guardar PDF",
-                icon=ft.Icons.SAVE,
-                icon_color=ft.Colors.WHITE,
-                color=ft.Colors.WHITE,
-                bgcolor=color_Docente,
-                on_click=controller.generar_y_navegar_pdf
-            )
-            self.view_pdf_button = ft.ElevatedButton(
-                text="Ver PDF",
-                icon=ft.Icons.PICTURE_AS_PDF,
-                icon_color=ft.Colors.WHITE,
-                color=ft.Colors.WHITE,
-                bgcolor=ft.Colors.BLUE_GREY,
-                on_click=lambda _: controller.page.go(f"/export_pdf/{controller.current_det_id}")
-            )
-            tabs_control = ft.Column(controls = [ft.Row([self.generate_pdf_button, self.view_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-                ft.Tabs(
-                    indicator_color=color_Docente,
-                    divider_color= ft.Colors.TRANSPARENT,
-                    unselected_label_color = ft.Colors.BLACK,
-                    label_color=color_Docente,
-                    overlay_color = {                        
-                    ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
-                    ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),  
-                    },
-                    
-                    selected_index=0,
-                    animation_duration=300,
-                tabs=[
-                    ft.Tab(
-                        text="Atención",
-                        content=
-                        ft.Container(
-                            padding=20,
-                            content=
-                                ft.Column(
-                                    [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_atencion])],
-                                    scroll=ft.ScrollMode.AUTO),
-                        )
-                    ),
-                    ft.Tab(
-                        text="Memoria",
-                        content=
-                        ft.Container(
-                        padding=20,
-                        content=
-                            ft.Column(
-                            [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_memoria])],
-                            scroll=ft.ScrollMode.AUTO),
-                        )
-                    ),
-                    ft.Tab(
-                        text="Social",
-                        content=
-                        ft.Container(
-                        padding=20,
-                        content=
-                        ft.Column(
-                            controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_social])],
-                            scroll=ft.ScrollMode.AUTO),
-                        )
-                    ),
-                    ft.Tab(
-                        text="Emocional",
-                        content=
-                        ft.Container(
-                        padding=20,
-                        content=
-                        ft.Column(
-                            controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_emocional])],
-                            scroll=ft.ScrollMode.AUTO),
-                        )
-                    ),
-                ]
-                )
-                ],
-            )
-            main_column_controls.append(tabs_control)
+        # --- Controles solo para PIE (botones PDF y pestañas de respuestas) ---
+        self.generate_pdf_button = ft.ElevatedButton(
+            text="Generar y Guardar PDF", icon=ft.Icons.SAVE, icon_color=ft.Colors.WHITE,
+            color=ft.Colors.WHITE, bgcolor=color_Docente, on_click=controller.generar_y_navegar_pdf
+        )
+        self.view_pdf_button = ft.ElevatedButton(
+            text="Ver PDF", icon=ft.Icons.PICTURE_AS_PDF, icon_color=ft.Colors.WHITE,
+            color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE_GREY,
+            on_click=lambda _: controller.page.go(f"/export_pdf/{controller.current_det_id}")
+        )
+        
+        tabs_control = ft.Tabs(
+            indicator_color=color_Docente, divider_color=ft.Colors.TRANSPARENT,
+            unselected_label_color=ft.Colors.BLACK, label_color=color_Docente,
+            overlay_color={
+                ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
+                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),
+            },
+            selected_index=0, animation_duration=300,
+            tabs=[
+                ft.Tab(
+                    text="Atención",
+                    content=ft.Container(padding=20, content=ft.Column(
+                        [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_atencion])],
+                        scroll=ft.ScrollMode.AUTO)
+                    )
+                ),
+                ft.Tab(
+                    text="Memoria",
+                    content=ft.Container(padding=20, content=ft.Column(
+                        [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_memoria])],
+                        scroll=ft.ScrollMode.AUTO)
+                    )
+                ),
+                ft.Tab(
+                    text="Social",
+                    content=ft.Container(padding=20, content=ft.Column(
+                        controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_social])],
+                        scroll=ft.ScrollMode.AUTO)
+                    )
+                ),
+                ft.Tab(
+                    text="Emocional",
+                    content=ft.Container(padding=20, content=ft.Column(
+                        controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_emocional])],
+                        scroll=ft.ScrollMode.AUTO)
+                    )
+                ),
+            ]
+        )
+
+        self.pie_controls_container = ft.Column(
+            visible=False, # Oculto por defecto
+            controls=[
+                ft.Row([self.generate_pdf_button, self.view_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+                tabs_control
+            ]
+        )
+        main_column_controls.append(self.pie_controls_container)
 
         view = ft.View(
             "/resultados_detallado/:det_id",
+            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
             scroll=ft.ScrollMode.AUTO,
-            bgcolor=background_color,
             controls=[
                 self.feedback_snackbar,
                 ft.Column(
