@@ -75,7 +75,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
         ]
     )
 
-def main(page, model: AppModel):
+def main(page: ft.Page, model: AppModel):
     page.title = "NeuroCheck"
     view_title = ft.Text("", color="white", size=20)
 
@@ -268,8 +268,11 @@ def main(page, model: AppModel):
     page.on_view_pop = view_pop
     page.on_resize = on_resize
     page.go("/")
+    page.update()
 
 # La función que será el punto de entrada para ft.app
-# La llamada a ft.app() debe estar en el scope global del módulo
 if __name__ == "__main__":
-    ft.app(target=main, assets_dir="assets", view=ft.AppView.WEB_BROWSER)
+    def main_standalone(page: ft.Page):
+        model = AppModel()
+        main(page, model)
+    ft.app(target=main_standalone, assets_dir="assets",view=ft.AppView.WEB_BROWSER, port=8080, host="192.168.1.85")

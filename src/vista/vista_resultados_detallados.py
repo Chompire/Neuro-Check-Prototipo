@@ -215,7 +215,11 @@ class ResultadosDetalladosView(FletView):
                 ]
             ),
         ]
-        if model.datos_profesor.pro_cargo == 1:
+        
+        # Determinar el color de fondo y si se muestran los controles de PIE de forma segura
+        is_pie = hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1
+        background_color = color_Background_PIE if is_pie else color_Background_Docente
+        if is_pie:
             self.generate_pdf_button = ft.ElevatedButton(
                 text="Generar y Guardar PDF",
                 icon=ft.Icons.SAVE,
@@ -294,21 +298,17 @@ class ResultadosDetalladosView(FletView):
                 )
                 ],
             )
-            
             main_column_controls.append(tabs_control)
 
         view = ft.View(
             "/resultados_detallado/:det_id",
             scroll=ft.ScrollMode.AUTO,
-        bgcolor=color_Background_PIE if model.datos_profesor.pro_cargo == 1 else color_Background_Docente,
-        controls=[
-            self.feedback_snackbar,
-            ft.Column(
-                controls=main_column_controls
-            )
-            
-        ]
-    ) 
-
+            bgcolor=background_color,
+            controls=[
+                self.feedback_snackbar,
+                ft.Column(
+                    controls=main_column_controls
+                )
+            ]
+        )
         super().__init__(model, view, controller)
-        self.page = controller.page

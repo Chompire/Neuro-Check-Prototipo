@@ -28,7 +28,9 @@ class MisTestsView(FletView):
             rows=[]
         )
         self.test_profesores_table = None
-        if model.datos_profesor.pro_cargo == 1:
+        # Comprobar de forma segura si el usuario es PIE
+        is_pie = hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1
+        if is_pie:
             self.test_profesores_table = ft.DataTable(
                 heading_row_color=color_Docente,
                 heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
@@ -68,7 +70,7 @@ class MisTestsView(FletView):
         view = ft.View(
             "/mis_tests",
             scroll=ft.ScrollMode.AUTO,
-            bgcolor=color_Background_PIE if model.datos_profesor.pro_cargo == 1 else color_Background_Docente,
+            bgcolor=color_Background_PIE if is_pie else color_Background_Docente,
             controls=[
                 ft.Column(
                     controls=column_controls,
