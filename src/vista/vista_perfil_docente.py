@@ -55,11 +55,8 @@ class PerfilDocenteView(FletView):
                                 ft.Row([self.cursos_designados_table], scroll=ft.ScrollMode.AUTO),
                                 ])
                         ]),
-                    
                 ]),            
-        
             ]
-
         )
         
         super().__init__(model, view, controller)
