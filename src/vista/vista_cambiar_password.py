@@ -2,7 +2,7 @@ import flet as ft
 from flet_mvc import FletView
 from colors import color_Docente, color_Background_PIE
 
-class PasswordChangeView(FletView):
+class CambiarPasswordView(FletView):
     def __init__(self, controller, model):
         self.feedback_text = ft.Text("", size=16, weight=ft.FontWeight.BOLD)
         self.nuevo_password = ft.TextField(label="Nueva contraseña", color="black", label_style=ft.TextStyle(color="black"), password=True)

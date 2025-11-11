@@ -113,14 +113,13 @@ class ModificacionDocenteView(FletView):
             controls=[
                 self.feedback_snackbar, self.add_dialog, self.edit_dialog, self.delete_dialog,
                 ft.Column(
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
+                        ft.Text("Inicio > Gestión de Docentes"),
                         ft.Container(
                             content=ft.Column([
                                 ft.Text("Lista de Docentes", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO),
-                            ]),
-                            padding=10, bgcolor=ft.Colors.WHITE,
+                            ])  , bgcolor=ft.Colors.WHITE,
                         ),
                         ft.Container(
                             content=ft.Column([
@@ -160,7 +159,6 @@ class ModificacionDocenteView(FletView):
                                 ft.Row([self.update_course_button]),
                             ]),
                             padding=10, bgcolor=ft.Colors.WHITE,
-                            margin=ft.margin.only(top=20),
                         )
                         
                     ]

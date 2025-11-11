@@ -12,6 +12,7 @@ from vista.vista_resultados_detallados import ResultadosDetalladosView
 from vista.vista_modificacion_docente import ModificacionDocenteView
 from vista.vista_export_pdf import ExportPDFView
 from vista.vista_mis_tests import MisTestsView
+from vista.vista_cambiar_password import CambiarPasswordView
 from vista.vista_notificaciones import NotificacionesView
 from controlador.ctrl_inicio import InicioController
 from controlador.ctrl_real_test import RealizarTestController
@@ -25,6 +26,7 @@ from controlador.ctrl_resultados_detallados import ResultadosDetalladosControlle
 from controlador.ctrl_export_pdf import ExportPDFController
 from controlador.ctrl_mis_tests import MisTestsController
 from controlador.ctrl_notificaciones import NotificacionesController
+from controlador.ctrl_cambiar_password import CambiarPasswordController
 from colors import color_Docente, color_Background_Docente, color_Background_PIE
 
 
@@ -131,6 +133,7 @@ def main(page: ft.Page, model: AppModel):
                 if model.datos_profesor.pro_cargo == 1:
                     page.go("/inicio_pie")
             
+    
     login_controller = LoginController(page, model)
     inicio_controller = InicioController(page, model)
     inicio_pie_controller = InicioPIEController(page, model)
@@ -143,7 +146,8 @@ def main(page: ft.Page, model: AppModel):
     export_pdf_controller = ExportPDFController(page, model)
     mis_tests_controller = MisTestsController(page, model)
     notificaciones_controller = NotificacionesController(page, model)
-    
+    cambiar_password_controller = CambiarPasswordController(page, model)
+
     login_view = LoginView(login_controller, model)
     inicio_view = InicioView(inicio_controller, model)
     inicio_pie_view = InicioPIEView(inicio_pie_controller, model)
@@ -156,6 +160,8 @@ def main(page: ft.Page, model: AppModel):
     export_pdf_view = ExportPDFView(export_pdf_controller, model)
     mis_tests_view = MisTestsView(mis_tests_controller, model)
     notificaciones_view = NotificacionesView(notificaciones_controller, model)
+    cambiar_password_view  = CambiarPasswordView(cambiar_password_controller, model)
+
 
     login_controller.view = login_view
     inicio_controller.view = inicio_view
@@ -285,19 +291,25 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/mis_tests"):
             view_title.value = "Mis tests"
             mis_tests_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
-            # Actualizar el color de fondo dinámicamente
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 mis_tests_view.content.bgcolor = color_Background_PIE
             else:
                 mis_tests_view.content.bgcolor = color_Background_Docente
-            
-            # Controlar la visibilidad de la tabla de tests de otros profesores
             mis_tests_controller.cargar_tests_completados()
             if model.datos_profesor.pro_cargo == 1:
                 mis_tests_view.tests_profesores_title.visible = True
                 mis_tests_view.test_profesores_table.visible = True
                 mis_tests_controller.cargar_test_profesores()
             current_view = mis_tests_view.content
+        
+        elif troute.match("/cambiar_contrasena"):
+            view_title.value = "Cambiar contraseña"
+            cambiar_password_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
+                cambiar_password_view.content.bgcolor = color_Background_PIE
+            else:
+                cambiar_password_view.content.bgcolor = color_Background_Docente
+            current_view = cambiar_password_view.content
 
         elif troute.match("/notificaciones"):
             view_title.value = "Notificaciones"
