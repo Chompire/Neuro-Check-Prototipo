@@ -52,7 +52,13 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
                 on_click=lambda _: page.go("/notificaciones")
             )
         )
-
+    popup_items.append(
+        ft.PopupMenuItem(
+            icon=ft.Icons.PASSWORD,
+            text="Cambiar contraseña",
+            on_click=lambda _: page.go("/cambiar_contrasena")
+        )
+    )
     popup_items.append(
         ft.PopupMenuItem(
             icon=ft.Icons.EXIT_TO_APP,
@@ -60,6 +66,8 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
             on_click=logout_handler
         )
     )
+
+    
     return ft.AppBar(
         leading=back_button,
         leading_width=40,
