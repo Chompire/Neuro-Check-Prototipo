@@ -321,4 +321,4 @@ if __name__ == "__main__":
     # Construye la ruta absoluta al directorio de assets
     assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "assets"))
 
-    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER, host="localhost", port=8080)
+    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER)

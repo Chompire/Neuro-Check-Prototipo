@@ -8,10 +8,8 @@ class NotificacionesController(FletController):
         self.view = None
 
     def cargar_notificaciones(self):
-        """Carga todas las notificaciones (leídas y no leídas) para el profesor PIE."""
         if self.model.datos_profesor and self.model.datos_profesor.pro_cargo == 1:
             prof_id = self.model.datos_profesor.pro_nameID
-            # Pasamos solo_no_leidas=False para obtener todas
             notificaciones = self.model.leer_notificaciones(prof_id=prof_id, solo_no_leidas=False)
             
             self.view.notification_list.controls.clear()

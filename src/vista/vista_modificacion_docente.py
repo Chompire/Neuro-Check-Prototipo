@@ -120,7 +120,7 @@ class ModificacionDocenteView(FletView):
                                 ft.Text("Lista de Docentes", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO),
                             ]),
-                            padding=10, border=ft.border.all(2, ft.Colors.BLACK), border_radius=8, bgcolor=ft.Colors.WHITE,
+                            padding=10, bgcolor=ft.Colors.WHITE,
                         ),
                         ft.Container(
                             content=ft.Column([
@@ -134,20 +134,21 @@ class ModificacionDocenteView(FletView):
                                 ),
                                 ft.ResponsiveRow(
                                     controls=[
-                                        ft.Container(content=self.apellido_pat, col={"sm": 12, "md": 6}),
-                                        ft.Container(content=self.apellido_mat, col={"sm": 12, "md": 6}),
+                                        ft.Container(content=self.apellido_pat, col={"sm": 12, "md": 4}),
+                                        ft.Container(content=self.apellido_mat, col={"sm": 12, "md": 4}),
+                                        ft.Container(content=self.rut_field, col={"sm": 12, "md": 4}),
                                     ]
                                 ),
                                 ft.ResponsiveRow(
-                                    controls=[
-                                        ft.Container(content=self.rut_field, col={"sm": 12, "md": 6}),
-                                        ft.Container(content=self.cargo_field, col={"sm": 12, "md": 6}),
+                                    controls=[                                        
+                                        ft.Container(content=self.cargo_field, col={"sm": 12, "md": 4}),
+                                        ft.Container(content=self.estado_field, col={"sm": 12, "md": 4}),
                                     ]
                                 ),
-                                ft.Row([self.estado_field, self.cursos_checkbox_group], vertical_alignment=ft.CrossAxisAlignment.START),
+                                ft.Row([self.cursos_checkbox_group], vertical_alignment=ft.CrossAxisAlignment.START),
                                 ft.Row([self.add_button, self.edit_button, self.delete_button]),
                             ]),
-                            padding=10, border=ft.border.all(2, ft.Colors.BLACK), border_radius=8, bgcolor=ft.Colors.WHITE,
+                            padding=10,bgcolor=ft.Colors.WHITE,
                         ),
                         ft.Container(
                             content=ft.Column([
@@ -158,7 +159,7 @@ class ModificacionDocenteView(FletView):
                                 ft.Row([self.course_name_field, self.course_year_field, self.course_state_field]),
                                 ft.Row([self.update_course_button]),
                             ]),
-                            padding=10, border=ft.border.all(2, ft.Colors.BLACK), border_radius=8, bgcolor=ft.Colors.WHITE,
+                            padding=10, bgcolor=ft.Colors.WHITE,
                             margin=ft.margin.only(top=20),
                         )
                         
