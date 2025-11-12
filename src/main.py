@@ -285,6 +285,9 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/export_pdf/:res_det_id"):
             view_title.value = "Exportar PDF"
             export_pdf_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            # Es crucial que el FilePicker esté en el overlay de la página para funcionar.
+            if export_pdf_view.file_picker not in page.overlay:
+                page.overlay.append(export_pdf_view.file_picker)
             export_pdf_controller.cargar_alumno(int(troute.res_det_id))
             current_view = export_pdf_view.content
 
@@ -341,4 +344,4 @@ if __name__ == "__main__":
         
     assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "assets"))
 
-    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.FLET_APP)
+    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER)

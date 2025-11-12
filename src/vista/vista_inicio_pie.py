@@ -55,7 +55,6 @@ class InicioPIEView(FletView):
                                             padding=10
                                         )
                                     ),
-                                    # Card para Mis Tests
                                     ft.Card(
                                         color=color_Docente,
                                         content=ft.Container(
