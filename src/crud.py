@@ -9,8 +9,8 @@ def profesorCREATE(datos_profesor: tuple):
                 pro_nombre_1,pro_nombre_2, pro_nombre_3,
                 pro_apellido_pat, pro_apellido_mat,
                 pro_rut, pro_cargo,pro_password,
-                pro_state, pro_nacimiento)
-                VALUES(?,?,?,?,?,?,?,?,?,?);"""
+                pro_state, pro_nacimiento, pro_online_state)
+                VALUES(?,?,?,?,?,?,?,?,?,?,?);"""
                 cursor.execute(sql_add, datos_profesor)
                 cnxn.commit()
                 return True  # Retorna True si la operación fue exitosa

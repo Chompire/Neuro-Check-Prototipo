@@ -9,6 +9,8 @@ class ModificacionDocenteController(FletController):
         self.selected_prof_id = None
         self.password_define = "neurocheck2025"
         self.selected_course_id = None
+        self.online_state = False
+
 
     def initialize_view(self):
         cursos = self.model.leer_cursos()
@@ -156,8 +158,6 @@ class ModificacionDocenteController(FletController):
         self.page.update()
 
     def build_cursos_checkboxes(self, cursos):
-        """Construye las checkboxes de cursos en la vista."""
-        # Limpiar checkboxes existentes, excepto el título
         if len(self.view.cursos_checkbox_group.content.controls) > 1:
             self.view.cursos_checkbox_group.content.controls = [self.view.cursos_checkbox_group.content.controls[0]]
 
@@ -210,7 +210,8 @@ class ModificacionDocenteController(FletController):
             self.view.apellido_pat.value, self.view.apellido_mat.value,
             rut,
             cargo_valor, self.password_define,
-            estado_valor, None
+            estado_valor, None,
+            self.online_state,
         )
 
         success = self.model.crear_profesor(datos_nuevos)

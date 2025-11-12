@@ -110,19 +110,17 @@ class ModificacionDocenteView(FletView):
             "/gestion_docente",
             scroll=ft.ScrollMode.AUTO,
             bgcolor=color_Background_PIE,
-            controls=[
-                self.feedback_snackbar, self.add_dialog, self.edit_dialog, self.delete_dialog,
+            controls=[                
                 ft.Column(
                     controls=[
-                        ft.Text("Inicio > Gestión de Docentes"),
-                        ft.Container(
-                            content=ft.Column([
+                        ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Gestión de Docentes", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
+                     
+                        ft.Column([
                                 ft.Text("Lista de Docentes", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO),
-                            ])  , bgcolor=ft.Colors.WHITE,
-                        ),
-                        ft.Container(
-                            content=ft.Column([
+                            ]),
+                        
+                        ft.Column([
                                 ft.Text("Añadir / Editar Docente", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.ResponsiveRow(
                                     controls=[
@@ -147,10 +145,9 @@ class ModificacionDocenteView(FletView):
                                 ft.Row([self.cursos_checkbox_group], vertical_alignment=ft.CrossAxisAlignment.START),
                                 ft.Row([self.add_button, self.edit_button, self.delete_button]),
                             ]),
-                            padding=10,bgcolor=ft.Colors.WHITE,
+                    ]
                         ),
-                        ft.Container(
-                            content=ft.Column([
+                        ft.Column([
                                 ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.course_data_table], scroll=ft.ScrollMode.AUTO),
                                 ft.Divider(),
@@ -158,12 +155,13 @@ class ModificacionDocenteView(FletView):
                                 ft.Row([self.course_name_field, self.course_year_field, self.course_state_field]),
                                 ft.Row([self.update_course_button]),
                             ]),
-                            padding=10, bgcolor=ft.Colors.WHITE,
-                        )
-                        
-                    ]
-                )
+                            self.feedback_snackbar, self.add_dialog, self.edit_dialog, self.delete_dialog,
+        
             ]
+            
         )
+           
+            
+        
         super().__init__(model, view, controller)
         self.page = controller.page # Guardar referencia a la página

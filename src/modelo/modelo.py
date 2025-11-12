@@ -43,7 +43,6 @@ class AppModel(FletModel):
         else:
             return False
     def leer_estudiantes_por_curso(self, lvl_curso: int):
-        """Lee estudiantes filtrando por el ID del curso."""
         datos = db.estudiantesREAD(lvl_curso=lvl_curso)
         if datos:
             return datos
