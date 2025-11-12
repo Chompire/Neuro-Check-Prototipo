@@ -6,14 +6,14 @@ from colors import color_Background_Docente,color_Docente,color_Background_PIE
 class RealizarTestView(FletView):  # Heredamos de BaseView
     def __init__(self, controller, model):
         self.feedback_snackbar = ft.SnackBar(content=ft.Text(""))
-        self.prev_button_test = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_test,bgcolor=color_Docente)
+        self.prev_button_test = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_test,icon_color=color_Docente)
         self.page_label_test = ft.Text("Página 1 de 1", color="black")
-        self.next_button_test = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_test,bgcolor=color_Docente)
+        self.next_button_test = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_test,icon_color=color_Docente)
         self.pagination_controls_test = ft.Row([self.prev_button_test, self.page_label_test, self.next_button_test], alignment=ft.MainAxisAlignment.CENTER)
 
-        self.prev_button_est = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_est,bgcolor=color_Docente)
+        self.prev_button_est = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_est,icon_color=color_Docente)
         self.page_label_est = ft.Text("Página 1 de 1", color="black")
-        self.next_button_est = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_est,bgcolor=color_Docente)
+        self.next_button_est = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_est,icon_color=color_Docente)
         self.pagination_controls_est = ft.Row([self.prev_button_est, self.page_label_est, self.next_button_est], alignment=ft.MainAxisAlignment.CENTER)
         self.estudiante_search = ft.TextField(bgcolor=color_Docente,
             prefix_icon=ft.Icons.SEARCH,
@@ -99,38 +99,32 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
             bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
             scroll=ft.ScrollMode.AUTO,
             controls=
-            [
+            [                
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START), # This line already exists, no change needed.
                 self.feedback_snackbar,
                 ft.Column(
-                expand=True,
-                scroll=ft.ScrollMode.AUTO,
-                controls=[
-                    ft.Row(alignment=ft.MainAxisAlignment.CENTER,
-                           controls=[ft.Column(controls=[
-                               ft.Row(controls=[
-                                   ft.Text("Seleccionar estudiante:", size=30, weight=ft.FontWeight.BOLD, color="black"),
-                                   self.next_button]),
-                                   ft.Row(controls=[self.estudiante_search], expand=True),
-                                   ft.Row([self.estudiante_table], scroll=ft.ScrollMode.AUTO),
-                                   self.pagination_controls_est,
-                                   ]),
-                                    ]),
-                    
-                    ft.Divider(color="black"),
-                    ft.Row(alignment=ft.MainAxisAlignment.CENTER,
-                           controls=[ft.Column(controls=[
-                               ft.Row(controls=[
-                                   ft.Text("Terminar test incompleto:", size=30, weight=ft.FontWeight.BOLD, color="black"),
-                                   self.upload_button]),
-                                   ft.Row(controls=[self.test_search], expand=True),
-                                   ft.Row([self.test_incompletos], scroll=ft.ScrollMode.AUTO),
-                                   self.pagination_controls_test]),
-                                    ]),
-                ],
-            )
-            ],
-            vertical_alignment=ft.MainAxisAlignment.CENTER,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-        )
+                    expand=True,
+                    scroll=ft.ScrollMode.AUTO,
+                    controls=[ # Esta es la lista de controles para la columna principal
+                        ft.Column(controls=[ # Primera sección: "Seleccionar estudiante"
+                                   ft.Row(controls=[
+                                       ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                       self.next_button]),
+                                       ft.Row(controls=[self.estudiante_search], expand=True),
+                                       ft.Row([self.estudiante_table], scroll=ft.ScrollMode.AUTO),
+                                       self.pagination_controls_est,
+                                       ]),
+                        ft.Divider(color="black"),
+                        ft.Column(controls=[ # Segunda sección: "Terminar test incompleto"
+                                   ft.Row(controls=[
+                                       ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                       self.upload_button]),
+                                       ft.Row(controls=[self.test_search], expand=True),
+                                       ft.Row([self.test_incompletos], scroll=ft.ScrollMode.AUTO),
+                                       self.pagination_controls_test]),
+                    ]
+                )
+            ] # Cierra la lista de controles de la vista
+        ) # Cierra la llamada al constructor de ft.View
         super().__init__(model, view, controller)
         

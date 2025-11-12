@@ -11,13 +11,14 @@ class NotificacionesView(FletView):
         view = ft.View(
             "/notificaciones",
             controls=[
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Notificaciones", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 self.feedback_snackbar,
                 ft.Column(
                     expand=True,
                     controls=[
                         ft.Row(
                             [
-                                ft.Text("Bandeja de Notificaciones", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text("Bandeja de Notificaciones", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.IconButton(
                                     icon=ft.Icons.DELETE_SWEEP,
                                     icon_color=ft.Colors.RED_400,

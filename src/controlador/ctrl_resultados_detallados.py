@@ -42,6 +42,16 @@ class ResultadosDetalladosController(FletController):
             resultados_detallados = self.model.leer_resultados_detallados_by_det_id(det_id=det_id, pro_id=self.model.datos_profesor.pro_nameID)
 
         if resultados_detallados:
+            # --- Lógica para visibilidad de botones PDF ---
+            is_pie = self.model.datos_profesor.pro_cargo == 1
+            if is_pie:
+                file_name_to_find = f"informe_estudiante_{det_id}.pdf"
+                pdf_document = self.model.leer_documento_por_nombre(file_name_to_find)
+                
+                # Si el PDF ya existe, ocultar "Generar" y mostrar "Ver"
+                self.view.generate_pdf_button.visible = not bool(pdf_document)
+                self.view.view_pdf_button.visible = bool(pdf_document)
+
             self.cargar_respuestas(resultados_detallados[0].id_test)
             self.view.datatable.rows.clear()
             for resultado in resultados_detallados:
@@ -305,6 +315,11 @@ class ResultadosDetalladosController(FletController):
         pdf_id = self.model.crear_documento_pdf(file_name, ".pdf", pdf_output_bytes)
 
         if pdf_id:
+            # Ocultar el botón de generar y mostrar el de ver PDF
+            self.view.generate_pdf_button.visible = False
+            self.view.view_pdf_button.visible = True
+            self.page.update()
+
             # --- Navegar a la vista de exportación solo si el PDF se guardó correctamente ---
             self.page.go(f"/export_pdf/{self.current_det_id}")
         else:

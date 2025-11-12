@@ -131,7 +131,7 @@ class ResultadosDetalladosView(FletView):
             blur_style=ft.ShadowBlurStyle.NORMAL,
         )
     )
-        self.preguntas_atencion = ft.Text(f"{controller.model.leer_preguntas(pre_cat='Atención')[0][1]}", size=30, weight=ft.FontWeight.BOLD)
+        self.preguntas_atencion = ft.Text(f"{controller.model.leer_preguntas(pre_cat='Atención')[0][1]}", size=20, weight=ft.FontWeight.BOLD)
 
 
         main_column_controls = [
@@ -142,7 +142,7 @@ class ResultadosDetalladosView(FletView):
                     ft.Column(
                         scroll=ft.ScrollMode.AUTO,
                         controls=[
-                            ft.Text("Datos del alumno:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Text("Datos del alumno:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                             ft.Row([self.datatable], scroll=ft.ScrollMode.AUTO, expand=True),
                         ]
                     )                    
@@ -163,7 +163,7 @@ class ResultadosDetalladosView(FletView):
                     ft.Column(
                         scroll=ft.ScrollMode.AUTO,
                         controls=[
-                            ft.Text("Posibles indicios de riesgo:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Text("Posibles indicios de riesgo:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                             ft.Container(
                                 alignment=ft.alignment.center_left,
                                 border=ft.border.all(1, ft.Colors.BLACK),
@@ -282,6 +282,7 @@ class ResultadosDetalladosView(FletView):
             scroll=ft.ScrollMode.AUTO,
             controls=[
                 self.feedback_snackbar,
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mis Tests >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Resultados Detallados", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 ft.Column(
                     controls=main_column_controls
                 )

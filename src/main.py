@@ -88,7 +88,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
     )
 
 def main(page: ft.Page, model: AppModel):
-    page.title = "NeuroCheck"
+    page.title = "Neuro Check"
     view_title = ft.Text("", color="white", size=20)
 
     def logout(e):
@@ -121,7 +121,7 @@ def main(page: ft.Page, model: AppModel):
             # Al volver de resultados detallados, ir a mis tests
             page.go("/mis_tests") 
         elif page.route.startswith("/export_pdf/"):
-            page.go("/resultados_detallados/")
+            page.go(f"/resultados_detallados/{export_pdf_controller.res_det_id}")
         elif page.route == "/mis_tests":
             if hasattr(model, 'datos_profesor') and model.datos_profesor:
                 if model.datos_profesor.pro_cargo == 1:
@@ -230,7 +230,7 @@ def main(page: ft.Page, model: AppModel):
             current_view = rel_test_view.content
 
         elif troute.match("/perfil_docente"):
-            view_title.value = "Perfil Docente"
+            view_title.value = "Mi Perfil"
             perfil_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 perfil_docente_view.content.bgcolor = color_Background_PIE
@@ -299,6 +299,7 @@ def main(page: ft.Page, model: AppModel):
             if model.datos_profesor.pro_cargo == 1:
                 mis_tests_view.tests_profesores_title.visible = True
                 mis_tests_view.test_profesores_table.visible = True
+                mis_tests_view.pagination_controls_otros.visible = True
                 mis_tests_controller.cargar_test_profesores()
             current_view = mis_tests_view.content
         
@@ -337,8 +338,7 @@ if __name__ == "__main__":
     def main_standalone(page: ft.Page):
         model = AppModel()
         main(page, model)
-
-    # Construye la ruta absoluta al directorio de assets
+        
     assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "assets"))
 
-    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER)
+    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.FLET_APP)

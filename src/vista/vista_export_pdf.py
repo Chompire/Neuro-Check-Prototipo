@@ -24,6 +24,7 @@ class ExportPDFView(FletView):
             scroll=ft.ScrollMode.ADAPTIVE,
             bgcolor=color_Background_PIE,
             controls=[
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mis Tests >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Resultados Detallados >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Exportar PDF", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 ft.Container(
                     content=ft.Column(
                         [

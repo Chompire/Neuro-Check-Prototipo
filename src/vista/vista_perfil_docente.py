@@ -40,17 +40,17 @@ class PerfilDocenteView(FletView):
         )
 
         view = ft.View(
-            "/perfil_docente",
+            "/mi_perfil",
             bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
             scroll=ft.ScrollMode.AUTO,
             controls=[
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mi Perfil", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START), # This line already exists, no change needed.
                 ft.Column(                    
                 controls=[
                     ft.Row(
-                        alignment=ft.MainAxisAlignment.CENTER,
                         controls=[
                             ft.Column(spacing=5,controls=[
-                                ft.Text("Datos del docente:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text("Datos del docente:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.info_table], scroll=ft.ScrollMode.AUTO),
                                 ft.Row([self.cursos_designados_table], scroll=ft.ScrollMode.AUTO),
                                 ])

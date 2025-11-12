@@ -52,6 +52,10 @@ class ModificacionDocenteView(FletView):
             },
             rows=[]
         )
+        self.prev_button_pro = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_pro,icon_color=color_Docente)
+        self.page_label_pro = ft.Text("Página 1 de 1", color="black")
+        self.next_button_pro = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_pro,icon_color=color_Docente)
+        self.pagination_controls_pro = ft.Row([self.prev_button_pro, self.page_label_pro, self.next_button_pro], alignment=ft.MainAxisAlignment.CENTER)
 
         self.nombre1 = ft.TextField(label="Primer nombre", color="black", label_style=ft.TextStyle(color="black"))
         self.nombre2 = ft.TextField(label="Segundo nombre", color="black", label_style=ft.TextStyle(color="black"))
@@ -60,13 +64,13 @@ class ModificacionDocenteView(FletView):
         self.apellido_mat = ft.TextField(label="Apellido materno", color="black", label_style=ft.TextStyle(color="black"))
         self.rut_field = ft.TextField(label="RUT", width=300, color="black", on_change=controller.formato_rut, label_style=ft.TextStyle(color="black"))
         self.cargo_field = ft.Dropdown(
-            label="Cargo", width=300,
+            label="Cargo", width=500,
             options=[ft.dropdown.Option("Profesional PIE"), ft.dropdown.Option("Docente")],
             color="black", on_change=controller.toggle_cursos_visibility,
             label_style=ft.TextStyle(color="black")
         )
         self.estado_field = ft.Dropdown(
-            label="Estado", width=300,
+            label="Estado", width=500,
             options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")],
             color="black",
             label_style=ft.TextStyle(color="black")
@@ -105,6 +109,11 @@ class ModificacionDocenteView(FletView):
         self.course_year_field = ft.TextField(label="Año", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
         self.course_state_field = ft.Dropdown(label="Estado del Curso", width=300, options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")], color="black", label_style=ft.TextStyle(color="black"))
         self.update_course_button = ft.ElevatedButton("Actualizar Curso", on_click=controller.update_curso, visible=False, bgcolor=color_Docente, color=ft.Colors.WHITE)
+        
+        self.prev_button_cursos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_cursos, icon_color=color_Docente)
+        self.page_label_cursos = ft.Text("Página 1 de 1", color="black")
+        self.next_button_cursos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_cursos, icon_color=color_Docente)
+        self.pagination_controls_cursos = ft.Row([self.prev_button_cursos, self.page_label_cursos, self.next_button_cursos], alignment=ft.MainAxisAlignment.CENTER)
 
         view = ft.View(
             "/gestion_docente",
@@ -116,46 +125,52 @@ class ModificacionDocenteView(FletView):
                         ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Gestión de Docentes", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                      
                         ft.Column([
-                                ft.Text("Lista de Docentes", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                                ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO),
-                            ]),
+                            ft.Text("Añadir / Editar Docente", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO),
+                            self.pagination_controls_pro,
+                        ]),
                         
-                        ft.Column([
-                                ft.Text("Añadir / Editar Docente", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                                ft.ResponsiveRow(
+                        ft.ResponsiveRow(
+                            vertical_alignment=ft.CrossAxisAlignment.START,
+                            controls=[
+                                ft.Column(
+                                    col={"sm": 12, "md": 8},
                                     controls=[
-                                        ft.Container(content=self.nombre1, col={"sm": 12, "md": 4}),
-                                        ft.Container(content=self.nombre2, col={"sm": 12, "md": 4}),
-                                        ft.Container(content=self.nombre3, col={"sm": 12, "md": 4}),
-                                    ]
-                                ),
-                                ft.ResponsiveRow(
-                                    controls=[
-                                        ft.Container(content=self.apellido_pat, col={"sm": 12, "md": 4}),
-                                        ft.Container(content=self.apellido_mat, col={"sm": 12, "md": 4}),
-                                        ft.Container(content=self.rut_field, col={"sm": 12, "md": 4}),
-                                    ]
-                                ),
-                                ft.ResponsiveRow(
-                                    controls=[                                        
-                                        ft.Container(content=self.cargo_field, col={"sm": 12, "md": 4}),
-                                        ft.Container(content=self.estado_field, col={"sm": 12, "md": 4}),
-                                    ]
-                                ),
-                                ft.Row([self.cursos_checkbox_group], vertical_alignment=ft.CrossAxisAlignment.START),
-                                ft.Row([self.add_button, self.edit_button, self.delete_button]),
+                                        ft.ResponsiveRow(
+                                            controls=[
+                                                ft.Container(content=self.nombre1, col={"sm": 12, "md": 6}),
+                                                ft.Container(content=self.nombre2, col={"sm": 12, "md": 6}),
+                                            ]
+                                        ),
+                                        ft.ResponsiveRow(
+                                            controls=[
+                                                ft.Container(content=self.nombre3, col={"sm": 12, "md": 6}),
+                                                ft.Container(content=self.apellido_pat, col={"sm": 12, "md": 6}),
+                                            ]
+                                        ),
+                                        ft.ResponsiveRow(
+                                            controls=[                                        
+                                                ft.Container(content=self.apellido_mat, col={"sm": 12, "md": 6}),
+                                                ft.Container(content=self.rut_field, col={"sm": 12, "md": 6}),
+                                                ft.Container(content=self.cargo_field, col={"sm": 12, "md": 6}),
+                                                ft.Container(content=self.estado_field, col={"sm": 12, "md": 6}),
+                                            ]
+                                        ),
+                                    ]),
+                                ft.Container(content=self.cursos_checkbox_group, col={"sm": 12, "md": 4}),
                             ]),
+                        ft.Row([self.add_button, self.edit_button, self.delete_button]),
                     ]
                         ),
+                        ft.Divider(),
                         ft.Column([
-                                ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                                ft.Row([self.course_data_table], scroll=ft.ScrollMode.AUTO),
-                                ft.Divider(),
-                                ft.Text("Editar Curso Seleccionado", weight=ft.FontWeight.BOLD, color="black"),
-                                ft.Row([self.course_name_field, self.course_year_field, self.course_state_field]),
-                                ft.Row([self.update_course_button]),
-                            ]),
-                            self.feedback_snackbar, self.add_dialog, self.edit_dialog, self.delete_dialog,
+                            ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Row([self.course_data_table], scroll=ft.ScrollMode.AUTO),
+                            self.pagination_controls_cursos,
+                            ft.Row([self.course_name_field, self.course_year_field, self.course_state_field]),
+                            ft.Row([self.update_course_button]),
+                        ]),
+                        self.feedback_snackbar, self.add_dialog, self.edit_dialog, self.delete_dialog,
         
             ]
             

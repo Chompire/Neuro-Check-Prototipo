@@ -95,6 +95,7 @@ class TestView(FletView):
             "/test",
             bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
             controls=[
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Test", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 self.error_snack_bar,
                 tabs_control,
                 ft.Row(

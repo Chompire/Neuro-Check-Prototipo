@@ -56,7 +56,7 @@ class InicioView(FletView):  # Heredamos de BaseView
                                         content=ft.Container(
                                             content=ft.Column([
                                                 ft.ListTile(
-                                                    title=ft.Text("Perfil docente", size=20, weight=ft.FontWeight.BOLD),
+                                                    title=ft.Text("Mi Perfil", size=20, weight=ft.FontWeight.BOLD),
                                                     subtitle=ft.Text(
                                                         "Puedes ver tu información personal y revisar los resultados de los tests.",
                                                         size=15

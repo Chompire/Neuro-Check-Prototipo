@@ -9,4 +9,4 @@ class InicioController(FletController):
         self.page.go("/realizar_test")
 
     def go_perfil_docente(self, e):
-        self.page.go("/perfil_docente")
+        self.page.go("/mi_perfil")

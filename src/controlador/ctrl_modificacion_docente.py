@@ -10,39 +10,67 @@ class ModificacionDocenteController(FletController):
         self.password_define = "neurocheck2025"
         self.selected_course_id = None
         self.online_state = False
-
+        self.numpage_prof = 5
+        self.numpage_cursos = 5
+        self.current_page_prof = 0
+        self.current_page_cursos = 0
+        self.total_page_prof = 1
+        self.total_page_cursos = 1
 
     def initialize_view(self):
         cursos = self.model.leer_cursos()
         self.build_cursos_checkboxes(cursos)
 
-    def load_profesores_to_table(self, id_to_select=None):
+    def load_profesores_to_table(self, id_to_select=None, profesores_a_mostrar = None):
         self.view.data_table.rows.clear()
-        profesores = self.model.leer_profesores()
-        if profesores:
-            for prof in profesores:
-                self.view.data_table.rows.append(
-                    ft.DataRow(
-                        cells=[
-                            ft.DataCell(ft.Text(f"{prof.pro_nombre_1} {prof.pro_nombre_2 or ''}".strip())),
-                            ft.DataCell(ft.Text(f"{prof.pro_apellido_pat} {prof.pro_apellido_mat}")),
-                            ft.DataCell(ft.Text(prof.pro_rut)),
-                            ft.DataCell(ft.Text("Profesional PIE" if prof.pro_cargo else "Docente")),
-                            ft.DataCell(ft.Text("N/A")), # Ya no se muestra el curso
-                            ft.DataCell(ft.Text("Habilitado" if prof.pro_state else "Inhabilitado")),
-                        ],
-                        data=prof,
-                        selected=True if id_to_select is not None and prof.pro_nameID == id_to_select else False,
-                        on_select_changed=self.on_row_select,
+        if profesores_a_mostrar is None:
+            profesores_a_mostrar = self.model.leer_profesores()
+        total_items_pro = len(profesores_a_mostrar)
+        total_pages_pro = (total_items_pro + self.numpage_prof - 1) // self.numpage_prof
+        if total_pages_pro == 0: total_pages_pro = 1
+        start_index = self.current_page_prof * self.numpage_prof
+        end_index = start_index + self.numpage_prof
+        profesores_pagina_actual = profesores_a_mostrar[start_index:end_index]
+        self.view.page_label_pro.value = f"Página {self.current_page_prof + 1} de {total_pages_pro}"
+        self.view.prev_button_pro.visible = self.current_page_prof > 0
+        self.view.next_button_pro.visible = self.current_page_prof < total_pages_pro - 1
+        self.total_page_prof = total_pages_pro
+        if profesores_a_mostrar:
+            for prof in profesores_pagina_actual:
+                    self.view.data_table.rows.append(
+                        ft.DataRow(
+                            cells=[
+                                ft.DataCell(ft.Text(f"{prof.pro_nombre_1} {prof.pro_nombre_2 or ''}".strip())),
+                                ft.DataCell(ft.Text(f"{prof.pro_apellido_pat} {prof.pro_apellido_mat}")),
+                                ft.DataCell(ft.Text(prof.pro_rut)),
+                                ft.DataCell(ft.Text("Profesional PIE" if prof.pro_cargo else "Docente")),
+                                ft.DataCell(ft.Text("N/A")), # Ya no se muestra el curso
+                                ft.DataCell(ft.Text("Habilitado" if prof.pro_state else "Inhabilitado")),
+                            ],
+                            data=prof,
+                            selected=True if id_to_select is not None and prof.pro_nameID == id_to_select else False,
+                            on_select_changed=self.on_row_select,
+                        )
                     )
-                )
-        self.page.update()
+                    self.page.update()
 
     def load_cursos_to_table(self, id_to_select=None):
         self.view.course_data_table.rows.clear()
-        cursos = self.model.leer_cursos()
-        if cursos:
-            for curso in cursos:
+        cursos_totales = self.model.leer_cursos()
+        if cursos_totales:
+            total_items_cursos = len(cursos_totales)
+            total_pages_cursos = (total_items_cursos + self.numpage_cursos - 1) // self.numpage_cursos
+            if total_pages_cursos == 0: total_pages_cursos = 1
+            
+            start_index = self.current_page_cursos * self.numpage_cursos
+            end_index = start_index + self.numpage_cursos
+            cursos_pagina_actual = cursos_totales[start_index:end_index]
+
+            self.view.page_label_cursos.value = f"Página {self.current_page_cursos + 1} de {total_pages_cursos}"
+            self.view.prev_button_cursos.visible = self.current_page_cursos > 0
+            self.view.next_button_cursos.visible = self.current_page_cursos < total_pages_cursos - 1
+
+            for curso in cursos_pagina_actual:
                 self.view.course_data_table.rows.append(
                     ft.DataRow(
                         cells=[
@@ -55,6 +83,7 @@ class ModificacionDocenteController(FletController):
                         on_select_changed=self.on_course_row_select,
                     )
                 )
+        self.page.update()
 
     def on_row_select(self, e):
         selected_prof = e.control.data
@@ -84,8 +113,9 @@ class ModificacionDocenteController(FletController):
                 self.view.cursos_checkbox_group.visible = True
                 cursos_asignados_raw = self.model.leer_cursos_pie(self.selected_prof_id)
                 cursos_asignados_ids = cursos_asignados_raw[0].split(',') if cursos_asignados_raw and cursos_asignados_raw[0] else []
-                for checkbox in self.view.cursos_checkbox_group.content.controls:
-                    checkbox.value = str(checkbox.data) in cursos_asignados_ids
+                # Iterar solo sobre los checkboxes, omitiendo el título (que es el primer control)
+                for checkbox in self.view.cursos_checkbox_group.content.controls[1:]:
+                    checkbox.value = str(checkbox.data) in cursos_asignados_ids if isinstance(checkbox, ft.Checkbox) else checkbox.value
             else:
                 self.view.cursos_checkbox_group.visible = False
 
@@ -93,6 +123,35 @@ class ModificacionDocenteController(FletController):
             self.clear_form_fields()
             self.reset_selection_state()
         self.page.update()
+
+    def next_page_pro(self, e):
+        prof = self.model.leer_profesores()
+        total_items = len(prof)
+        total_pages = (total_items + self.numpage_prof - 1) // self.numpage_prof
+        if self.current_page_prof < total_pages - 1:
+            self.current_page_prof += 1
+            self.load_profesores_to_table()
+
+    def prev_page_pro(self, e):
+        if self.current_page_prof > 0:
+            self.current_page_prof -= 1
+            self.load_profesores_to_table()
+
+    def next_page_cursos(self, e):
+        cursos_totales = self.model.leer_cursos()
+        total_items = len(cursos_totales)
+        total_pages = (total_items + self.numpage_cursos - 1) // self.numpage_cursos
+        if self.current_page_cursos < total_pages - 1:
+            self.current_page_cursos += 1
+            self.load_cursos_to_table()
+
+    def prev_page_cursos(self, e):
+        if self.current_page_cursos > 0:
+            self.current_page_cursos -= 1
+            self.load_cursos_to_table()
+
+
+
 
     def clear_form_fields(self):
         self.view.nombre1.value = ""
@@ -133,25 +192,7 @@ class ModificacionDocenteController(FletController):
                 
         self.page.update()
 
-    def build_cursos_checkboxes(self, cursos):
-        """Construye las checkboxes de cursos en la vista."""
-        # Limpiar checkboxes existentes, excepto el título
-        if len(self.view.cursos_checkbox_group.content.controls) > 1:
-            self.view.cursos_checkbox_group.content.controls = [self.view.cursos_checkbox_group.content.controls[0]]
-
-        if cursos:
-            for curso in cursos:
-                self.view.cursos_checkbox_group.content.controls.append(
-                    ft.Checkbox(
-                        label=curso.cur_nombre,
-                        data=curso.cur_nameID,
-                        check_color=ft.Colors.RED,
-                        label_style=ft.TextStyle(color="black")
-                    )
-                )
-
     def show_feedback(self, message: str, color: str):
-        """Muestra un SnackBar con un mensaje de retroalimentación."""
         self.view.feedback_snackbar.content = ft.Text(message)
         self.view.feedback_snackbar.bgcolor = color
         self.view.feedback_snackbar.open = True
@@ -162,7 +203,9 @@ class ModificacionDocenteController(FletController):
             self.view.cursos_checkbox_group.content.controls = [self.view.cursos_checkbox_group.content.controls[0]]
 
         if cursos:
-            for curso in cursos:
+            # Filtrar solo los cursos que están habilitados (cur_state == 1)
+            cursos_habilitados = [curso for curso in cursos if curso.cur_state]
+            for curso in cursos_habilitados:
                 self.view.cursos_checkbox_group.content.controls.append(
                     ft.Checkbox(
                         label=curso.cur_nombre,
@@ -173,7 +216,6 @@ class ModificacionDocenteController(FletController):
                 )
 
     def show_feedback(self, message: str, color: str):
-        """Muestra un SnackBar con un mensaje de retroalimentación."""
         self.view.feedback_snackbar.content = ft.Text(message)
         self.view.feedback_snackbar.bgcolor = color
         self.view.feedback_snackbar.open = True
@@ -181,8 +223,7 @@ class ModificacionDocenteController(FletController):
 
     def reset_selection_state(self):
         for row in self.view.data_table.rows:
-            row.selected = False
-        
+            row.selected = False        
         self.view.edit_button.visible = False
         self.view.delete_button.visible = False
         self.view.add_button.disabled = False
@@ -213,7 +254,6 @@ class ModificacionDocenteController(FletController):
             estado_valor, None,
             self.online_state,
         )
-
         success = self.model.crear_profesor(datos_nuevos)
         if success:
             # Si es PIE, guardar los cursos asignados
@@ -276,8 +316,6 @@ class ModificacionDocenteController(FletController):
 
         datos_actualizados = {"cur_state": nuevo_estado_val}
         self.model.actualizar_curso(self.selected_course_id, datos_actualizados)
-
-        # Lógica para crear el siguiente curso si se inhabilita
         if nuevo_estado_val == 0:
             nombre_curso_actual = self.view.course_name_field.value
             match = re.search(r'\d+', nombre_curso_actual)

@@ -6,11 +6,18 @@ class MisTestsController(FletController):
         super().__init__(page, model)
         self.selected_test_id = None
         self.res_det_id = None
+        self.numpage_completos = 10
+        self.current_page_completos = 0
+        self.total_pages_completos = 1
+        self.numpage_otros = 10
+        self.current_page_otros = 0
+        self.total_pages_otros = 1
 
     def cargar_tests_completados(self):
         self.view.test_completos_table.rows.clear()
         pro_id = self.model.datos_profesor.pro_nameID
         test_dat = self.model.leer_test(pro_ID=pro_id, test_status=1)
+        total_items = len(test_dat)
 
         if not test_dat:
             self.view.test_completos_table.rows.append(
@@ -27,7 +34,17 @@ class MisTestsController(FletController):
                 )
             )
         else:
-            for test in test_dat:
+            total_pages = (total_items + self.numpage_completos - 1) // self.numpage_completos
+            if total_pages == 0: total_pages = 1
+            self.total_pages_completos = total_pages
+            start_index = self.current_page_completos * self.numpage_completos
+            end_index = start_index + self.numpage_completos
+            tests_pagina_actual = test_dat[start_index:end_index]
+
+            self.view.page_label_completos.value = f"Página {self.current_page_completos + 1} de {total_pages}"
+            self.view.prev_button_completos.visible = self.current_page_completos > 0
+            self.view.next_button_completos.visible = self.current_page_completos < total_pages - 1
+            for test in tests_pagina_actual:
                 self.view.test_completos_table.rows.append(
                     ft.DataRow(cells=[
                         ft.DataCell(ft.Text(test.es_nombre_1)),
@@ -43,6 +60,7 @@ class MisTestsController(FletController):
                     on_select_changed=self.test_completos_row_select,
                     )
                 )
+        self.page.update()
 
     def cargar_test_profesores(self):
         # Solo ejecutar si la tabla existe (es decir, si el usuario es PIE)
@@ -51,7 +69,6 @@ class MisTestsController(FletController):
 
         self.view.test_profesores_table.rows.clear()
         
-        # Obtener todos los tests completados (status=1)
         test_dat = self.model.leer_test(test_status=1)
         
         # Obtener los cursos a cargo del profesional PIE actual
@@ -65,10 +82,22 @@ class MisTestsController(FletController):
         # Convertir la cadena de IDs de cursos (ej: "1,5,8") en un conjunto de enteros para una búsqueda más eficiente
         cursos_pie_ids = {int(cid) for cid in curso_dat[0].split(',') if cid.isdigit()}
 
+        tests_filtrados = []
         # Filtrar y mostrar los tests
         for test in test_dat:
             # Condición: El test es de OTRO profesor Y el curso del estudiante está en la lista de cursos del PIE.
             if test.pro_ID != current_pro_id and test.cur_nameID in cursos_pie_ids:
+                tests_filtrados.append(test)
+        
+        total_items = len(tests_filtrados)
+        if total_items > 0:
+            total_pages = (total_items + self.numpage_otros - 1) // self.numpage_otros
+            self.total_pages_otros = total_pages
+            start_index = self.current_page_otros * self.numpage_otros
+            end_index = start_index + self.numpage_otros
+            tests_pagina_actual = tests_filtrados[start_index:end_index]
+
+            for test in tests_pagina_actual:
                 self.view.test_profesores_table.rows.append(
                     ft.DataRow(
                         cells=[
@@ -78,12 +107,35 @@ class MisTestsController(FletController):
                             ft.DataCell(ft.Text(test.cur_nombre)),
                             ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A")),
                             ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A")),
+                            ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}")),
                             ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%")),
                         ],
                         data=test,
                         on_select_changed=self.test_profesores_row_select,
                     )
                 )
+        self.page.update()
+
+    def next_page_completos(self, e):
+        if self.current_page_completos < self.total_pages_completos - 1:
+            self.current_page_completos += 1
+            self.cargar_tests_completados()
+
+    def prev_page_completos(self, e):
+        if self.current_page_completos > 0:
+            self.current_page_completos -= 1
+            self.cargar_tests_completados()
+
+    def next_page_otros(self, e):
+        if self.current_page_otros < self.total_pages_otros - 1:
+            self.current_page_otros += 1
+            self.cargar_test_profesores()
+
+    def prev_page_otros(self, e):
+        if self.current_page_otros > 0:
+            self.current_page_otros -= 1
+            self.cargar_test_profesores()
+
 
     def test_profesores_row_select(self, e):
         selected_test = e.control.data

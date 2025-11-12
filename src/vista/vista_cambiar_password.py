@@ -12,10 +12,11 @@ class CambiarPasswordView(FletView):
             scroll=ft.ScrollMode.AUTO,
             bgcolor=color_Background_PIE,
             controls=[
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Cambiar Contraseña", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 ft.Container(
                     content=ft.Column(
                         [
-                            ft.Text("Cambiar contraseña", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Text("Cambiar contraseña", size=20, weight=ft.FontWeight.BOLD, color="black"),
                             ft.Divider(),
                             ft.Row([self.nuevo_password]),
                             ft.Row([self.confirmar_password]),

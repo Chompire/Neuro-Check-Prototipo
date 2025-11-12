@@ -53,6 +53,7 @@ class ResultadosView(FletView):
             "/resultados",
             bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
             controls=[
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Resultados", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 self.save_snackbar,
                 self.rework_alert,
                 self.delete_alert,
@@ -62,7 +63,7 @@ class ResultadosView(FletView):
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
-                        ft.Text("Porcentaje de riesgo:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                        ft.Text("Porcentaje de riesgo:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                         ft.Container(
                             width=600,
                             alignment=ft.alignment.center,
@@ -75,7 +76,7 @@ class ResultadosView(FletView):
                             controls=[guardar_button, rehacer_button, eliminar_button],
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
-                        ft.Text("Registro de indicios:", size=30, weight=ft.FontWeight.BOLD, color="black"),
+                        ft.Text("Registro de indicios:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                         ft.Container(
                             alignment=ft.alignment.center,
                             border=ft.border.all(1, ft.Colors.BLACK),
