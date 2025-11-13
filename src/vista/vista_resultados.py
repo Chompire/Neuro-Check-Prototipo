@@ -5,7 +5,6 @@ from colors import color_Background_Docente, color_Docente, color_Background_PIE
 
 class ResultadosView(FletView):
     def __init__(self, controller, model):
-        # --- Controles dinámicos ---
         self.porcentaje_atencion_val= ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
         self.porcentaje_memoria_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
         self.porcentaje_social_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
@@ -13,7 +12,6 @@ class ResultadosView(FletView):
         self.porcentaje_val = ft.Text("0%", size=40, weight=ft.FontWeight.BOLD, color="black")
         self.save_snackbar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.Colors.GREEN)
 
-        # --- Diálogos de confirmación ---
         self.rework_alert = ft.AlertDialog(
             modal=True,
             title=ft.Text("Rehacer test"),
@@ -51,19 +49,18 @@ class ResultadosView(FletView):
 
         view = ft.View(
             "/resultados",
-            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
+            bgcolor=color_Background_Docente,
+            scroll=ft.ScrollMode.AUTO,
             controls=[
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Resultados", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 self.save_snackbar,
                 self.rework_alert,
                 self.delete_alert,
                 ft.Column(
-                    scroll=ft.ScrollMode.AUTO,
-                    expand=True,
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
-                        ft.Text("Porcentaje de riesgo:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                        ft.Text("IDT", size=20, weight=ft.FontWeight.BOLD, color="black"),
                         ft.Container(
                             width=600,
                             alignment=ft.alignment.center,
@@ -91,8 +88,7 @@ class ResultadosView(FletView):
                                     ft.Row(wrap=True,controls=[ft.Text("Emocional: ", size=20, weight=ft.FontWeight.BOLD, color="black"),self.porcentaje_emocional_val])
                                     ]
                             )
-                        ),
-                        
+                        ),                        
                     ]
                 )
             ]

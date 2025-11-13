@@ -95,6 +95,7 @@ def main(page: ft.Page, model: AppModel):
         if model.datos_profesor:
             prof_id = model.datos_profesor.pro_nameID
             model.actualizar_profesor(prof_id, {"pro_online_state": 0})
+        page.client_storage.remove("profesor_id") # Limpiar la sesión del cliente
         model.datos_profesor = None
         page.views.clear()
         page.go("/")
@@ -183,18 +184,29 @@ def main(page: ft.Page, model: AppModel):
         page.views.clear() 
         current_view = None
         troute = ft.TemplateRoute(page.route)
-            
-        if not troute.match("/") and not model.datos_profesor:
-            page.go("/")
-            return
+        if not model.datos_profesor:
+            profesor_id = page.client_storage.get("profesor_id")
+            if profesor_id:
+                print(f"Restaurando sesión para el profesor ID: {profesor_id}")
+                model.cargar_profesor_por_id(profesor_id)
 
-        if troute.match("/"): # Ruta de Login
-            view_title.value = "Inicio de Sesión"
-            login_view.content.appbar = None 
-            model.datos_profesor = None
-            current_view = login_view.content
+        if not model.datos_profesor and not troute.match("/"):
+             page.go("/")
+             return
+
+        if troute.match("/"):
+            if model.datos_profesor:
+                if model.datos_profesor.pro_cargo == 1:
+                    page.go("/inicio_pie")
+                else: # Es Docente
+                    page.go("/inicio_profesor")
+                return 
+            else:
+                view_title.value = "Inicio de Sesión"
+                login_view.content.appbar = None
+                current_view = login_view.content
         
-        elif troute.match("/inicio_profesor"): # Rutas protegidas
+        elif troute.match("/inicio_profesor"):
             view_title.value = "Inicio Docente"
             inicio_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             # Actualizar el color de fondo dinámicamente
@@ -245,7 +257,6 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/test/:test_id"):
             view_title.value = "Test"
             test_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
-            # Actualizar el color de fondo dinámicamente
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 test_view.content.bgcolor = color_Background_PIE
             else:
@@ -263,7 +274,7 @@ def main(page: ft.Page, model: AppModel):
                 resultados_view.content.bgcolor = color_Background_Docente
             resultados_controller.calcular_resultados(int(troute.test_id))
             current_view = resultados_view.content
-        
+                    
         elif troute.match("/resultados_detallados/:det_id"):
             view_title.value = "Resultados detallados"
             resultados_detallados_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)

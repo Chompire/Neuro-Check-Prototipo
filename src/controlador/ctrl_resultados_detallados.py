@@ -153,10 +153,10 @@ class ResultadosDetalladosController(FletController):
         test_full = self.model.leer_test(resultado.id_test)
         estudiante = self.model.leer_estudiante_por_id(test_full[1])
         
-        profesor_jefe_obj = self.model.cargar_profesor_id(estudiante.Pro_nameID)
+        profesor_jefe_obj = self.model.leer_profesor_por_id(estudiante.Pro_nameID)
         profesor_jefe = f"{profesor_jefe_obj.pro_nombre_1} {profesor_jefe_obj.pro_apellido_pat}" if profesor_jefe_obj else "N/A"
 
-        profesor_emisor = self.model.cargar_profesor_id(test_full[2])
+        profesor_emisor = self.model.leer_profesor_por_id(test_full[2])
 
         nombre_completo_Es = f"{estudiante.es_nombre_1} {estudiante.es_nombre_2 or ''} {estudiante.es_apellido_pat} {estudiante.es_apellido_mat}".replace("  ", " ").strip()
         profesor_emisor_nombre = f"{profesor_emisor.pro_nombre_1} {profesor_emisor.pro_nombre_2 or ''} {profesor_emisor.pro_apellido_pat} {profesor_emisor.pro_apellido_mat}".replace("  ", " ").strip()
@@ -214,21 +214,13 @@ class ResultadosDetalladosController(FletController):
         pdf.set_text_color(255, 255, 255)
         pdf.cell(col_width, 8, "Fecha de Nacimiento", 1, 0, 'C',fill=True)
         pdf.cell(col_width, 8, "Curso", 1, 0, 'C',fill=True)
-        pdf.cell(col_width, 8, "Repitencias", 1, 1, 'C',fill=True)
+        pdf.cell(col_width , 8, "Profesor Jefe", 1, 1, 'C',fill=True)
 
         pdf.set_font("Arial", '', 10)
         pdf.set_text_color(0, 0, 0)
         pdf.cell(col_width, 8, estudiante.es_nacimiento.strftime('%Y-%m-%d'), 1, 0, 'C')
         pdf.cell(col_width, 8, resultado.lvl_curso, 1, 0, 'C')
-        pdf.cell(col_width, 8, "xxxx", 1, 1, 'C')
-        pdf.ln(0)
-
-        pdf.set_font("Arial", 'B', 10)
-        pdf.set_text_color(255, 255, 255)
-        pdf.cell(col_width * 3, 8, "Profesor Jefe", 1, 1, 'C',fill=True)
-        pdf.set_font("Arial", '', 10)
-        pdf.set_text_color(0, 0, 0)
-        pdf.cell(col_width * 3, 8, profesor_jefe, 1, 1, 'C')
+        pdf.cell(col_width, 8, profesor_jefe, 1, 1, 'C')
         pdf.ln(2)
 
         # --- Tabla Profesor Emisor (Ajuste por Multi-Cell) ---
@@ -270,7 +262,7 @@ class ResultadosDetalladosController(FletController):
         col_width_res = pdf.w / 2.33 
         pdf.set_text_color(255, 255, 255)
         pdf.cell(col_width_res, 8, "Puntaje Obtenido", 1, 0, 'C', fill=True)
-        pdf.cell(col_width_res, 8, "Porcentaje de Riesgo", 1, 1, 'C', fill=True)
+        pdf.cell(col_width_res, 8, "IDT", 1, 1, 'C', fill=True)
 
         pdf.set_font("Arial", '', 10)
         pdf.set_text_color(0, 0, 0)
@@ -281,7 +273,7 @@ class ResultadosDetalladosController(FletController):
         pdf.set_text_color(255, 255, 255)
         pdf.set_font("Arial", 'B', 10)
         pdf.cell(col_width, 8, "Categoría", 1, 0, 'C', fill=True)
-        pdf.cell(col_width, 8, "Porcentaje de Riesgo", 1, 0, 'C', fill=True)
+        pdf.cell(col_width, 8, "IDT", 1, 0, 'C', fill=True)
         pdf.cell(col_width, 8, "Indicios Detectados", 1, 1, 'C', fill=True)
 
         pdf.set_font("Arial", '', 9)
@@ -338,8 +330,7 @@ class ResultadosDetalladosController(FletController):
         pdf.ln(10) # El cursor está ahora en el lugar correcto después de la tabla
 
         # --- Firma del Profesional (Movido fuera del bucle de la tabla) ---
-        pdf.cell(0, 10, "____________________", 0, 1, 'R')
-        pdf.cell(0, 10, "Firma del Profesional", 0, 1, 'R')
+        
 
         # --- Observaciones del Profesional ---
         # Manejo de salto de página si las observaciones no caben
@@ -350,13 +341,15 @@ class ResultadosDetalladosController(FletController):
         if observaciones:
             pdf.set_font("Arial", 'B', 10)
             pdf.set_text_color(0, 0, 0) 
-            pdf.cell(0, 10, "Observaciones del Profesional:", 0, 1, 'L')
+            pdf.cell(col_width, 10, "Observaciones del Profesional:", 0, 1, 'C',)
             pdf.set_font("Arial", '', 10)
             pdf.multi_cell(0, 5, observaciones)
+
+        pdf.cell(0, 10, "______________________", 0, 1, 'R')
+        pdf.cell(0, 10, f"{self.model.datos_profesor.pro_nombre_1} {self.model.datos_profesor.pro_apellido_pat}", 0, 1, 'R')
         
         # --- Guardar el PDF en la BD ---
         file_name = f"informe_estudiante_{self.current_det_id}.pdf"
-        # Codificar la salida a 'latin-1' para asegurar la compatibilidad con la base de datos
         pdf_output_bytes = pdf.output(dest="S").encode("latin-1")
         pdf_id = self.model.crear_documento_pdf(file_name, ".pdf", pdf_output_bytes)
 

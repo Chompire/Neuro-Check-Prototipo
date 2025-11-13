@@ -8,15 +8,13 @@ class LoginController(FletController):
         password = self.view.password_field.current.value
         profesor_cargado = self.model.cargar_profesor(rut, password)
         if profesor_cargado:
-            # Verificar si ya hay una sesión activa
-            if self.model.datos_profesor.pro_online_state == 1:
-                print(self.model.datos_profesor.pro_online_state)
-                self.show_error_feedback("Ya hay una sesión activa para este usuario.")
-                return
-
             # Actualizar el estado a 'online' (1)
             prof_id = self.model.datos_profesor.pro_nameID
             self.model.actualizar_profesor(prof_id, {"pro_online_state": 1})
+
+            # --- INICIO: Guardar la sesión en el cliente ---
+            self.page.client_storage.set("profesor_id", prof_id)
+            # --- FIN: Guardar la sesión en el cliente ---
 
             # Redirigir según el rol
             if self.model.datos_profesor.pro_cargo == 1:

@@ -113,7 +113,7 @@ class ResultadosDetalladosView(FletView):
         self.porcentaje_control = ft.Container(
         content=ft.Column(
             [
-                ft.Text("Porcentaje", weight=ft.FontWeight.BOLD, size=20,color="white"),
+                ft.Text("IDT (Indice de Detección Temprana)", weight=ft.FontWeight.BOLD, size=20,color="white"),
                 self.porcentaje_val
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -143,7 +143,7 @@ class ResultadosDetalladosView(FletView):
                         scroll=ft.ScrollMode.AUTO,
                         controls=[
                             ft.Text("Datos del alumno:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                            ft.Row([self.datatable], scroll=ft.ScrollMode.AUTO, expand=True),
+                            ft.Row([self.datatable], scroll=ft.ScrollMode.AUTO),
                         ]
                     )                    
                 ]
@@ -216,13 +216,13 @@ class ResultadosDetalladosView(FletView):
             ),
         ]
         
-        # --- Controles solo para PIE (botones PDF y pestañas de respuestas) ---
+        
         self.generate_pdf_button = ft.ElevatedButton(
-            text="Generar y Guardar PDF", icon=ft.Icons.SAVE, icon_color=ft.Colors.WHITE,
+            text="Generar arhivo PDF", icon=ft.Icons.SAVE, icon_color=ft.Colors.WHITE,
             color=ft.Colors.WHITE, bgcolor=color_Docente, on_click=controller.generar_y_navegar_pdf
         )
         self.view_pdf_button = ft.ElevatedButton(
-            text="Ver PDF", icon=ft.Icons.PICTURE_AS_PDF, icon_color=ft.Colors.WHITE,
+            text="Ver archivo PDF", icon=ft.Icons.PICTURE_AS_PDF, icon_color=ft.Colors.WHITE,
             color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE_GREY,
             on_click=lambda _: controller.page.go(f"/export_pdf/{controller.current_det_id}")
         )
@@ -281,10 +281,11 @@ class ResultadosDetalladosView(FletView):
         self.pie_controls_container = ft.Column(
             visible=False, # Oculto por defecto
             controls=[
+                self.observaciones_field,
                 ft.Row([self.generate_pdf_button, self.view_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
                 tabs_control,
                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
-                self.observaciones_field
+                
             ]
         )
         main_column_controls.append(self.pie_controls_container)

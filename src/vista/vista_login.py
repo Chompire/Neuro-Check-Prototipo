@@ -9,7 +9,8 @@ class LoginView(FletView):
         self.mensaje_error = ft.Ref[ft.Text]()
         self.feedback_snackbar = ft.SnackBar(content=ft.Text(""))
 
-        titulo = ft.Text("Iniciar Sesión", size=20, weight=ft.FontWeight.BOLD)
+        titulo = ft.Text("Neuro Check", size=20, weight=ft.FontWeight.BOLD)
+        titulo2 = ft.Text("Iniciar Sesión", size=15, weight=ft.FontWeight.BOLD)
         rut = ft.TextField(label="RUT (sin puntos ni guión)", width=300, ref=self.rut_field, on_change=lambda e: controller.formato_rut(e))
         password = ft.TextField(label="Contraseña", password=True, can_reveal_password=True, width=300, ref=self.password_field)
         boton_login = ft.ElevatedButton("Entrar", on_click=lambda e: controller.handle_login_click(e), width=100, height=30, bgcolor= "white", color=color_Docente)
@@ -27,6 +28,7 @@ class LoginView(FletView):
                 controls=[
                     logo,
                     titulo,
+                    titulo2,
                     rut,
                     password,
                     boton_login,

@@ -50,8 +50,6 @@ class ExportPDFController(FletController):
                     ft.Image(src_base64=img_base64, fit=ft.ImageFit.CONTAIN, width=800, border_radius=ft.border_radius.all(5))
                 )
             doc.close()
-            
-            self.view.feedback_text.value = "PDF cargado y listo para descargar."
             self.view.feedback_text.color = "green"
             
         except Exception as ex:
@@ -65,9 +63,6 @@ class ExportPDFController(FletController):
         if self.pdf_bytes:
             pdf_base64 = base64.b64encode(self.pdf_bytes).decode('utf-8')
             file_name = f"informe_estudiante_{self.res_det_id}.pdf"
-
-            # Con Flet actualizado, usamos page.launch_url con un data URI.
-            # El navegador interpreta esto como una descarga.
             data_uri = f"data:application/pdf;base64,{pdf_base64}"
             self.page.launch_url(url=data_uri, web_window_name=file_name)
             print(f"Iniciando descarga de {file_name}...")

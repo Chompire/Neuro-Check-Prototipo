@@ -13,6 +13,10 @@ TestDetails = namedtuple('TestDetails', [
 CursoDetails = namedtuple('CursoDetails', ['cur_nameID', 'cur_nombre', 'cur_año', 'cur_state'])
 
 class AppModel(FletModel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.datos_profesor = None
+
     def cargar_profesor(self, rut: str, password: str):
         datos = db.profesorREAD(pro_rut=rut, pro_password=password)
         if datos:
@@ -20,14 +24,19 @@ class AppModel(FletModel):
             return True
         else:
             return False
-    def cargar_profesor_id(self, pro_nameID: int | None = None):
-        prof_id = db.profesorREAD(pro_nameID=pro_nameID)
-        if prof_id:
-            self.datos_profesor_id = prof_id
-            return prof_id
+    def cargar_profesor_por_id(self, pro_id: int):
+        """Carga los datos de un profesor en el modelo usando solo su ID."""
+        profesor_data = db.profesorREAD(pro_nameID=pro_id)
+        if profesor_data:
+            self.datos_profesor = profesor_data
+            return True
         else:
             return False
         
+    def leer_profesor_por_id(self, pro_id: int):
+        """Lee los datos de un profesor desde la BD usando su ID y lo retorna."""
+        return db.profesorREAD(pro_nameID=pro_id)
+
     def cargar_estudiantes(self, es_nameID: int | None = None):
         datos = db.estudiantesREAD(es_nameID=es_nameID)
         if datos:
