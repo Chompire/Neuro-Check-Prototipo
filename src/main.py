@@ -81,7 +81,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
         center_title=False,
         actions=[
             ft.Row([
-                view_title_control, # El control de título dinámico
+                view_title_control,
                 ft.PopupMenuButton(items=popup_items)
             ]),
         ]
