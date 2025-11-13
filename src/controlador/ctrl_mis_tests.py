@@ -63,7 +63,6 @@ class MisTestsController(FletController):
         self.page.update()
 
     def cargar_test_profesores(self):
-        # Solo ejecutar si la tabla existe (es decir, si el usuario es PIE)
         if self.view.test_profesores_table is None:
             return # Si la tabla no existe en la vista, no hacer nada.
 
