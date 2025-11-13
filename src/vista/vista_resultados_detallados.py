@@ -113,7 +113,7 @@ class ResultadosDetalladosView(FletView):
         self.porcentaje_control = ft.Container(
         content=ft.Column(
             [
-                ft.Text("IDT (Indice de Detección Temprana)", weight=ft.FontWeight.BOLD, size=20,color="white"),
+                ft.Text("IDT", weight=ft.FontWeight.BOLD, size=20,color="white"),
                 self.porcentaje_val
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -179,7 +179,7 @@ class ResultadosDetalladosView(FletView):
                                             header=ft.ListTile(title=ft.Text("Atención"), content_padding = 10),
                                             bgcolor=color_Docente,
                                             content=ft.Container(content=ft.Column([
-                                                ft.ListTile(title=ft.Row([ft.Text("Porcentaje: "), self.porcentaje_atencion_val])),
+                                                ft.ListTile(title=ft.Row([ft.Text("IDT: "), self.porcentaje_atencion_val])),
                                                 ft.ListTile(title=self.indicios_atencion_val)
                                             ]), padding=10)
                                         ),
@@ -187,7 +187,7 @@ class ResultadosDetalladosView(FletView):
                                             header=ft.ListTile(title=ft.Text("Memoria"), content_padding = 10),
                                             bgcolor=color_Docente,
                                             content=ft.Container(content=ft.Column([
-                                                ft.ListTile(title=ft.Row([ft.Text("Porcentaje: "), self.porcentaje_memoria_val])),
+                                                ft.ListTile(title=ft.Row([ft.Text("IDT: "), self.porcentaje_memoria_val])),
                                                 ft.ListTile(title=self.indicios_memoria_val)
                                             ]), padding=10)
                                         ),
@@ -195,7 +195,7 @@ class ResultadosDetalladosView(FletView):
                                             header=ft.ListTile(title=ft.Text("Social"), content_padding = 10),
                                             bgcolor=color_Docente,
                                             content=ft.Container(content=ft.Column([
-                                                ft.ListTile(title=ft.Row([ft.Text("Porcentaje: "), self.porcentaje_social_val])),
+                                                ft.ListTile(title=ft.Row([ft.Text("IDT: "), self.porcentaje_social_val])),
                                                 ft.ListTile(title=self.indicios_social_val)
                                             ]), padding=10)
                                         ),
@@ -203,7 +203,7 @@ class ResultadosDetalladosView(FletView):
                                             header=ft.ListTile(title=ft.Text("Emocional"), content_padding = 10),
                                             bgcolor=color_Docente,
                                             content=ft.Container(content=ft.Column([
-                                                ft.ListTile(title=ft.Row([ft.Text("Porcentaje: "), self.porcentaje_emocional_val])),
+                                                ft.ListTile(title=ft.Row([ft.Text("IDT: "), self.porcentaje_emocional_val])),
                                                 ft.ListTile(title=self.indicios_emocional_val)
                                             ]), padding=10)
                                         )

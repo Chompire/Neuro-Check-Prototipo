@@ -68,8 +68,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
             on_click=logout_handler
         )
     )
-
-    
+        
     return ft.AppBar(
         leading=back_button,
         leading_width=40,

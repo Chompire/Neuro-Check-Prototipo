@@ -98,7 +98,6 @@ def prof_pie_UPDATE(prof_id: int, cursos_a_cargo: str):
         print(f"prof_pie_UPDATE Error: {ex.args[0]}")
 
 def prof_pie_DELETE(prof_id: int):
-    """Elimina una entrada de Prof_PIE."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn: # type: ignore
             with cnxn.cursor() as cursor:
@@ -109,7 +108,6 @@ def prof_pie_DELETE(prof_id: int):
         print(f"prof_pie_DELETE Error: {ex.args[0]}")
 
 def prof_pie_READ(prof_ID: int):
-    """Lee la cadena de cursos a cargo de un profesional PIE."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn: # type: ignore
             with cnxn.cursor() as cursor:

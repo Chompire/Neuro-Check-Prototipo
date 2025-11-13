@@ -53,7 +53,7 @@ class MisTestsController(FletController):
                         ft.DataCell(ft.Text(test.cur_nombre)),
                         ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A")),
                         ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A")),
-                        ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%")),
+                        ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if test.det_porcentaje <= 39 else ft.Colors.YELLOW if test.det_porcentaje <= 69 else ft.Colors.RED)),
                         
                     ],
                     data = test,
@@ -108,7 +108,7 @@ class MisTestsController(FletController):
                             ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A")),
                             ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A")),
                             ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}")),
-                            ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%")),
+                            ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if test.det_porcentaje <= 39 else ft.Colors.YELLOW if test.det_porcentaje <= 69 else ft.Colors.RED)),
                         ],
                         data=test,
                         on_select_changed=self.test_profesores_row_select,
