@@ -267,11 +267,24 @@ class ResultadosDetalladosView(FletView):
             ]
         )
 
+        # Campo para que el profesional PIE escriba sus observaciones
+        self.observaciones_field = ft.TextField(
+            label="Observaciones del Profesional",
+            multiline=True,
+            min_lines=4,
+            max_lines=8,
+            hint_text="Escriba aquí las observaciones que se incluirán en el PDF...",
+            color="black",
+            label_style=ft.TextStyle(color="black"),
+        )
+
         self.pie_controls_container = ft.Column(
             visible=False, # Oculto por defecto
             controls=[
                 ft.Row([self.generate_pdf_button, self.view_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-                tabs_control
+                tabs_control,
+                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+                self.observaciones_field
             ]
         )
         main_column_controls.append(self.pie_controls_container)
@@ -285,7 +298,7 @@ class ResultadosDetalladosView(FletView):
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mis Tests >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Resultados Detallados", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 ft.Column(
                     controls=main_column_controls
-                )
+                ),
             ]
         )
         super().__init__(model, view, controller)

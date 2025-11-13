@@ -30,7 +30,8 @@ class ResultadosDetalladosController(FletController):
         elif porcentaje >= 40:
             return f"Indicios moderados de: {indicios_base}"
         return "Sin indicios."
-
+    
+    # ... (cargar_resultados_detallados y cargar_respuestas omitidos por brevedad, se asume que funcionan) ...
     def cargar_resultados_detallados(self, det_id):
         self.current_det_id = det_id
         
@@ -51,6 +52,9 @@ class ResultadosDetalladosController(FletController):
                 # Si el PDF ya existe, ocultar "Generar" y mostrar "Ver"
                 self.view.generate_pdf_button.visible = not bool(pdf_document)
                 self.view.view_pdf_button.visible = bool(pdf_document)
+
+            # Limpiar el campo de observaciones al cargar
+            self.view.observaciones_field.value = ""
 
             self.cargar_respuestas(resultados_detallados[0].id_test)
             self.view.datatable.rows.clear()
@@ -124,7 +128,7 @@ class ResultadosDetalladosController(FletController):
                     respuesta_texto = "Sí" if respuesta == 'si' else "No"
                     color_respuesta = ft.Colors.RED if respuesta == 'si' else ft.Colors.GREEN
                     
-            
+                
                 tabla_destino.rows.append(
                     ft.DataRow(cells=[
                         ft.DataCell(ft.Text(pregunta_texto)),
@@ -133,10 +137,9 @@ class ResultadosDetalladosController(FletController):
                 )
         
         self.page.update()
-
+        
     def generar_y_navegar_pdf(self, e):
         if self.current_det_id is None:
-            # Aquí podrías mostrar un snackbar de error si es necesario
             print("Error: No hay un ID de resultado detallado para generar el PDF.")
             return
 
@@ -150,7 +153,7 @@ class ResultadosDetalladosController(FletController):
         test_full = self.model.leer_test(resultado.id_test)
         estudiante = self.model.leer_estudiante_por_id(test_full[1])
         
-        profesor_jefe_obj = self.model.cargar_profesor_id(estudiante.Pro_nameID) # Correcto: usar Pro_nameID del estudiante
+        profesor_jefe_obj = self.model.cargar_profesor_id(estudiante.Pro_nameID)
         profesor_jefe = f"{profesor_jefe_obj.pro_nombre_1} {profesor_jefe_obj.pro_apellido_pat}" if profesor_jefe_obj else "N/A"
 
         profesor_emisor = self.model.cargar_profesor_id(test_full[2])
@@ -159,9 +162,9 @@ class ResultadosDetalladosController(FletController):
         profesor_emisor_nombre = f"{profesor_emisor.pro_nombre_1} {profesor_emisor.pro_nombre_2 or ''} {profesor_emisor.pro_apellido_pat} {profesor_emisor.pro_apellido_mat}".replace("  ", " ").strip()
 
         total_preguntas = len(self.model.leer_preguntas(pre_cat="Atención")) + \
-                          len(self.model.leer_preguntas(pre_cat="Memoria")) + \
-                          len(self.model.leer_preguntas(pre_cat="Social")) + \
-                          len(self.model.leer_preguntas(pre_cat="Emocional"))
+                             len(self.model.leer_preguntas(pre_cat="Memoria")) + \
+                             len(self.model.leer_preguntas(pre_cat="Social")) + \
+                             len(self.model.leer_preguntas(pre_cat="Emocional"))
 
         # --- Inicialización del PDF ---
         pdf = FPDF()
@@ -173,14 +176,14 @@ class ResultadosDetalladosController(FletController):
         # --- Encabezado ---
         pdf.set_font("Arial", 'B', 14)
         pdf.cell(0, 10, "Informe de Derivación - Neuro Check", 0, 1, 'C')
-        pdf.ln(10)
+        pdf.ln(2)
 
         pdf.set_fill_color(255, 0, 0)
         pdf.set_font("Arial", 'B', 10)
         
         pdf.cell(0, 10, "Datos del estudiante:", 0, 1, 'L')
 
-        # --- Tabla Datos del Estudiante ---
+        # --- Tabla Datos del Estudiante (Ajuste por Multi-Cell) ---
         pdf.set_text_color(255, 255, 255)
         pdf.cell(col_width, 8, "Nombre Completo", 1, 0, 'C',fill=True)
         pdf.cell(col_width, 8, "RUT", 1, 0, 'C',fill=True)
@@ -193,13 +196,18 @@ class ResultadosDetalladosController(FletController):
         y_before_est = pdf.get_y()
         x_before_est = pdf.get_x()
         pdf.set_xy(x_before_est, y_before_est)
-        pdf.multi_cell(col_width, cell_height_est, nombre_completo_Es, 1, 'C')
+        # Importante: se agrega ln=0 para que la multi_cell solo calcule la altura
+        pdf.multi_cell(col_width, cell_height_est / 2, nombre_completo_Es, 1, 'C', 0, 0) 
         y_after_nombre_est = pdf.get_y()
         height_est = y_after_nombre_est - y_before_est
+        
+        # Se regresa a la posición Y original para dibujar las celdas laterales con la altura calculada
         pdf.set_xy(x_before_est + col_width, y_before_est)
         pdf.cell(col_width, height_est, estudiante.es_rut, 1, 0, 'C')
         pdf.cell(col_width, height_est, "Masculino" if estudiante.es_sexo == 1 else "Femenino", 1, 1, 'C')
-        pdf.set_y(y_after_nombre_est)
+        
+        pdf.set_y(y_after_nombre_est) # Se actualiza Y para el siguiente bloque
+
         pdf.ln(0)
 
         pdf.set_font("Arial", 'B', 10)
@@ -223,7 +231,7 @@ class ResultadosDetalladosController(FletController):
         pdf.cell(col_width * 3, 8, profesor_jefe, 1, 1, 'C')
         pdf.ln(2)
 
-        # --- Tabla Profesor Emisor ---
+        # --- Tabla Profesor Emisor (Ajuste por Multi-Cell) ---
         pdf.set_font("Arial", 'B', 10)
         pdf.cell(0, 10, "Profesor emisor del test:", 0, 1, 'L')
         pdf.set_text_color(255, 255, 255)
@@ -238,9 +246,10 @@ class ResultadosDetalladosController(FletController):
         y_before_emi = pdf.get_y()
         x_before_emi = pdf.get_x()
         pdf.set_xy(x_before_emi, y_before_emi)
-        pdf.multi_cell(col_width, cell_height_emi, profesor_emisor_nombre, 1, 'C')
+        pdf.multi_cell(col_width, cell_height_emi / 2, profesor_emisor_nombre, 1, 'C', 0, 0)
         y_after_nombre_emi = pdf.get_y()
         height_emi = y_after_nombre_emi - y_before_emi
+        
         pdf.set_xy(x_before_emi + col_width, y_before_emi) 
         pdf.cell(col_width, height_emi, profesor_emisor.pro_rut, 1, 0, 'C')
         pdf.cell(col_width, height_emi, "Profesional PIE" if profesor_emisor.pro_cargo == 1 else "Profesor Docente", 1, 1, 'C')
@@ -266,7 +275,7 @@ class ResultadosDetalladosController(FletController):
         pdf.set_font("Arial", '', 10)
         pdf.set_text_color(0, 0, 0)
         pdf.cell(col_width_res, 8, f"{resultado.det_puntaje}/{total_preguntas}", 1, 0, 'C')
-        pdf.cell(col_width_res, 8, f"{resultado.det_porcentaje}%", 1, 1, 'C')
+        pdf.cell(col_width_res, 8, f"{resultado.det_porcentaje:.2f}%", 1, 1, 'C')
         
         pdf.ln(0)
         pdf.set_text_color(255, 255, 255)
@@ -279,11 +288,18 @@ class ResultadosDetalladosController(FletController):
         pdf.set_text_color(0, 0, 0)
         cell_height_indicios = 5 
 
+        # *** FUNCIÓN DE DIBUJO DE FILA DINÁMICA - LA SOLUCIÓN REQUERIDA ***
         def draw_dynamic_row(category_name, porcentaje_val, indicios_val):
+            # Usamos el col_width definido fuera de la función
+            nonlocal col_width
+            
             estimated_min_height = 4 * cell_height_indicios 
             page_break_margin = 15
+            
+            # 0. Manejo de Salto de Página antes de empezar la fila
             if pdf.get_y() + estimated_min_height > (pdf.h - page_break_margin):
                  pdf.add_page()
+                 # Redibujar encabezados
                  pdf.set_text_color(255, 255, 255)
                  pdf.set_font("Arial", 'B', 10)
                  pdf.cell(col_width, 8, "Categoría", 1, 0, 'C', fill=True)
@@ -293,24 +309,54 @@ class ResultadosDetalladosController(FletController):
                  pdf.set_text_color(0, 0, 0)
 
             x_start, y_start = pdf.get_x(), pdf.get_y()
+            
+            # 1. Dibuja la tercera columna (Indicios) con multi_cell para determinar la altura
             pdf.set_xy(x_start + col_width * 2, y_start) 
-            pdf.multi_cell(col_width, cell_height_indicios, indicios_val, 1, 'L') 
+            # El ln=0 es crucial: dibuja la celda y calcula la nueva altura (y_end) sin mover el cursor al margen.
+            pdf.multi_cell(col_width, cell_height_indicios, indicios_val, 1, 'L', 0, 0) 
+            
             y_end = pdf.get_y()
             row_height = y_end - y_start
+            
+            # 2. Vuelve a X=x_start y dibuja las dos primeras columnas con la altura total calculada
             pdf.set_xy(x_start, y_start) 
             pdf.cell(col_width, row_height, category_name, 1, 0, 'C') 
             pdf.cell(col_width, row_height, porcentaje_val, 1, 0, 'C') 
-            pdf.set_y(y_end)
+            
+            # 3. Mueve el cursor a la posición inicial (x_start) y la nueva altura (y_end)
+            # ESTE ES EL PASO CRÍTICO: garantiza que la próxima fila comience correctamente.
+            pdf.set_xy(x_start, y_end) 
+            
+            # Se eliminó la firma y pdf.ln(5) que estaban incorrectamente aquí.
+
 
         draw_dynamic_row("Atención", f"{resultado.det_porcentaje_atencion:.2f}%", self.get_indicios_text(resultado.det_porcentaje_atencion, self.indicios_atencion))
         draw_dynamic_row("Memoria", f"{resultado.det_porcentaje_memoria:.2f}%", self.get_indicios_text(resultado.det_porcentaje_memoria, self.indicios_memoria))
         draw_dynamic_row("Social", f"{resultado.det_porcentaje_social:.2f}%", self.get_indicios_text(resultado.det_porcentaje_social, self.indicios_social))
         draw_dynamic_row("Emocional", f"{resultado.det_porcentaje_emocional:.2f}%", self.get_indicios_text(resultado.det_porcentaje_emocional, self.indicios_emocional))
 
-        pdf.ln(10)
+        pdf.ln(10) # El cursor está ahora en el lugar correcto después de la tabla
+
+        # --- Firma del Profesional (Movido fuera del bucle de la tabla) ---
+        pdf.cell(0, 10, "____________________", 0, 1, 'R')
+        pdf.cell(0, 10, "Firma del Profesional", 0, 1, 'R')
+
+        # --- Observaciones del Profesional ---
+        # Manejo de salto de página si las observaciones no caben
+        observaciones = self.view.observaciones_field.value
+        if pdf.get_y() + 20 > (pdf.h - 15) and observaciones:
+             pdf.add_page()
+             
+        if observaciones:
+            pdf.set_font("Arial", 'B', 10)
+            pdf.set_text_color(0, 0, 0) 
+            pdf.cell(0, 10, "Observaciones del Profesional:", 0, 1, 'L')
+            pdf.set_font("Arial", '', 10)
+            pdf.multi_cell(0, 5, observaciones)
         
         # --- Guardar el PDF en la BD ---
         file_name = f"informe_estudiante_{self.current_det_id}.pdf"
+        # Codificar la salida a 'latin-1' para asegurar la compatibilidad con la base de datos
         pdf_output_bytes = pdf.output(dest="S").encode("latin-1")
         pdf_id = self.model.crear_documento_pdf(file_name, ".pdf", pdf_output_bytes)
 

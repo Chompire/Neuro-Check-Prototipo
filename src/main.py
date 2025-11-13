@@ -92,6 +92,9 @@ def main(page: ft.Page, model: AppModel):
     view_title = ft.Text("", color="white", size=20)
 
     def logout(e):
+        if model.datos_profesor:
+            prof_id = model.datos_profesor.pro_nameID
+            model.actualizar_profesor(prof_id, {"pro_online_state": 0})
         model.datos_profesor = None
         page.views.clear()
         page.go("/")
@@ -270,6 +273,7 @@ def main(page: ft.Page, model: AppModel):
                 resultados_detallados_view.content.bgcolor = color_Background_Docente
             is_pie = hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1
             resultados_detallados_view.pie_controls_container.visible = is_pie
+            resultados_detallados_view.observaciones_field.visible = is_pie
 
             resultados_detallados_controller.cargar_resultados_detallados(int(troute.det_id))
             current_view = resultados_detallados_view.content
@@ -308,8 +312,10 @@ def main(page: ft.Page, model: AppModel):
             cambiar_password_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 cambiar_password_view.content.bgcolor = color_Background_PIE
+                cambiar_password_view.guardar_button.bgcolor = color_Background_PIE
             else:
                 cambiar_password_view.content.bgcolor = color_Background_Docente
+                cambiar_password_view.guardar_button.bgcolor = color_Background_Docente
             current_view = cambiar_password_view.content
 
         elif troute.match("/notificaciones"):
@@ -341,4 +347,4 @@ if __name__ == "__main__":
         
     assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "assets"))
 
-    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER, port=8000, host="localhost")
+    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER, port=8080, host="192.168.1.87")

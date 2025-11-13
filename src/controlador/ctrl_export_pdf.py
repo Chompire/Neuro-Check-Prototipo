@@ -76,5 +76,4 @@ class ExportPDFController(FletController):
             print("Error: No hay datos de PDF para descargar.")
 
     def guardar_archivo_resultado(self, e: ft.FilePickerResultEvent):
-        # Este método ya no es necesario para la descarga web.
         pass

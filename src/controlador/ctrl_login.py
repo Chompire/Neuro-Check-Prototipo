@@ -8,8 +8,18 @@ class LoginController(FletController):
         password = self.view.password_field.current.value
         profesor_cargado = self.model.cargar_profesor(rut, password)
         if profesor_cargado:
-            # Verificar el cargo del profesor
-            if self.model.datos_profesor.pro_cargo == 1: # 1 para PIE
+            # Verificar si ya hay una sesión activa
+            if self.model.datos_profesor.pro_online_state == 1:
+                print(self.model.datos_profesor.pro_online_state)
+                self.show_error_feedback("Ya hay una sesión activa para este usuario.")
+                return
+
+            # Actualizar el estado a 'online' (1)
+            prof_id = self.model.datos_profesor.pro_nameID
+            self.model.actualizar_profesor(prof_id, {"pro_online_state": 1})
+
+            # Redirigir según el rol
+            if self.model.datos_profesor.pro_cargo == 1:
                 self.page.go("/inicio_pie")
             else: # Otro cargo (docente normal)
                 self.page.go("/inicio_profesor")
