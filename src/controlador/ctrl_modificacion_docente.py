@@ -291,8 +291,6 @@ class ModificacionDocenteController(FletController):
             "pro_cargo": cargo_valor, "pro_state": estado_valor,
         }
         self.model.actualizar_profesor(self.selected_prof_id, datos_actualizados)
-
-        # Actualizar cursos para PIE
         if cargo_valor == 1:
             cursos_seleccionados = [
                 str(cb.data) for cb in self.view.cursos_checkbox_group.content.controls if cb.value
@@ -300,7 +298,6 @@ class ModificacionDocenteController(FletController):
             cursos_str = ",".join(cursos_seleccionados)
             self.model.actualizar_asignacion_pie(self.selected_prof_id, cursos_str)
         else:
-            # Si el cargo cambia de PIE a otro, eliminamos la asignación de cursos
             self.model.eliminar_asignacion_pie(self.selected_prof_id)
 
 
@@ -326,6 +323,7 @@ class ModificacionDocenteController(FletController):
                 año_actual = datetime.now().year
 
                 self.model.crear_curso(nombre_siguiente_curso, año_actual)
+                self.model.crear_curso(nombre_curso_actual, año_actual)
                 self.show_feedback(f"Curso '{nombre_siguiente_curso}' para el {año_actual} creado.", ft.Colors.BLUE)
 
         self.show_feedback("Estado del curso actualizado.", ft.Colors.GREEN)

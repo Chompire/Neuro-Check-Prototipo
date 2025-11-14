@@ -38,6 +38,64 @@ class PerfilDocenteView(FletView):
             ],
             rows=[]
         )
+        
+        self.stat_cantidad_cursos_encuestados = ft.BarChart(
+            bar_groups=[],
+            border=ft.border.all(1, ft.Colors.GREY_400),
+            width=700,
+            left_axis=ft.ChartAxis(
+                labels_size=40, title=ft.Text("Cantidad de tests realizados en el año", weight=ft.FontWeight.BOLD, color="black"), title_size=40,
+                labels=[
+                    ft.ChartAxisLabel(value=0, label=ft.Text("0", color="black")),
+                    ft.ChartAxisLabel(value=5, label=ft.Text("5", color="black")),
+                    ft.ChartAxisLabel(value=10, label=ft.Text("10", color="black")),
+                    ft.ChartAxisLabel(value=15, label=ft.Text("15", color="black")),
+                    ft.ChartAxisLabel(value=20, label=ft.Text("20", color="black")),
+                ]
+            ),
+            bottom_axis=ft.ChartAxis(
+                labels=[],
+            ),
+            horizontal_grid_lines=ft.ChartGridLines(
+                color=ft.Colors.BLACK, width=1, dash_pattern=[3, 3]
+            ),
+            max_y=20,
+            interactive=True,
+        )
+
+        self.stat_cantidad_cursos_encuestados_totales = ft.BarChart(
+            bar_groups=[],
+            border=ft.border.all(1, ft.Colors.GREY_400),
+            width=700,
+            left_axis=ft.ChartAxis(
+                labels_size=40, title=ft.Text("Cantidad de tests totales realizados en el año", weight=ft.FontWeight.BOLD, color="black"), title_size=40,
+                labels=[
+                    ft.ChartAxisLabel(value=0, label=ft.Text("0", color="black")),
+                    ft.ChartAxisLabel(value=5, label=ft.Text("5", color="black")),
+                    ft.ChartAxisLabel(value=10, label=ft.Text("10", color="black")),
+                    ft.ChartAxisLabel(value=15, label=ft.Text("15", color="black")),
+                    ft.ChartAxisLabel(value=20, label=ft.Text("20", color="black")),
+                ]
+            ),
+            bottom_axis=ft.ChartAxis(
+                labels=[],
+            ),
+            horizontal_grid_lines=ft.ChartGridLines(
+                color=ft.Colors.BLACK, width=1, dash_pattern=[3, 3]
+            ),
+            max_y=20,
+            interactive=True,
+        )
+
+        self.cursos_en_rojo= ft.PieChart(            
+            width=800,
+            height=400,
+            sections=[],
+            sections_space=1,
+            center_space_radius=0,
+        )
+        
+
 
         view = ft.View(
             "/mi_perfil",
@@ -49,10 +107,28 @@ class PerfilDocenteView(FletView):
                 controls=[
                     ft.Row(
                         controls=[
-                            ft.Column(spacing=5,controls=[
-                                ft.Text("Datos del docente:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Column(spacing=5, expand=True, controls=[ # Añadido expand=True aquí
+                                ft.Text("Mis datos:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.info_table], scroll=ft.ScrollMode.AUTO),
                                 ft.Row([self.cursos_designados_table], scroll=ft.ScrollMode.AUTO),
+                                ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                                ft.Row([ft.Text("Graficos de barras:", size=10, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                                ft.Container(
+                                    content=ft.Row(
+                                        [self.stat_cantidad_cursos_encuestados, self.stat_cantidad_cursos_encuestados_totales],
+                                        scroll=ft.ScrollMode.ADAPTIVE
+                                    ),
+                                    padding=5,
+                                    expand=True
+                                ),
+                                ft.Container(
+                                    content=ft.Row(
+                                        [self.cursos_en_rojo],
+                                        scroll=ft.ScrollMode.ADAPTIVE
+                                    ),
+                                    padding=5,
+                                    expand=True
+                                )
                                 ])
                         ]),
                 ]),            

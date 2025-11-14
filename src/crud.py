@@ -334,13 +334,11 @@ def resultados_detalladosCREATE(detalles_data: tuple):
         print(f"resultados_detalladosCREATE Error al crear resultado detallado: {ex.args[0]}")
         return None
 
-def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = None, pro_ID: int | None = None, lvl_curso: str | None = None):
+def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = None, pro_ID: int | None = None, lvl_curso: str | None = None, det_fecha: str | None = None, cur_año: int | None = None):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 if det_ID is not None and pro_ID is not None:
-                    # Nueva lógica: Buscar un resultado detallado específico que pertenezca a un profesor específico.
-                    # Se une con la tabla Test para poder filtrar por pro_ID.
                     sql_info = """
                         SELECT rd.* FROM Resultados_detallados rd
                         JOIN Test t ON rd.id_test = t.test_ID
@@ -362,18 +360,26 @@ def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = N
                         SELECT rd.*, c.cur_año, c.cur_state FROM Resultados_detallados rd
                         JOIN Test t ON rd.id_test = t.test_ID
                         LEFT JOIN Curso c ON rd.lvl_curso = c.cur_nombre
-                        WHERE t.pro_ID = ? ORDER BY cur_nombre
+                        WHERE t.pro_ID = ?
                     """
-                    cursor.execute(sql_info, pro_ID)
+                    params = [pro_ID]
+                    if cur_año is not None:
+                        sql_info += " AND YEAR(rd.det_fecha) = ?"
+                        params.append(cur_año)
+                    sql_info += " ORDER BY c.cur_nombre"
+                    cursor.execute(sql_info, params)
+                    return cursor.fetchall()
+                elif det_fecha is not None:
+                    sql_info = "SELECT * FROM Resultados_detallados WHERE det_fecha = ?"
+                    cursor.execute(sql_info, det_fecha)
                     return cursor.fetchall()
                 elif lvl_curso is not None:
-                    # Nueva lógica para filtrar por curso
                     sql_info = """
-                        SELECT rd.* FROM Resultados_detallados rd
-                        JOIN Test t ON rd.id_test = t.test_ID
+                        SELECT rd.*, c.cur_año FROM Resultados_detallados rd
+                        LEFT JOIN Curso c ON rd.lvl_curso = c.cur_nombre
                         WHERE rd.lvl_curso = ?
                     """
-                    cursor.execute(sql_info, lvl_curso)
+                    cursor.execute(sql_info, (lvl_curso,))
                     return cursor.fetchall()
                 # Si no se proporciona ningún argumento, devolver una lista vacía
                 # para evitar el error "No results".

@@ -23,7 +23,7 @@ class MisTestsView(FletView):
                 ft.DataColumn(ft.Text("Curso")),
                 ft.DataColumn(ft.Text("Fecha de Creación")),
                 ft.DataColumn(ft.Text("Fecha de Finalización")),
-                ft.DataColumn(ft.Text("Riesgo")),
+                ft.DataColumn(ft.Text("IDT")),
             ],
             rows=[]
         )
@@ -55,7 +55,7 @@ class MisTestsView(FletView):
                 ft.DataColumn(ft.Text("Fecha de Creación")),
                 ft.DataColumn(ft.Text("Fecha de Finalización")),
                 ft.DataColumn(ft.Text("Profesor Emisor")),
-                ft.DataColumn(ft.Text("Riesgo")),
+                ft.DataColumn(ft.Text("IDT")),
             ],
             rows=[],
             visible=False # Oculto por defecto

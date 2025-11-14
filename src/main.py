@@ -68,7 +68,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
             on_click=logout_handler
         )
     )
-        
+
     return ft.AppBar(
         leading=back_button,
         leading_width=40,
@@ -135,6 +135,12 @@ def main(page: ft.Page, model: AppModel):
             if hasattr(model, 'datos_profesor') and model.datos_profesor:
                 if model.datos_profesor.pro_cargo == 1:
                     page.go("/inicio_pie")
+        elif page.route == "/cambiar_contrasena":
+            if hasattr(model, 'datos_profesor') and model.datos_profesor:
+                if model.datos_profesor.pro_cargo == 1:
+                    page.go("/inicio_pie")
+                else:
+                    page.go("/inicio_profesor")
             
     
     login_controller = LoginController(page, model)
@@ -164,8 +170,6 @@ def main(page: ft.Page, model: AppModel):
     mis_tests_view = MisTestsView(mis_tests_controller, model)
     notificaciones_view = NotificacionesView(notificaciones_controller, model)
     cambiar_password_view  = CambiarPasswordView(cambiar_password_controller, model)
-
-
     login_controller.view = login_view
     inicio_controller.view = inicio_view
     inicio_pie_controller.view = inicio_pie_view
@@ -246,11 +250,13 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/perfil_docente"):
             view_title.value = "Mi Perfil"
             perfil_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 perfil_docente_view.content.bgcolor = color_Background_PIE
             else:
                 perfil_docente_view.content.bgcolor = color_Background_Docente
             perfil_docente_controller.cargar_datos_docente()
+            perfil_docente_controller.cargar_estadisticas_cursos_encuestados()
             current_view = perfil_docente_view.content
         
         elif troute.match("/test/:test_id"):
@@ -357,4 +363,4 @@ if __name__ == "__main__":
         
     assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "assets"))
 
-    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER, port=8080, host="192.168.1.87")
+    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER, port=8080, host="localhost")
