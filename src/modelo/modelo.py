@@ -159,8 +159,8 @@ class AppModel(FletModel):
         test_record = db.testREAD(test_ID=test_id)
         if not test_record:
             return None
-        es_id = test_record[1] # es_ID del test
-        pro_id = test_record[2] # pro_ID del test
+        es_id = test_record[1]
+        pro_id = test_record[2]
         student_record = db.estudiantesREAD(es_nameID=es_id)
         profesor_record = db.profesorREAD(pro_nameID=pro_id)
         
