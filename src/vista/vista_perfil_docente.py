@@ -88,7 +88,7 @@ class PerfilDocenteView(FletView):
         )
 
         self.cursos_en_rojo= ft.PieChart(            
-            width=800,
+            width=400,
             height=400,
             sections=[],
             sections_space=1,
@@ -123,7 +123,10 @@ class PerfilDocenteView(FletView):
                                 ),
                                 ft.Container(
                                     content=ft.Row(
-                                        [self.cursos_en_rojo],
+                                        [ft.Column([
+                                            ft.Text("Cursos con mayor cantidad de resultados en riesgo alto", weight=ft.FontWeight.BOLD, color="black", size=16),
+                                            self.cursos_en_rojo
+                                        ])],
                                         scroll=ft.ScrollMode.ADAPTIVE
                                     ),
                                     padding=5,

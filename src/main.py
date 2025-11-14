@@ -169,7 +169,7 @@ def main(page: ft.Page, model: AppModel):
     export_pdf_view = ExportPDFView(export_pdf_controller, model)
     mis_tests_view = MisTestsView(mis_tests_controller, model)
     notificaciones_view = NotificacionesView(notificaciones_controller, model)
-    cambiar_password_view  = CambiarPasswordView(cambiar_password_controller, model)
+    cambiar_password_view  = CambiarPasswordView(cambiar_password_controller, model)    
     login_controller.view = login_view
     inicio_controller.view = inicio_view
     inicio_pie_controller.view = inicio_pie_view

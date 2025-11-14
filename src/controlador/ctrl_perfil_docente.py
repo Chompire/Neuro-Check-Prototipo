@@ -125,7 +125,7 @@ class PerfilDocenteController(FletController):
                 title=f"{curso} ({conteo})",
                 title_style=ft.TextStyle(size=12, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
                 color=colors_list[i % len(colors_list)],
-                radius=110,
+                radius=200,
             ))
 
         for i, (curso, conteo) in enumerate(conteo_por_curso.items()):
