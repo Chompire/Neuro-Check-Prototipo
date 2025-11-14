@@ -381,9 +381,10 @@ def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = N
                     """
                     cursor.execute(sql_info, (lvl_curso,))
                     return cursor.fetchall()
-                # Si no se proporciona ningún argumento, devolver una lista vacía
-                # para evitar el error "No results".
-                return []
+                else:
+                    sql_info = "SELECT * FROM Resultados_detallados"
+                    cursor.execute(sql_info)
+                    return cursor.fetchall()
     except pyodbc.Error as ex:
         print(f"resultados_detalladosREAD Error al leer resultados detallados: {ex.args[0]}")
         return []

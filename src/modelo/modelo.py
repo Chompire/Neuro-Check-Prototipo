@@ -131,17 +131,18 @@ class AppModel(FletModel):
         det_id = db.resultados_detalladosCREATE(detalles_data)
         return det_id
     
-    def leer_resultados_detallados(self, ID_test: int | None = None, pro_ID: int | None = None, lvl_curso: str | None = None, det_porcentaje: int | None = None, cur_año: int | None = None):
+    def leer_resultados_detallados(self, ID_test: int | None = None, pro_ID: int | None = None, lvl_curso: str | None = None, det_porcentaje: int | None = None, cur_año: int | None = None, det_nameES: str | None = None):
         kwargs = {}
         if ID_test is not None:
             kwargs['test_ID'] = ID_test
         if pro_ID is not None:
             kwargs['pro_ID'] = pro_ID
-        # Añadir cur_año a los argumentos que se pasan al CRUD
         if cur_año is not None:
             kwargs['cur_año'] = cur_año
         if lvl_curso is not None:
             kwargs['lvl_curso'] = lvl_curso
+        if det_nameES is not None:
+            kwargs['det_nameES'] = det_nameES
         return db.resultados_detalladosREAD(**kwargs)
 
     def leer_resultados_detallados_by_det_id(self, det_id: int | None = None, pro_id: int| None = None, det_fecha: str | None =None):
