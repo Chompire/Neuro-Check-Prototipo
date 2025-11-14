@@ -73,10 +73,8 @@ class PerfilDocenteController(FletController):
         current_year_str = str(datetime.datetime.now().year)
         current_year_int = datetime.datetime.now().year
         profesor = self.model.datos_profesor
-
-        # Obtener todos los resultados del profesor para el año actual
+        
         resultados_detallados_profesional = self.model.leer_resultados_detallados(pro_ID=profesor.pro_nameID, cur_año=current_year_int)
-        cursos_rojos = [res for res in resultados_detallados_profesional if res.det_porcentaje < 50]
 
         cursos_asignados_nombres = set()
         if profesor.pro_cargo == 1: # Es PIE
