@@ -105,10 +105,6 @@ class PerfilDocenteController(FletController):
 
         bar_groups2 = []
         axis_labels2 = []
-
-        # --- Lógica para el Gráfico Circular (PieChart) ---
-        # Para el rol PIE, contar los resultados con Riesgo Alto (>= 70%) de TODOS los profesores,
-        # pero solo en los cursos que tiene asignados.
         conteo_riesgo_alto_por_curso = {}
         if profesor.pro_cargo == 1 and cursos_asignados_nombres:
             for curso_nombre in cursos_asignados_nombres:

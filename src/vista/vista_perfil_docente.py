@@ -94,6 +94,14 @@ class PerfilDocenteView(FletView):
             sections_space=1,
             center_space_radius=0,
         )
+
+        self.estudiantes_rojos = ft.PieChart(            
+            width=400,
+            height=400,
+            sections=[],
+            sections_space=1,
+            center_space_radius=0,
+        )
         
 
 
@@ -124,8 +132,12 @@ class PerfilDocenteView(FletView):
                                 ft.Container(
                                     content=ft.Row(
                                         [ft.Column([
-                                            ft.Text("Cursos con mayor cantidad de resultados en riesgo alto", weight=ft.FontWeight.BOLD, color="black", size=16),
+                                            ft.Text("Cursos con mayor cantidad de resultados en IDT alto", weight=ft.FontWeight.BOLD, color="black", size=16),
                                             self.cursos_en_rojo
+                                        ]),
+                                        ft.Column([
+                                            ft.Text("Estudiantes con mayor cantidad de test con IDT alto ", weight=ft.FontWeight.BOLD, color="black", size=16),
+                                            self.estudiantes_rojos
                                         ])],
                                         scroll=ft.ScrollMode.ADAPTIVE
                                     ),
