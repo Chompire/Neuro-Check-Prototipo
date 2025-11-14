@@ -103,8 +103,6 @@ class PerfilDocenteView(FletView):
             center_space_radius=0,
         )
         
-
-
         view = ft.View(
             "/mi_perfil",
             bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
@@ -120,7 +118,7 @@ class PerfilDocenteView(FletView):
                                 ft.Row([self.info_table], scroll=ft.ScrollMode.AUTO),
                                 ft.Row([self.cursos_designados_table], scroll=ft.ScrollMode.AUTO),
                                 ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
-                                ft.Row([ft.Text("Graficos de barras:", size=10, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                                ft.Row([ft.Text("Graficos de barras:", size=15, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
                                 ft.Container(
                                     content=ft.Row(
                                         [self.stat_cantidad_cursos_encuestados, self.stat_cantidad_cursos_encuestados_totales],

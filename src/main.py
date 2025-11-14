@@ -38,7 +38,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
     )
 
     has_unread = False
-    if model.datos_profesor and model.datos_profesor.pro_cargo == 1: # Solo para PIE
+    if model.datos_profesor and model.datos_profesor.pro_cargo == 1:
         prof_id = model.datos_profesor.pro_nameID
         notificaciones = model.leer_notificaciones(prof_id=prof_id, solo_no_leidas=True)
         has_unread = bool(notificaciones)
@@ -94,7 +94,7 @@ def main(page: ft.Page, model: AppModel):
         if model.datos_profesor:
             prof_id = model.datos_profesor.pro_nameID
             model.actualizar_profesor(prof_id, {"pro_online_state": 0})
-        page.client_storage.remove("profesor_id") # Limpiar la sesión del cliente
+        page.client_storage.remove("profesor_id")
         model.datos_profesor = None
         page.views.clear()
         page.go("/")
@@ -182,6 +182,7 @@ def main(page: ft.Page, model: AppModel):
     export_pdf_controller.view = export_pdf_view
     mis_tests_controller.view = mis_tests_view
     notificaciones_controller.view = notificaciones_view
+    cambiar_password_controller.view = cambiar_password_view
     def route_change(route):
         print(f"Cambiando a la ruta: {page.route}")
         page.views.clear() 

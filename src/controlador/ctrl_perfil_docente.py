@@ -47,6 +47,7 @@ class PerfilDocenteController(FletController):
     def cargar_cursos_pie(self, pro_id):
         self.view.cursos_designados_table.rows.clear()
         resultados_detallados_profesional = self.model.leer_resultados_detallados(pro_ID=pro_id)
+        
         conteo_por_curso = {}
         for resultado in resultados_detallados_profesional:
             curso = resultado.lvl_curso
@@ -58,7 +59,6 @@ class PerfilDocenteController(FletController):
             curso_obj = cursos_map.get(nombre_curso)
             año_curso = str(curso_obj.cur_año) if curso_obj else "N/A"
             estado_curso = "Habilitado" if curso_obj and curso_obj.cur_state else "Inhabilitado"
-
             self.view.cursos_designados_table.rows.append(
                 ft.DataRow(cells=[
                     ft.DataCell(ft.Text(nombre_curso)),
@@ -73,21 +73,25 @@ class PerfilDocenteController(FletController):
         current_year_str = str(datetime.datetime.now().year)
         current_year_int = datetime.datetime.now().year
         profesor = self.model.datos_profesor
-
         resultados_detallados_profesional = self.model.leer_resultados_detallados(pro_ID=profesor.pro_nameID, cur_año=current_year_int)
 
+        # Obtener todos los cursos y filtrar solo los habilitados
+        todos_los_cursos = self.model.leer_cursos()
+        cursos_habilitados = {c.cur_nombre for c in todos_los_cursos if c.cur_state == 1}
+
         cursos_asignados_nombres = set()
-        if profesor.pro_cargo == 1: # Es PIE
+        if profesor.pro_cargo == 1:
             cursos_pie_info = self.model.leer_cursos_pie(profesor.pro_nameID)
             if cursos_pie_info and cursos_pie_info.cursos_a_cargo:
                 cursos_asignados_ids = cursos_pie_info.cursos_a_cargo.split(',')
-                todos_los_cursos = self.model.leer_cursos()
-                cursos_asignados_nombres = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in cursos_asignados_ids}
+                # Filtrar cursos asignados para que solo incluya los habilitados
+                cursos_asignados_nombres = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in cursos_asignados_ids and c.cur_state == 1}
 
         conteo_por_curso = {}
         for resultado in resultados_detallados_profesional:
             curso = resultado.lvl_curso
-            conteo_por_curso[curso] = conteo_por_curso.get(curso, 0) + 1
+            if curso in cursos_habilitados:
+                conteo_por_curso[curso] = conteo_por_curso.get(curso, 0) + 1
 
         # Para el gráfico de totales, obtenemos el conteo total solo de los cursos asignados al PIE.
         conteo_por_curso_totales = {}
@@ -95,18 +99,16 @@ class PerfilDocenteController(FletController):
         
         for curso_nombre in cursos_para_totales:
             if curso_nombre in conteo_por_curso: # Asegurarse de que el curso tiene datos del profesor para comparar
-                resultados_totales_curso = self.model.leer_resultados_detallados(lvl_curso=curso_nombre)
+                resultados_totales_curso = self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int)
                 conteo_por_curso_totales[curso_nombre] = sum(1 for res in resultados_totales_curso if str(res.cur_año) == current_year_str)
-
         bar_groups1 = []
         axis_labels1 = []
-
         bar_groups2 = []
         axis_labels2 = []
         conteo_riesgo_alto_por_curso = {}
         if profesor.pro_cargo == 1 and cursos_asignados_nombres:
             for curso_nombre in cursos_asignados_nombres:
-                resultados_totales_curso = self.model.leer_resultados_detallados(lvl_curso=curso_nombre)
+                resultados_totales_curso = self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int)
                 conteo_alto_riesgo = sum(1 for res in resultados_totales_curso if res.cur_año == current_year_int and res.det_porcentaje >= 70)
                 if conteo_alto_riesgo > 0:
                     conteo_riesgo_alto_por_curso[curso_nombre] = conteo_alto_riesgo
@@ -121,6 +123,29 @@ class PerfilDocenteController(FletController):
                 color=colors_list[i % len(colors_list)],
                 radius=200,
             ))
+
+        # Lógica para el PieChart de estudiantes con IDT alto (>= 70%)
+        conteo_riesgo_alto_por_estudiante = {}
+        # Para el total, consideramos todos los resultados del año actual en los cursos asignados al PIE
+        if profesor.pro_cargo == 1:
+            for curso_nombre in cursos_asignados_nombres:
+                resultados_totales_curso = self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int)
+                for res in resultados_totales_curso:
+                    if res.det_porcentaje >= 70:
+                        nombre_estudiante = f"{res.det_nameES} {res.det_apellidoES}"
+                        conteo_riesgo_alto_por_estudiante[nombre_estudiante] = conteo_riesgo_alto_por_estudiante.get(nombre_estudiante, 0) + 1
+        
+        pie_chart_estudiantes_sections = []
+        if profesor.pro_cargo == 1:
+            colors_list_estudiantes = [ft.Colors.BLUE_700, ft.Colors.LIGHT_BLUE, ft.Colors.CYAN, ft.Colors.TEAL]
+            for i, (estudiante, conteo) in enumerate(conteo_riesgo_alto_por_estudiante.items()):
+                pie_chart_estudiantes_sections.append(ft.PieChartSection(
+                    value=conteo,
+                    title=f"{estudiante} ({conteo})",
+                    title_style=ft.TextStyle(size=12, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
+                    color=colors_list_estudiantes[i % len(colors_list_estudiantes)],
+                    radius=200,
+                ))
 
         for i, (curso, conteo) in enumerate(conteo_por_curso.items()):
             bar_groups1.append(
@@ -174,14 +199,11 @@ class PerfilDocenteController(FletController):
         self.view.stat_cantidad_cursos_encuestados_totales.bottom_axis.labels = axis_labels2
 
         self.view.cursos_en_rojo.sections = pie_chart_sections
+        self.view.estudiantes_rojos.sections = pie_chart_estudiantes_sections
 
         self.page.update()
 
     def cargar_estadisticas_cursos_rojos(self):
-        """
-        Carga y muestra un gráfico de barras con la cantidad de resultados "rojos"
-        (rendimiento < 50%) por curso para el profesor actual.
-        """
         if not self.model.datos_profesor:
             return
 
@@ -190,7 +212,6 @@ class PerfilDocenteController(FletController):
 
         conteo_rojos_por_curso = {}
         for resultado in resultados_profesional:
-            # Asumimos que un resultado "rojo" es aquel con un porcentaje < 50
             if resultado.det_porcentaje < 50:
                 curso = resultado.lvl_curso
                 if curso:

@@ -7,15 +7,12 @@ class CambiarPasswordView(FletView):
         self.feedback_snackbar = ft.SnackBar(content=ft.Text(""))
         self.nuevo_password = ft.TextField(label="Nueva contraseña", color="black", label_style=ft.TextStyle(color="black"), password=True, can_reveal_password=True)
         self.confirmar_password = ft.TextField(label="Confirmar nueva contraseña", color="black", label_style=ft.TextStyle(color="black"), password=True, can_reveal_password=True)
-
-        # El color del botón se determinará dinámicamente en main.py antes de mostrar la vista.
-        # Aquí, simplemente creamos el botón.
         self.guardar_button = ft.ElevatedButton(
             text="Guardar Cambios",
             on_click=controller.cambiar_contrasena,
-            color="black"
+            color="black",
+            bgcolor=color_Docente
         )
-
         view = ft.View(
             "/cambiar_contrasena",
             scroll=ft.ScrollMode.AUTO,
