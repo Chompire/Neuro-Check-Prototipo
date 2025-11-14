@@ -73,14 +73,6 @@ class PerfilDocenteController(FletController):
         current_year_str = str(datetime.datetime.now().year)
         current_year_int = datetime.datetime.now().year
         profesor = self.model.datos_profesor
-        estudiantes = self.model.leer_resultados_detallados(det_nameES="estudiante", cur_año=current_year_int)
-        estudiantes_select = []
-        for est in estudiantes:
-            print(est.es_nombre_1)
-            estudiantes_select.append(est.es_nombre_1)
-        print(estudiantes_select)
-        #resultados_estudiantes = self.model.leer_resultados_detallados(det_nameES="estudiante", cur_año=current_year_int)
-        #print(resultados_estudiantes)
 
         resultados_detallados_profesional = self.model.leer_resultados_detallados(pro_ID=profesor.pro_nameID, cur_año=current_year_int)
 
