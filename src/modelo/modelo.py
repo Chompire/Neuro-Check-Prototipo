@@ -177,6 +177,9 @@ class AppModel(FletModel):
     def crear_documento_pdf(self, nombre, extension, contenido):
         return db.documentoPDFCREATE(nombre, extension, contenido)
 
+    def actualizar_documento_pdf(self, pdf_id: int, contenido: bytes):
+        return db.documentoPDFUPDATE(pdf_id, contenido)
+
     def leer_lista_documentos_pdf(self):
         return db.documentoPDF_READ(include_content=False)
 
@@ -191,6 +194,8 @@ class AppModel(FletModel):
 
     def leer_profesor_por_rut(self, rut):
         return db.profesorREAD(pro_rut=rut)
+    def leer_profesor_por_rut_contra_estado(self, rut, password):
+        return db.profesorREAD(pro_rut=rut, pro_password=password)
 
     def crear_profesor(self, datos):
         return db.profesorCREATE(datos)

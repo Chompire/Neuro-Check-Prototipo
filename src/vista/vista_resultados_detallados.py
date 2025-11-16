@@ -226,6 +226,11 @@ class ResultadosDetalladosView(FletView):
             color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE_GREY,
             on_click=lambda _: controller.page.go(f"/export_pdf/{controller.current_det_id}")
         )
+        self.update_pdf_button = ft.ElevatedButton(
+            text="Actualizar PDF", icon=ft.Icons.UPDATE, icon_color=ft.Colors.WHITE,
+            color=ft.Colors.WHITE, bgcolor=ft.Colors.ORANGE,
+            on_click=controller.generar_y_navegar_pdf, visible=False
+        )
         
         tabs_control = ft.Tabs(
             indicator_color=color_Docente, divider_color=ft.Colors.TRANSPARENT,
@@ -282,7 +287,7 @@ class ResultadosDetalladosView(FletView):
             visible=False, # Oculto por defecto
             controls=[
                 self.observaciones_field,
-                ft.Row([self.generate_pdf_button, self.view_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
+                ft.Row([self.generate_pdf_button, self.view_pdf_button, self.update_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
                 tabs_control,
                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                 

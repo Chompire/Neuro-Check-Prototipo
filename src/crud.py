@@ -476,6 +476,21 @@ def documentoPDFCREATE(nombre: str, extension: str, contenido: bytes):
         print(f"documentoPDFCREATE Error de conexión o consulta: {ex.args[0]}")
         return None
 
+def documentoPDFUPDATE(pdf_id: int, contenido: bytes):
+    """
+    Actualiza el contenido de un documento PDF existente.
+    """
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_update = "UPDATE DocumentosPDF SET pdf_contenido = ?, pdf_fecha = GETDATE() WHERE pdf_id = ?"
+                cursor.execute(sql_update, contenido, pdf_id)
+                cnxn.commit()
+                return True
+    except pyodbc.Error as ex:
+        print(f"documentoPDFUPDATE Error de conexión o consulta: {ex.args[0]}")
+        return False
+
 def documentoPDF_READ(pdf_id: int | None = None, pdf_nombre: str | None = None, include_content: bool = False):
     """
     Lee documentos PDF de la base de datos.

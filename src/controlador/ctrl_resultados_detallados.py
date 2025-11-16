@@ -46,12 +46,11 @@ class ResultadosDetalladosController(FletController):
             # --- Lógica para visibilidad de botones PDF ---
             is_pie = self.model.datos_profesor.pro_cargo == 1
             if is_pie:
-                file_name_to_find = f"informe_estudiante_{det_id}.pdf"
-                pdf_document = self.model.leer_documento_por_nombre(file_name_to_find)
-                
-                # Si el PDF ya existe, ocultar "Generar" y mostrar "Ver"
-                self.view.generate_pdf_button.visible = not bool(pdf_document)
-                self.view.view_pdf_button.visible = bool(pdf_document)
+                archivo_buscar = f"informe_estudiante_{det_id}.pdf"
+                documento_pdf = self.model.leer_documento_por_nombre(archivo_buscar)
+                self.view.generate_pdf_button.visible = not bool(documento_pdf)
+                self.view.view_pdf_button.visible = bool(documento_pdf)
+                self.view.update_pdf_button.visible = bool(documento_pdf)
 
             # Limpiar el campo de observaciones al cargar
             self.view.observaciones_field.value = ""
@@ -350,16 +349,24 @@ class ResultadosDetalladosController(FletController):
         
         # --- Guardar el PDF en la BD ---
         file_name = f"informe_estudiante_{self.current_det_id}.pdf"
-        pdf_output_bytes = pdf.output(dest="S").encode("latin-1")
-        pdf_id = self.model.crear_documento_pdf(file_name, ".pdf", pdf_output_bytes)
+        pdf_output_bytes = pdf.output(dest="S").encode("latin-1") # Usar latin-1 para bytes
 
-        if pdf_id:
+        # Verificar si el documento ya existe para actualizarlo en lugar de crearlo
+        existing_pdf = self.model.leer_documento_por_nombre(file_name)
+        if existing_pdf:
+            # Actualizar el contenido del PDF existente
+            success = self.model.actualizar_documento_pdf(existing_pdf.pdf_id, pdf_output_bytes)
+        else:
+            # Crear un nuevo registro de PDF
+            success = self.model.crear_documento_pdf(file_name, ".pdf", pdf_output_bytes)
+
+        if success:
             # Ocultar el botón de generar y mostrar el de ver PDF
             self.view.generate_pdf_button.visible = False
             self.view.view_pdf_button.visible = True
+            self.view.update_pdf_button.visible = True
             self.page.update()
 
-            # --- Navegar a la vista de exportación solo si el PDF se guardó correctamente ---
             self.page.go(f"/export_pdf/{self.current_det_id}")
         else:
             print("Error: No se pudo guardar el PDF en la base de datos.")
