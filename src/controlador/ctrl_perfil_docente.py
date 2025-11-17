@@ -9,9 +9,7 @@ class PerfilDocenteController(FletController):
         self.selected_test_id = None
         self.res_det_id = None
         self.pro_id = None
-        
-        
-        
+
     def cargar_datos_docente(self):
         self.view.info_table.rows.clear()
         doc_info = self.model.datos_profesor
@@ -27,8 +25,7 @@ class PerfilDocenteController(FletController):
                 ])
             )
             return
-
-        # Crear y añadir la fila con los datos del docente
+        
         row = ft.DataRow(cells=[
             ft.DataCell(ft.Text(f"{doc_info.pro_nombre_1} {doc_info.pro_nombre_2 or ''}".strip())),
             ft.DataCell(ft.Text(f"{doc_info.pro_apellido_pat} {doc_info.pro_apellido_mat}")),
@@ -37,12 +34,15 @@ class PerfilDocenteController(FletController):
             ft.DataCell(ft.Text("N/A")),
         ])
         self.view.info_table.rows.append(row)
-
+        self.cargar_cursos_pie(doc_info.pro_nameID)
         if doc_info.pro_cargo == 1:
-            self.cargar_cursos_pie(doc_info.pro_nameID)
+            
+            self.view.graficos_container.visible = True
         else:
-            self.view.cursos_designados_table.rows.clear() # Limpiar la tabla si no es PIE
+            self.view.cursos_designados_table.rows.clear()
+            self.view.graficos_container.visible = False
 
+        self.page.update()
 
     def cargar_cursos_pie(self, pro_id):
         self.view.cursos_designados_table.rows.clear()
@@ -74,8 +74,6 @@ class PerfilDocenteController(FletController):
         current_year_int = datetime.datetime.now().year
         profesor = self.model.datos_profesor
         resultados_detallados_profesional = self.model.leer_resultados_detallados(pro_ID=profesor.pro_nameID, cur_año=current_year_int)
-
-        # Obtener todos los cursos y filtrar solo los habilitados
         todos_los_cursos = self.model.leer_cursos()
         cursos_habilitados = {c.cur_nombre for c in todos_los_cursos if c.cur_state == 1}
 
@@ -84,7 +82,6 @@ class PerfilDocenteController(FletController):
             cursos_pie_info = self.model.leer_cursos_pie(profesor.pro_nameID)
             if cursos_pie_info and cursos_pie_info.cursos_a_cargo:
                 cursos_asignados_ids = cursos_pie_info.cursos_a_cargo.split(',')
-                # Filtrar cursos asignados para que solo incluya los habilitados
                 cursos_asignados_nombres = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in cursos_asignados_ids and c.cur_state == 1}
 
         conteo_por_curso = {}
@@ -93,7 +90,6 @@ class PerfilDocenteController(FletController):
             if curso in cursos_habilitados:
                 conteo_por_curso[curso] = conteo_por_curso.get(curso, 0) + 1
 
-        # Para el gráfico de totales, obtenemos el conteo total solo de los cursos asignados al PIE.
         conteo_por_curso_totales = {}
         cursos_para_totales = cursos_asignados_nombres if profesor.pro_cargo == 1 else conteo_por_curso.keys()
         
@@ -124,7 +120,6 @@ class PerfilDocenteController(FletController):
                 radius=200,
             ))
 
-        # Lógica para el PieChart de estudiantes con IDT alto (>= 70%)
         conteo_riesgo_alto_por_estudiante = {}
         # Para el total, consideramos todos los resultados del año actual en los cursos asignados al PIE
         if profesor.pro_cargo == 1:

@@ -103,6 +103,30 @@ class PerfilDocenteView(FletView):
             center_space_radius=0,
         )
         
+        self.graficos_container = ft.Column(
+            visible=False, # Oculto por defecto
+            controls=[
+                ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                ft.Row([ft.Text("Graficos de barras:", size=15, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                ft.Container(
+                    content=ft.Row(
+                        [self.stat_cantidad_cursos_encuestados, self.stat_cantidad_cursos_encuestados_totales],
+                        scroll=ft.ScrollMode.ADAPTIVE
+                    ),
+                    padding=5,
+                    expand=True
+                ),
+                ft.Container(
+                    content=ft.Row(
+                        [ft.Column([ft.Text("Cursos con mayor cantidad de resultados en IDT alto", weight=ft.FontWeight.BOLD, color="black", size=16), self.cursos_en_rojo]),
+                         ft.Column([ft.Text("Estudiantes con mayor cantidad de test con IDT alto ", weight=ft.FontWeight.BOLD, color="black", size=16), self.estudiantes_rojos])],
+                        scroll=ft.ScrollMode.ADAPTIVE
+                    ),
+                    padding=5,
+                    expand=True
+                )
+            ])
+
         view = ft.View(
             "/mi_perfil",
             bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
@@ -117,31 +141,7 @@ class PerfilDocenteView(FletView):
                                 ft.Text("Mis datos:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.Row([self.info_table], scroll=ft.ScrollMode.AUTO),
                                 ft.Row([self.cursos_designados_table], scroll=ft.ScrollMode.AUTO),
-                                ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
-                                ft.Row([ft.Text("Graficos de barras:", size=15, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
-                                ft.Container(
-                                    content=ft.Row(
-                                        [self.stat_cantidad_cursos_encuestados, self.stat_cantidad_cursos_encuestados_totales],
-                                        scroll=ft.ScrollMode.ADAPTIVE
-                                    ),
-                                    padding=5,
-                                    expand=True
-                                ),
-                                ft.Container(
-                                    content=ft.Row(
-                                        [ft.Column([
-                                            ft.Text("Cursos con mayor cantidad de resultados en IDT alto", weight=ft.FontWeight.BOLD, color="black", size=16),
-                                            self.cursos_en_rojo
-                                        ]),
-                                        ft.Column([
-                                            ft.Text("Estudiantes con mayor cantidad de test con IDT alto ", weight=ft.FontWeight.BOLD, color="black", size=16),
-                                            self.estudiantes_rojos
-                                        ])],
-                                        scroll=ft.ScrollMode.ADAPTIVE
-                                    ),
-                                    padding=5,
-                                    expand=True
-                                )
+                                self.graficos_container, # Contenedor de gráficos
                                 ])
                         ]),
                 ]),            
