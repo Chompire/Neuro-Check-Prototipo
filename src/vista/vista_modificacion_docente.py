@@ -42,7 +42,7 @@ class ModificacionDocenteView(FletView):
 
         # --- DataTable ---
         self.data_table = ft.DataTable(
-            width=1000,
+            width=1450,
             heading_row_color=color_Docente,
             columns=[
                 ft.DataColumn(ft.Text("Nombres")), ft.DataColumn(ft.Text("Apellidos")),
@@ -60,6 +60,11 @@ class ModificacionDocenteView(FletView):
                 ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),
             },
             rows=[]
+        )
+        self.profesor_search_field = ft.TextField(
+            label="Buscar Profesor por Nombre o RUT",
+            on_change=lambda e: controller.search_profesor(reset_page=True),
+            color="black", label_style=ft.TextStyle(color="black")
         )
         self.prev_button_pro = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_pro,icon_color=color_Docente)
         self.page_label_pro = ft.Text("Página 1 de 1", color="black")
@@ -100,7 +105,7 @@ class ModificacionDocenteView(FletView):
         # --- Course Management UI ---
         self.course_data_table = ft.DataTable(
             heading_row_color=color_Docente,
-            width=1000,
+            width=1450,
             columns=[
                 ft.DataColumn(ft.Text("Nombre Curso")), ft.DataColumn(ft.Text("Año")), ft.DataColumn(ft.Text("Estado")),
             ],
@@ -114,6 +119,11 @@ class ModificacionDocenteView(FletView):
                 ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),
             },
             rows=[]
+        )
+        self.course_search_field = ft.TextField(
+            label="Buscar Curso por Nombre o Año",
+            on_change=lambda e: controller.search_curso(reset_page=True),
+            color="black", label_style=ft.TextStyle(color="black")
         )
         self.course_name_field = ft.TextField(label="Nombre del Curso", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
         self.course_year_field = ft.TextField(label="Año", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
@@ -145,7 +155,7 @@ class ModificacionDocenteView(FletView):
             color="black", label_style=ft.TextStyle(color="black")
         )
         self.student_data_table = ft.DataTable(
-            width=1000,
+            width=1450,
             heading_row_color=color_Docente,
             columns=[
                 ft.DataColumn(ft.Text("Nombre")), ft.DataColumn(ft.Text("Apellidos")),
@@ -181,7 +191,8 @@ class ModificacionDocenteView(FletView):
                 ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
                     ft.Column([
                         ft.Row(alignment=ft.MainAxisAlignment.START, controls=[ft.Text("Añadir / Editar Docente:", size=20, weight=ft.FontWeight.BOLD, color="black")]),
-                        ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO),
+                        ft.Row([self.profesor_search_field]),
+                        ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO),                        
                         
                     ]),
                 ]),
@@ -218,6 +229,7 @@ class ModificacionDocenteView(FletView):
                 ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
                     ft.Column([
                         ft.Row(alignment=ft.MainAxisAlignment.START, controls=[ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black")]),
+                        ft.Row([self.course_search_field]),
                         ft.Row([self.course_data_table], scroll=ft.ScrollMode.AUTO),                        
                     ]),
                 ]),

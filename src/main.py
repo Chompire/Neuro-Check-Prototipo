@@ -29,14 +29,12 @@ from controlador.ctrl_notificaciones import NotificacionesController
 from controlador.ctrl_cambiar_password import CambiarPasswordController
 from colors import color_Docente, color_Background_Docente, color_Background_PIE
 
-
 def create_appbar(page, view_title_control, back_handler, model, logout_handler, route_change_handler):
     back_button = ft.IconButton(
         icon=ft.Icons.ARROW_BACK,
         on_click=lambda _: back_handler(None), 
         visible=False 
     )
-
     has_unread = False
     if model.datos_profesor and model.datos_profesor.pro_cargo == 1:
         prof_id = model.datos_profesor.pro_nameID
@@ -271,7 +269,6 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/resultados/:test_id"):
             view_title.value = "Resultados del Test"
             resultados_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
-            # Actualizar el color de fondo dinámicamente
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 resultados_view.content.bgcolor = color_Background_PIE
             else:

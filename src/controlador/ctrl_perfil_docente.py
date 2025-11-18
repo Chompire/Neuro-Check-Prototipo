@@ -21,7 +21,6 @@ class PerfilDocenteController(FletController):
                     ft.DataCell(ft.Text("")),
                     ft.DataCell(ft.Text("")),
                     ft.DataCell(ft.Text("")),
-                    ft.DataCell(ft.Text("")),
                 ])
             )
             return
@@ -31,7 +30,6 @@ class PerfilDocenteController(FletController):
             ft.DataCell(ft.Text(f"{doc_info.pro_apellido_pat} {doc_info.pro_apellido_mat}")),
             ft.DataCell(ft.Text(doc_info.pro_rut)),
             ft.DataCell(ft.Text("Profesional PIE" if doc_info.pro_cargo == 1 else "Profesor Docente")),
-            ft.DataCell(ft.Text("N/A")),
         ])
         self.view.info_table.rows.append(row)
 

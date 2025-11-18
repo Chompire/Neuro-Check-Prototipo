@@ -59,17 +59,19 @@ class ModificacionDocenteController(FletController):
                     )
                     self.page.update()
 
-    def load_cursos_to_table(self, id_to_select=None):
+    def load_cursos_to_table(self, id_to_select=None, cursos_a_mostrar=None):
         self.view.course_data_table.rows.clear()
-        cursos_totales = self.model.leer_cursos() 
-        if cursos_totales:
-            total_items_cursos = len(cursos_totales)
+        if cursos_a_mostrar is None:
+            cursos_a_mostrar = self.model.leer_cursos()
+        if cursos_a_mostrar:
+            total_items_cursos = len(cursos_a_mostrar)
             total_pages_cursos = (total_items_cursos + self.numpage_cursos - 1) // self.numpage_cursos
             if total_pages_cursos == 0: total_pages_cursos = 1
+            self.total_page_cursos = total_pages_cursos # Actualizar el total de páginas
             
             start_index = self.current_page_cursos * self.numpage_cursos
             end_index = start_index + self.numpage_cursos
-            cursos_pagina_actual = cursos_totales[start_index:end_index]
+            cursos_pagina_actual = cursos_a_mostrar[start_index:end_index]
 
             self.view.page_label_cursos.value = f"Página {self.current_page_cursos + 1} de {total_pages_cursos}"
             self.view.prev_button_cursos.visible = self.current_page_cursos > 0
@@ -144,13 +146,10 @@ class ModificacionDocenteController(FletController):
             self.view.rut_field.value = selected_prof.pro_rut or ""
             self.view.cargo_field.value = "Profesional PIE" if selected_prof.pro_cargo else "Docente"
             self.view.estado_field.value = "Habilitado" if selected_prof.pro_state else "Inhabilitado"
-
-            # Lógica para mostrar y marcar los cursos si es PIE
             if selected_prof.pro_cargo == 1:
                 self.view.cursos_checkbox_group.visible = True
                 cursos_asignados_raw = self.model.leer_cursos_pie(self.selected_prof_id)
                 cursos_asignados_ids = cursos_asignados_raw[0].split(',') if cursos_asignados_raw and cursos_asignados_raw[0] else []
-                # Iterar solo sobre los checkboxes, omitiendo el título (que es el primer control)
                 for checkbox in self.view.cursos_checkbox_group.content.controls[1:]:
                     checkbox.value = str(checkbox.data) in cursos_asignados_ids if isinstance(checkbox, ft.Checkbox) else checkbox.value
             else:
@@ -162,30 +161,37 @@ class ModificacionDocenteController(FletController):
         self.page.update()
 
     def next_page_pro(self, e):
-        prof = self.model.leer_profesores()
-        total_items = len(prof)
-        total_pages = (total_items + self.numpage_prof - 1) // self.numpage_prof
-        if self.current_page_prof < total_pages - 1:
+        if self.current_page_prof < self.total_page_prof - 1:
             self.current_page_prof += 1
-            self.load_profesores_to_table()
+            self.search_profesor()
 
     def prev_page_pro(self, e):
         if self.current_page_prof > 0:
             self.current_page_prof -= 1
-            self.load_profesores_to_table()
+            self.search_profesor()
+
+    def search_profesor(self, reset_page=False):
+        if reset_page: self.current_page_prof = 0
+        search_term = self.view.profesor_search_field.value.lower()
+        profesores_filtrados = [prof for prof in self.model.leer_profesores() if search_term in f"{prof.pro_nombre_1} {prof.pro_apellido_pat}".lower() or search_term in prof.pro_rut]
+        self.load_profesores_to_table(profesores_a_mostrar=profesores_filtrados)
+
 
     def next_page_cursos(self, e):
-        cursos_totales = self.model.leer_cursos()
-        total_items = len(cursos_totales)
-        total_pages = (total_items + self.numpage_cursos - 1) // self.numpage_cursos
-        if self.current_page_cursos < total_pages - 1:
+        if self.current_page_cursos < self.total_page_cursos - 1:
             self.current_page_cursos += 1
-            self.load_cursos_to_table()
+            self.search_curso()
 
     def prev_page_cursos(self, e):
         if self.current_page_cursos > 0:
             self.current_page_cursos -= 1
-            self.load_cursos_to_table()
+            self.search_curso()
+
+    def search_curso(self, reset_page=False):
+        if reset_page: self.current_page_cursos = 0
+        search_term = self.view.course_search_field.value.lower()
+        cursos_filtrados = [curso for curso in self.model.leer_cursos() if search_term in curso.cur_nombre.lower() or search_term in str(curso.cur_año)]
+        self.load_cursos_to_table(cursos_a_mostrar=cursos_filtrados)
 
     def next_page_estudiantes(self, e):
         if self.current_page_estudiantes < self.total_page_estudiantes - 1:
@@ -201,7 +207,7 @@ class ModificacionDocenteController(FletController):
         if reset_page: self.current_page_estudiantes = 0
         search_term = self.view.student_search_field.value.lower()
         estudiantes_filtrados = [est for est in self.model.leer_estudiantes() if search_term in est.es_nombre_1.lower() or search_term in est.es_rut]
-        self.load_estudiantes_to_table(estudiantes_filtrados)
+        self.load_estudiantes_to_table(estudiantes_a_mostrar=estudiantes_filtrados)
 
     def clear_form_fields(self):
         self.view.nombre1.value = ""
@@ -380,35 +386,42 @@ class ModificacionDocenteController(FletController):
         nuevo_estado_str = self.view.course_state_field.value
         nuevo_estado_val = 1 if nuevo_estado_str == "Habilitado" else 0
 
-        if nuevo_estado_val == 0:
-            # Lógica para promover estudiantes
-            nombre_curso_actual = self.view.course_name_field.value
-            match = re.search(r'\d+', nombre_curso_actual)
-            if match:
-                nivel_actual = int(match.group())
-                siguiente_nivel = nivel_actual + 1
-                nombre_siguiente_curso = nombre_curso_actual.replace(str(nivel_actual), str(siguiente_nivel), 1)
-                año_siguiente = int(self.view.course_year_field.value) + 1
-                todos_los_cursos = self.model.leer_cursos()
-                siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_siguiente_curso.lower() and c.cur_año == año_siguiente), None)
-                
-                if not siguiente_curso_obj:
-                    self.model.crear_curso(nombre_siguiente_curso, año_siguiente)
-                    todos_los_cursos = self.model.leer_cursos()
-                    siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_siguiente_curso.lower() and c.cur_año == año_siguiente), None)
-
-                if siguiente_curso_obj:
-                    estudiantes_a_mover = self.model.leer_estudiantes_por_curso(self.selected_course_id)
-                    for estudiante in estudiantes_a_mover:
-                        self.model.actualizar_estudiante(estudiante.es_nameID, {"lvl_curso": siguiente_curso_obj.cur_nameID})
-                    self.show_feedback(f"{len(estudiantes_a_mover)} estudiantes movidos a '{nombre_siguiente_curso}'.", ft.Colors.BLUE)
-                else:
-                    self.show_feedback(f"Error: No se pudo crear o encontrar el curso '{nombre_siguiente_curso}'.", ft.Colors.RED)
-
-        # 3. Actualizar el estado del curso actual
+        # Actualizar el estado del curso actual primero
         datos_actualizados = {"cur_state": nuevo_estado_val}
         self.model.actualizar_curso(self.selected_course_id, datos_actualizados)
         self.show_feedback("Estado del curso actualizado.", ft.Colors.GREEN)
+
+        # Lógica para promover estudiantes si se está inhabilitando el curso
+        if nuevo_estado_val == 0:
+            nombre_curso_actual = self.view.course_name_field.value
+
+            # Si el curso es 8° básico, no se promueve a 9°
+            if "8" in nombre_curso_actual or "octavo" in nombre_curso_actual.lower():
+                self.show_feedback(f"Curso '{nombre_curso_actual}' inhabilitado. No se promueven estudiantes desde 8° básico.", ft.Colors.BLUE)
+            else:
+                match = re.search(r'\d+', nombre_curso_actual)
+                if match:
+                    nivel_actual = int(match.group())
+                    siguiente_nivel = nivel_actual + 1
+                    nombre_siguiente_curso = nombre_curso_actual.replace(str(nivel_actual), str(siguiente_nivel), 1)
+                    año_siguiente = int(self.view.course_year_field.value) + 1
+                    
+                    todos_los_cursos = self.model.leer_cursos()
+                    siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_siguiente_curso.lower() and c.cur_año == año_siguiente), None)
+
+                    if not siguiente_curso_obj:
+                        self.model.crear_curso(nombre_siguiente_curso, año_siguiente)
+                        todos_los_cursos = self.model.leer_cursos() # Recargar para obtener el nuevo ID
+                        siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_siguiente_curso.lower() and c.cur_año == año_siguiente), None)
+
+                    if siguiente_curso_obj:
+                        estudiantes_a_mover = self.model.leer_estudiantes_por_curso(self.selected_course_id)
+                        for estudiante in estudiantes_a_mover:
+                            self.model.actualizar_estudiante(estudiante.es_nameID, {"lvl_curso": siguiente_curso_obj.cur_nameID})
+                        self.show_feedback(f"{len(estudiantes_a_mover)} estudiantes movidos a '{nombre_siguiente_curso}'.", ft.Colors.BLUE)
+                    else:
+                        self.show_feedback(f"Error: No se pudo crear o encontrar el curso '{nombre_siguiente_curso}'.", ft.Colors.RED)
+
         self.load_cursos_to_table(id_to_select=self.selected_course_id)
         self.page.update()
 

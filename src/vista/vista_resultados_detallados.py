@@ -170,7 +170,7 @@ class ResultadosDetalladosView(FletView):
                                 border=ft.border.all(1, ft.Colors.BLACK),
                                 bgcolor=ft.Colors.WHITE,
                                 padding=10,
-                                width=1000,
+                                width=1450,
                                 content=ft.ExpansionPanelList(
                                     expand_icon_color=ft.Colors.BLACK,
                                     elevation=8,

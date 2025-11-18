@@ -11,13 +11,12 @@ class PerfilDocenteView(FletView):
             border=ft.border.all(2, ft.Colors.BLACK),
             vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
             horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
-            width= 800,
+            width=1450,
             columns=[
                 ft.DataColumn(ft.Text("Nombres")),
                 ft.DataColumn(ft.Text("Apellidos")),
                 ft.DataColumn(ft.Text("RUT")),
                 ft.DataColumn(ft.Text("Cargo")),
-                ft.DataColumn(ft.Text("Curso")),
             ],
         )
         self.mis_tests_view = None # Placeholder for the new view
@@ -29,7 +28,7 @@ class PerfilDocenteView(FletView):
             border=ft.border.all(2, ft.Colors.BLACK),
             vertical_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
             horizontal_lines=ft.border.BorderSide(1, ft.Colors.BLACK),
-            width= 800,
+            width=1450,
             columns=[
                 ft.DataColumn(ft.Text("Curso")),
                 ft.DataColumn(ft.Text("Año")),
@@ -166,7 +165,8 @@ class PerfilDocenteView(FletView):
                                 ]
                                 )]
                         ),                        
-                        self.graficos_container, # Contenedor de gráficos
+                        ft.Divider(height=20, color=ft.Colors.BLACK, visible=False),
+                        self.graficos_container, # Contenedor de gráficos,
                     ]
                 ),
             ]

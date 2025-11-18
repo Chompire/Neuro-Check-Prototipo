@@ -5,6 +5,7 @@ from colors import color_Background_Docente,color_Docente
 class MisTestsView(FletView):
     def __init__(self, controller, model):
         self.test_completos_table = ft.DataTable(
+            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
@@ -33,9 +34,9 @@ class MisTestsView(FletView):
         self.next_button_completos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_completos, icon_color=color_Docente)
         self.pagination_controls_completos = ft.Row([self.prev_button_completos, self.page_label_completos, self.next_button_completos], alignment=ft.MainAxisAlignment.CENTER)
 
-        # Siempre crear la tabla, pero ocultarla por defecto
         self.tests_profesores_title = ft.Text("Tests de otros profesores:", size=20, weight=ft.FontWeight.BOLD, color="black", visible=False)
         self.test_profesores_table = ft.DataTable(
+            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
@@ -68,12 +69,26 @@ class MisTestsView(FletView):
 
         # Build the column controls conditionally
         column_controls = [
-            ft.Text("Mis tests:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-            ft.Row([self.test_completos_table], scroll=ft.ScrollMode.AUTO),
+            ft.Row(
+                alignment=ft.MainAxisAlignment.CENTER,
+                controls=[
+                ft.Column([
+                    ft.Row([ft.Text("Mis tests:", size=20, weight=ft.FontWeight.BOLD, color="black")]),
+                    ft.Row([self.test_completos_table], scroll=ft.ScrollMode.AUTO),
+                ]),
+            ]),
             self.pagination_controls_completos,
+            ft.Divider(height=20, color=ft.Colors.BLACK),
         ]
         # Añadir los controles de PIE, que estarán ocultos por defecto
-        column_controls.extend([self.tests_profesores_title, ft.Row([self.test_profesores_table], scroll=ft.ScrollMode.AUTO), self.pagination_controls_otros])
+        column_controls.extend([
+            ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
+                ft.Column([ 
+                    self.tests_profesores_title,
+                    ft.Row([self.test_profesores_table],scroll=ft.ScrollMode.AUTO),
+                ])
+            ]),
+            self.pagination_controls_otros])
 
         view = ft.View(
             "/mis_tests",

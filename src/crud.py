@@ -221,13 +221,13 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 if es_nameID is not None:
-                    sql_info = """SELECT e.*, c.cur_nombre
+                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID WHERE e.es_nameID = ?"""
                     cursor.execute(sql_info, es_nameID)
                     return cursor.fetchone()
                 elif es_rut is not None:
-                    sql_info = """SELECT e.*, c.cur_nombre
+                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID WHERE e.es_rut = ?"""
                     cursor.execute(sql_info, (es_rut,))
@@ -236,13 +236,13 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro
                     print("estudiantesREAD: La búsqueda por pro_nameID ya no está soportada en Estudiantes.")
                     return []
                 elif lvl_curso is not None:
-                    sql_info = """SELECT e.*, c.cur_nombre
+                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID WHERE e.lvl_curso = ?"""
                     cursor.execute(sql_info, lvl_curso)
                     return cursor.fetchall()
                 else:
-                    sql_info = """SELECT e.*, c.cur_nombre
+                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
                     """

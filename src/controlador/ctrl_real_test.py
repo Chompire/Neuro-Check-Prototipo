@@ -25,8 +25,9 @@ class RealizarTestController(FletController):
         self.view.estudiante_table.rows.clear()
         self.view.next_button.visible = False
         self.selected_es_id = None
-        # Actualizar siempre los datos desde el modelo para reflejar los cambios
-        self.estudiante_data = self.model.leer_estudiantes()
+        
+        # Leer estudiantes y filtrar por cursos habilitados (cur_state == 1)
+        self.estudiante_data = [est for est in self.model.leer_estudiantes() if est.cur_state == 1]
         if estudiantes_a_mostrar is None:
             estudiantes_a_mostrar = self.estudiante_data
 

@@ -27,6 +27,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
             on_change=lambda e: controller.test_search(reset_page=True),
             )
         self.estudiante_table = ft.DataTable(
+            width=1450,
             border=ft.border.all(2, ft.Colors.BLACK),
             bgcolor="white",
             heading_row_color= color_Docente,        
@@ -50,6 +51,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
         )
         
         self.test_incompletos =ft.DataTable(
+            width=1450,
                 heading_row_color= color_Docente,
                 heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
                 bgcolor="white",
@@ -104,28 +106,36 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                 ft.Column(
                     expand=True,
                     scroll=ft.ScrollMode.AUTO,
-                    controls=[ # Esta es la lista de controles para la columna principal
-                        ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                  controls=[ # Primera sección: "Seleccionar estudiante"
-                                   ft.Row(controls=[
-                                       ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                    controls=[
+                        ft.Row(alignment=ft.MainAxisAlignment.CENTER,
+                               controls=[
+                        ft.Column(
+                                  controls=[ 
+                                   ft.Row(alignment=ft.MainAxisAlignment.START,
+                                          controls=[ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                        self.next_button]),
                                        ft.Row(controls=[self.estudiante_search], expand=True),
                                        ft.Row([self.estudiante_table], scroll=ft.ScrollMode.AUTO),
-                                       self.pagination_controls_est,
+                                       
                                        ]),
+                                       
+                        ]),
+                        ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.pagination_controls_est]),
                         ft.Divider(color="black"),
-                        ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                                  controls=[ # Segunda sección: "Terminar test incompleto"
-                                   ft.Row(controls=[
-                                       ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                                       self.upload_button]),
-                                       ft.Row(controls=[self.test_search], expand=True),
-                                       ft.Row([self.test_incompletos], scroll=ft.ScrollMode.AUTO),
-                                       self.pagination_controls_test]),
+                        ft.Row(alignment=ft.MainAxisAlignment.CENTER,
+                               controls=[
+                            ft.Column(
+                                controls=[
+                                        ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                        self.upload_button,
+                                        ft.Row(controls=[self.test_search], expand=True),
+                                        ft.Row([self.test_incompletos])]),      
+                            ]),
+                            ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.pagination_controls_test]),
+                            
                     ]
                 )
-            ] # Cierra la lista de controles de la vista
-        ) # Cierra la llamada al constructor de ft.View
+            ]
+        )
         super().__init__(model, view, controller)
         
