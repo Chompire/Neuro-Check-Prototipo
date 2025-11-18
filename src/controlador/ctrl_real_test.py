@@ -123,7 +123,7 @@ class RealizarTestController(FletController):
                         ft.DataCell(ft.Text(test.cur_nombre)),
                         ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}")),
                         ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d'))),
-                        ft.DataCell(ft.Text("Incompleto")), # El estado es 0 (Incompleto)
+                        ft.DataCell(ft.Text("Incompleto")),
                     ],
                     data=test,
                     on_select_changed=self.test_row_select,)

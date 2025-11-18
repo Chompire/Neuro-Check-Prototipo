@@ -54,7 +54,7 @@ class TestView(FletView):
             f"10. {controller.model.leer_preguntas(40)[0][1]}",
         ]
 
-        # Crear 10 radio groups para cada categoría usando la función auxiliar
+        
         self.radiogroups_atencion = controller.create_radio_groups(10)
         self.radiogroups_memoria = controller.create_radio_groups(10)
         self.radiogroups_social = controller.create_radio_groups(10)
@@ -65,6 +65,12 @@ class TestView(FletView):
         emocional_content = controller.crear_contenido_tab(preguntas_emocional, self.radiogroups_emocional)
 
         tabs_control = ft.Tabs(
+            indicator_color=color_Docente, divider_color=ft.Colors.TRANSPARENT,
+            unselected_label_color=ft.Colors.BLACK, label_color=color_Docente,
+            overlay_color={
+                ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
+                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),
+            },
             selected_index=0,
             animation_duration=300,
             tabs=[

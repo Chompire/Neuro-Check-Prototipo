@@ -57,7 +57,6 @@ class TestController(FletController):
 
     def guardar_respuestas(self, e: ft.ControlEvent):
         if self.current_test_id is None:
-            # Handle the case where test_id was not set (e.g., if the view was accessed incorrectly)
             self.page.snack_bar = ft.SnackBar(ft.Text("Error: No se pudo obtener el ID del test para guardar las respuestas."), open=True, bgcolor=ft.Colors.RED)
             self.page.update()
             return
@@ -87,10 +86,7 @@ class TestController(FletController):
         self.page.update()
 
     def finalizar_test(self, e):
-        # Primero, guardar el estado actual de las respuestas
         self.guardar_respuestas(e)
-
-        # Luego, verificar si todas las preguntas están completas
         mapa_radiogroups = {
             "Atención": self.view.radiogroups_atencion,
             "Memoria": self.view.radiogroups_memoria,
