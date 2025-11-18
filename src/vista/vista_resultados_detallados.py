@@ -18,6 +18,7 @@ class ResultadosDetalladosView(FletView):
 
         
         self.result_test_table_atencion = ft.DataTable(
+            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
@@ -32,6 +33,7 @@ class ResultadosDetalladosView(FletView):
             rows=[]
         )
         self.result_test_table_memoria = ft.DataTable(
+            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
@@ -46,6 +48,7 @@ class ResultadosDetalladosView(FletView):
             rows=[]
         )
         self.result_test_table_social= ft.DataTable(
+            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
@@ -60,6 +63,7 @@ class ResultadosDetalladosView(FletView):
             rows=[]
         )
         self.result_test_table_emocional = ft.DataTable(
+            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
@@ -141,7 +145,6 @@ class ResultadosDetalladosView(FletView):
                 controls=[
                     ft.Column(
                         scroll=ft.ScrollMode.AUTO,
-                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         controls=[
                             ft.Text("Datos del alumno:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                             ft.Row([self.datatable], scroll=ft.ScrollMode.AUTO),
@@ -170,7 +173,7 @@ class ResultadosDetalladosView(FletView):
                                 border=ft.border.all(1, ft.Colors.BLACK),
                                 bgcolor=ft.Colors.WHITE,
                                 padding=10,
-                                width=1450,
+                                width=1000,
                                 content=ft.ExpansionPanelList(
                                     expand_icon_color=ft.Colors.BLACK,
                                     elevation=8,
@@ -233,7 +236,7 @@ class ResultadosDetalladosView(FletView):
             on_click=controller.generar_y_navegar_pdf, visible=False
         )
         
-        tabs_control = ft.Tabs(
+        self.tabs_control = ft.Tabs(
             indicator_color=color_Docente, divider_color=ft.Colors.TRANSPARENT,
             unselected_label_color=ft.Colors.BLACK, label_color=color_Docente,
             overlay_color={
@@ -245,28 +248,28 @@ class ResultadosDetalladosView(FletView):
                 ft.Tab(
                     text="Atención",
                     content=ft.Container(padding=20, content=ft.Column(
-                        [self.result_test_table_atencion],
+                        [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_atencion])],
                         scroll=ft.ScrollMode.AUTO)
                     )
                 ),
                 ft.Tab(
                     text="Memoria",
                     content=ft.Container(padding=20, content=ft.Column(
-                        [self.result_test_table_memoria],
+                        [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_memoria])],
                         scroll=ft.ScrollMode.AUTO)
                     )
                 ),
                 ft.Tab(
                     text="Social",
                     content=ft.Container(padding=20, content=ft.Column(
-                        controls=[self.result_test_table_social],
+                        controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_social])],
                         scroll=ft.ScrollMode.AUTO)
                     )
                 ),
                 ft.Tab(
                     text="Emocional",
                     content=ft.Container(padding=20, content=ft.Column(
-                        controls=[self.result_test_table_emocional],
+                        controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_emocional])],
                         scroll=ft.ScrollMode.AUTO)
                     )
                 ),
@@ -289,8 +292,7 @@ class ResultadosDetalladosView(FletView):
             controls=[
                 self.observaciones_field,
                 ft.Row([self.generate_pdf_button, self.view_pdf_button, self.update_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-                tabs_control,
-                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
+                self.tabs_control,
                 
             ]
         )

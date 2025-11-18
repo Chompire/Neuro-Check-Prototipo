@@ -20,7 +20,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
             label="Buscar estudiante",
             on_change=lambda e: controller.est_search(reset_page=True),
             )
-        self.eliminar_button = ft.ElevatedButton("Eliminar Test", bgcolor=ft.Colors.RED, color=ft.Colors.WHITE,on_click=controller.eliminar_test)
+        self.eliminar_button = ft.ElevatedButton("Eliminar Test",width=150,height=40, icon=ft.Icons.DELETE, bgcolor=ft.Colors.RED, color=ft.Colors.WHITE,on_click=controller.eliminar_test, visible=False)
         
         self.test_search = ft.TextField(bgcolor=color_Docente,
             prefix_icon=ft.Icons.SEARCH,

@@ -152,8 +152,10 @@ class ResultadosDetalladosController(FletController):
         test_full = self.model.leer_test(resultado.id_test)
         estudiante = self.model.leer_estudiante_por_id(test_full[1])
         
-        profesor_jefe_obj = self.model.leer_profesor_por_id(estudiante.Pro_nameID)
-        profesor_jefe = f"{profesor_jefe_obj.pro_nombre_1} {profesor_jefe_obj.pro_apellido_pat}" if profesor_jefe_obj else "N/A"
+        # Obtener el profesor jefe a través del curso del estudiante
+        prof_jefe_id = self.model.obtener_pie_por_curso(estudiante.lvl_curso)
+        profesor_jefe_obj = self.model.leer_profesor_por_id(prof_jefe_id) if prof_jefe_id else None
+        profesor_jefe = f"{profesor_jefe_obj.pro_nombre_1} {profesor_jefe_obj.pro_apellido_pat}" if profesor_jefe_obj else "No Asignado"
 
         profesor_emisor = self.model.leer_profesor_por_id(test_full[2])
 
@@ -345,7 +347,7 @@ class ResultadosDetalladosController(FletController):
             pdf.multi_cell(0, 5, observaciones)
 
         pdf.cell(0, 10, "______________________", 0, 1, 'R')
-        pdf.cell(0, 10, f"{self.model.datos_profesor.pro_nombre_1} {self.model.datos_profesor.pro_apellido_pat}", 0, 1, 'R')
+        pdf.cell(0, 10, f"Profesional PIE: {self.model.datos_profesor.pro_nombre_1} {self.model.datos_profesor.pro_apellido_pat}", 0, 1, 'R')
         
         # --- Guardar el PDF en la BD ---
         file_name = f"informe_estudiante_{self.current_det_id}.pdf"

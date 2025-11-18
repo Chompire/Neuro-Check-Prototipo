@@ -227,6 +227,9 @@ class AppModel(FletModel):
     def eliminar_asignacion_pie(self, prof_id):
         db.prof_pie_DELETE(prof_id)
 
+    def obtener_pie_por_curso(self, curso_id: int):
+        return db.obtener_pie_por_curso(curso_id)
+
     def crear_notificacion(self, prof_id_destino, mensaje, test_id):
         return db.notificacionCREATE(prof_id_destino, mensaje, test_id)
 

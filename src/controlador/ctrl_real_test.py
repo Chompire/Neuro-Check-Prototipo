@@ -85,7 +85,8 @@ class RealizarTestController(FletController):
             row.selected = False
         if not is_currently_selected:
             e.control.selected = True
-            self.view.upload_button.visible = True
+            self.view.upload_button.visible = True            
+            self.view.eliminar_button.visible = True
             self.selected_test_id = selected_test.test_ID
             print(self.selected_test_id)
         else:
@@ -93,9 +94,11 @@ class RealizarTestController(FletController):
                 row.selected = False
                 if selected_test_id  is not None:
                     self.view.upload_button.visible = False
+                    self.view.eliminar_button.visible = False
                 for row in self.view.test_incompletos.rows:
                     row.selected = False
                     self.view.upload_button.visible = False
+                    self.view.eliminar_button.visible = False
         self.page.update()
 
     def cargar_test_incompletos(self, test_a_mostrar=None):
