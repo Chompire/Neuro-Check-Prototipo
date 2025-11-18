@@ -81,7 +81,9 @@ class TestController(FletController):
                 self.model.actualizar_respuesta(id_respuesta, {"res_respuesta": respuesta_combinada})
                 print(f"Guardada respuesta combinada para la categoría '{tipo}' en la respuesta ID {id_respuesta}")
         
-        self.page.snack_bar = ft.SnackBar(ft.Text("Respuestas guardadas correctamente."), open=True, bgcolor=ft.Colors.GREEN)
+        self.view.error_snack_bar.content = ft.Text("Respuestas guardadas correctamente.")
+        self.view.error_snack_bar.bgcolor = ft.Colors.YELLOW
+        self.view.error_snack_bar.open = True
         self.page.update()
 
     def finalizar_test(self, e):
