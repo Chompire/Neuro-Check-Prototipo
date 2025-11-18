@@ -1,6 +1,6 @@
 import flet as ft
 from flet_mvc import FletView
-from colors import color_Background_Docente,color_Docente, color_Background_PIE
+from colors import color_Background_Docente,color_Docente
 
 class MisTestsView(FletView):
     def __init__(self, controller, model):
