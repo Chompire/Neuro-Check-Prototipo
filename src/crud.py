@@ -73,7 +73,6 @@ def profesorDELETE(pro_nameID: int):
         print(f"profesorDELETE Error de conexión o consulta: {ex.args[0]}")
 
 def prof_pie_CREATE(prof_id: int, cursos_a_cargo: str):
-    """Crea una nueva entrada en Prof_PIE."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn: # type: ignore
             with cnxn.cursor() as cursor:
@@ -84,7 +83,6 @@ def prof_pie_CREATE(prof_id: int, cursos_a_cargo: str):
         print(f"prof_pie_CREATE Error: {ex.args[0]}")
 
 def prof_pie_UPDATE(prof_id: int, cursos_a_cargo: str):
-    """Actualiza o inserta una entrada en Prof_PIE."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn: # type: ignore
             with cnxn.cursor() as cursor:
@@ -120,11 +118,6 @@ def prof_pie_READ(prof_ID: int):
         return None
 
 def cursoREAD(curso_id: int | None = None):
-    """
-    Lee cursos de la base de datos.
-    Si se proporciona un curso_id, lee un curso específico.
-    Si no, lee todos los cursos.
-    """
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -141,7 +134,6 @@ def cursoREAD(curso_id: int | None = None):
         return None if curso_id is not None else []
 
 def cursoCREATE(nombre: str, año: int):
-    """Crea un nuevo curso en la base de datos con estado habilitado por defecto."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -154,7 +146,6 @@ def cursoCREATE(nombre: str, año: int):
         return False
 
 def cursoUPDATE(curso_id: int, datos_curso: dict):
-    """Actualiza los datos de un curso, como su estado."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -168,7 +159,6 @@ def cursoUPDATE(curso_id: int, datos_curso: dict):
     
 
 def estudianteCREATE(datos_estudiante: tuple):
-    """Crea un nuevo estudiante en la base de datos."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -185,7 +175,6 @@ def estudianteCREATE(datos_estudiante: tuple):
         return False
 
 def estudiante_existe_por_rut(es_rut: str) -> bool:
-    """Verifica si un estudiante ya existe por su RUT."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -194,11 +183,9 @@ def estudiante_existe_por_rut(es_rut: str) -> bool:
                 return cursor.fetchone() is not None
     except pyodbc.Error as ex:
         print(f"estudiante_existe_por_rut Error: {ex.args[0]}")
-        # En caso de error, es más seguro asumir que podría existir para evitar duplicados.
         return True
 
 def estudianteUPDATE(es_nameID: int, datos_estudiante: dict):
-    """Actualiza los datos de un estudiante, como su curso."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -216,17 +203,12 @@ def estudianteDELETE(es_nameID: int):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                # 1. Obtener los test_IDs asociados al estudiante
                 cursor.execute("SELECT test_ID FROM Test WHERE es_ID = ?", es_nameID)
                 test_ids = [row.test_ID for row in cursor.fetchall()]
-
                 if test_ids:
                     placeholders = ','.join('?' for _ in test_ids)
                     cursor.execute(f"DELETE FROM Respuestas WHERE ID_test IN ({placeholders})", *test_ids)
-                    
-                    # 4. Eliminar de Test
                     cursor.execute(f"DELETE FROM Test WHERE es_ID = ?", es_nameID)
-
                 cursor.execute("DELETE FROM Estudiantes WHERE es_nameID = ?", es_nameID)
                 cnxn.commit()
                 return True
@@ -235,7 +217,6 @@ def estudianteDELETE(es_nameID: int):
         return False
 
 def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro_nameID: int | None = None, lvl_curso: int | None = None):
-    """Lee todos los estudiantes de la base de datos."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -261,7 +242,6 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro
                     cursor.execute(sql_info, lvl_curso)
                     return cursor.fetchall()
                 else:
-                    # Se une Estudiantes con Curso para obtener el nombre del curso.
                     sql_info = """SELECT e.*, c.cur_nombre
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
@@ -517,9 +497,7 @@ def respuestaDELETE(ID_respuesta: int| None = None, ID_test: int | None = None):
 #-------------------documentosPDFCRUD
 
 def documentoPDFCREATE(nombre: str, extension: str, contenido: bytes):
-    """
-    Inserta un nuevo documento PDF en la base de datos.
-    """
+
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -533,9 +511,6 @@ def documentoPDFCREATE(nombre: str, extension: str, contenido: bytes):
         return None
 
 def documentoPDFUPDATE(pdf_id: int, contenido: bytes):
-    """
-    Actualiza el contenido de un documento PDF existente.
-    """
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -548,12 +523,7 @@ def documentoPDFUPDATE(pdf_id: int, contenido: bytes):
         return False
 
 def documentoPDF_READ(pdf_id: int | None = None, pdf_nombre: str | None = None, include_content: bool = False):
-    """
-    Lee documentos PDF de la base de datos.
-    - Si se proporciona pdf_id o pdf_nombre, lee un documento específico.
-    - Si no, lee una lista de todos los documentos (sin contenido por defecto).
-    - 'include_content' determina si se incluye el contenido binario.
-    """
+  
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -580,7 +550,7 @@ def documentoPDF_READ(pdf_id: int | None = None, pdf_nombre: str | None = None, 
 #-------------------notificacionesCRUD
 
 def notificacionCREATE(prof_id_destino: int, mensaje: str, id_resultados_detallados: int):
-    """Crea una nueva notificación en la base de datos."""
+
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -594,7 +564,7 @@ def notificacionCREATE(prof_id_destino: int, mensaje: str, id_resultados_detalla
         return False
 
 def notificacionesREAD(prof_id: int, solo_no_leidas: bool = False):
-    """Lee todas las notificaciones."""
+
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -611,7 +581,7 @@ def notificacionesREAD(prof_id: int, solo_no_leidas: bool = False):
         return []
 
 def notificacionUPDATE_leida(noti_ID: int, leida: bool = True):
-    """Marca una notificación como leída o no leída."""
+
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -622,7 +592,7 @@ def notificacionUPDATE_leida(noti_ID: int, leida: bool = True):
         print(f"notificacionUPDATE_leida Error: {ex.args[0]}")
 
 def notificacionesDELETE(prof_id: int | None = None, not_status: int | None = None, noti_ID: int | None = None):
-    """Elimina notificaciones basándose en los criterios proporcionados."""
+
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
@@ -646,10 +616,7 @@ def notificacionesDELETE(prof_id: int | None = None, not_status: int | None = No
         return False
 
 def obtener_pie_por_curso(curso_id: int):
-    """
-    Busca el ID (pro_nameID) de un profesor PIE asignado a un curso específico.
-    Asume que 'cursos_a_cargo' en Prof_PIE es una cadena de IDs de curso separados por comas.
-    """
+   
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
