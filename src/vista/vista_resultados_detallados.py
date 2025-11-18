@@ -273,8 +273,7 @@ class ResultadosDetalladosView(FletView):
                 ),
             ]
         )
-
-        # Campo para que el profesional PIE escriba sus observaciones
+        
         self.observaciones_field = ft.TextField(
             label="Observaciones del Profesional",
             multiline=True,
