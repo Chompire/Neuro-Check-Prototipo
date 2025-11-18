@@ -136,8 +136,6 @@ class ResultadosDetalladosView(FletView):
         )
     )
         self.preguntas_atencion = ft.Text(f"{controller.model.leer_preguntas(pre_cat='Atención')[0][1]}", size=20, weight=ft.FontWeight.BOLD)
-
-
         main_column_controls = [
             ft.Row(
                 alignment=ft.MainAxisAlignment.CENTER,
