@@ -20,6 +20,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
             label="Buscar estudiante",
             on_change=lambda e: controller.est_search(reset_page=True),
             )
+        self.eliminar_button = ft.ElevatedButton("Eliminar Test", bgcolor=ft.Colors.RED, color=ft.Colors.WHITE,on_click=controller.eliminar_test)
         
         self.test_search = ft.TextField(bgcolor=color_Docente,
             prefix_icon=ft.Icons.SEARCH,
@@ -128,7 +129,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                                 controls=[
                                         ft.Row([ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                         ]),
-                                        ft.Row(controls=[self.test_search,self.upload_button], expand=True),
+                                        ft.Row(controls=[self.test_search,self.upload_button, self.eliminar_button], expand=True),
                                         ft.Row([self.test_incompletos])]),      
                             ]),
                             ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.pagination_controls_test]),

@@ -53,8 +53,6 @@ class TestView(FletView):
             f"9. {controller.model.leer_preguntas(39)[0][1]}",
             f"10. {controller.model.leer_preguntas(40)[0][1]}",
         ]
-
-        
         self.radiogroups_atencion = controller.create_radio_groups(10)
         self.radiogroups_memoria = controller.create_radio_groups(10)
         self.radiogroups_social = controller.create_radio_groups(10)

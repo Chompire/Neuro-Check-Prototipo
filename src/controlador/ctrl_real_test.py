@@ -220,3 +220,16 @@ class RealizarTestController(FletController):
             self.view.feedback_snackbar.bgcolor = ft.Colors.RED_700
             self.view.feedback_snackbar.open = True
             self.page.update()
+    def eliminar_test(self, e):
+        if self.selected_test_id is not None:
+            self.model.eliminar_test(self.selected_test_id)
+            self.view.feedback_snackbar.content = ft.Text("Test eliminado correctamente.")
+            self.view.feedback_snackbar.bgcolor = ft.Colors.GREEN
+            self.view.feedback_snackbar.open = True
+            self.page.update()
+            self.cargar_test_incompletos()
+        else:
+            self.view.feedback_snackbar.content = ft.Text("Por favor, selecciona un test para eliminar.")
+            self.view.feedback_snackbar.bgcolor = ft.Colors.RED_700
+            self.view.feedback_snackbar.open = True
+            self.page.update()
