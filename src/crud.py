@@ -1,5 +1,6 @@
 import flet as ft
 import pyodbc
+import pandas as pd
 from db import CONNECTION_STRING    
 def profesorCREATE(datos_profesor: tuple):
     try:
@@ -166,50 +167,105 @@ def cursoUPDATE(curso_id: int, datos_curso: dict):
         print(f"cursoUPDATE Error de conexión o consulta: {ex.args[0]}")
     
 
+def estudianteCREATE(datos_estudiante: tuple):
+    """Crea un nuevo estudiante en la base de datos."""
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_add = """INSERT INTO Estudiantes(es_nombre_1,
+                es_apellido_pat, es_apellido_mat,
+                es_rut, es_nacimiento, es_sexo,
+                lvl_curso)
+                VALUES(?,?,?,?,?,?,?);"""
+                cursor.execute(sql_add, datos_estudiante)
+                cnxn.commit()
+                return True
+    except pyodbc.Error as ex:
+        print(f"estudianteCREATE Error de conexión o consulta: {ex.args[0]}")
+        return False
+
+def estudiante_existe_por_rut(es_rut: str) -> bool:
+    """Verifica si un estudiante ya existe por su RUT."""
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                sql_check = "SELECT 1 FROM Estudiantes WHERE es_rut = ?"
+                cursor.execute(sql_check, es_rut)
+                return cursor.fetchone() is not None
+    except pyodbc.Error as ex:
+        print(f"estudiante_existe_por_rut Error: {ex.args[0]}")
+        # En caso de error, es más seguro asumir que podría existir para evitar duplicados.
+        return True
+
+def estudianteUPDATE(es_nameID: int, datos_estudiante: dict):
+    """Actualiza los datos de un estudiante, como su curso."""
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                set_clause = ", ".join([f"{key} = ?" for key in datos_estudiante.keys()])
+                sql_update = f"UPDATE Estudiantes SET {set_clause} WHERE es_nameID = ?"
+                params = list(datos_estudiante.values()) + [es_nameID]
+                cursor.execute(sql_update, params)
+                cnxn.commit()
+                return True
+    except pyodbc.Error as ex:
+        print(f"estudianteUPDATE Error de conexión o consulta: {ex.args[0]}")
+        return False
+
+def estudianteDELETE(es_nameID: int):
+    try:
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
+            with cnxn.cursor() as cursor:
+                # 1. Obtener los test_IDs asociados al estudiante
+                cursor.execute("SELECT test_ID FROM Test WHERE es_ID = ?", es_nameID)
+                test_ids = [row.test_ID for row in cursor.fetchall()]
+
+                if test_ids:
+                    placeholders = ','.join('?' for _ in test_ids)
+                    cursor.execute(f"DELETE FROM Respuestas WHERE ID_test IN ({placeholders})", *test_ids)
+                    
+                    # 4. Eliminar de Test
+                    cursor.execute(f"DELETE FROM Test WHERE es_ID = ?", es_nameID)
+
+                cursor.execute("DELETE FROM Estudiantes WHERE es_nameID = ?", es_nameID)
+                cnxn.commit()
+                return True
+    except pyodbc.Error as ex:
+        print(f"estudianteDELETE Error de conexión o consulta: {ex.args[0]}")
+        return False
+
 def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro_nameID: int | None = None, lvl_curso: int | None = None):
     """Lee todos los estudiantes de la base de datos."""
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 if es_nameID is not None:
-                    sql_info = """
-                    SELECT e.*, c.cur_nameID,
-                    c.cur_nombre,
-                    p.pro_nombre_1, p.pro_apellido_pat
+                    sql_info = """SELECT e.*, c.cur_nombre
                     FROM Estudiantes e
-                    LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
-                    LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID WHERE e.es_nameID = ?"""
+                    LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID WHERE e.es_nameID = ?"""
                     cursor.execute(sql_info, es_nameID)
                     return cursor.fetchone()
+                elif es_rut is not None:
+                    sql_info = """SELECT e.*, c.cur_nombre
+                    FROM Estudiantes e
+                    LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID WHERE e.es_rut = ?"""
+                    cursor.execute(sql_info, (es_rut,))
+                    return cursor.fetchone()
                 elif pro_nameID is not None:
-                    sql_info = """
-                    SELECT e.*,
-                    c.cur_nombre,
-                    p.pro_nombre_1, p.pro_apellido_pat
-                    FROM Estudiantes e
-                    LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
-                    LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID WHERE e.Pro_nameID = ?"""
-                    cursor.execute(sql_info, pro_nameID)
-                    return cursor.fetchall()
+                    print("estudiantesREAD: La búsqueda por pro_nameID ya no está soportada en Estudiantes.")
+                    return []
                 elif lvl_curso is not None:
-                    sql_info = """
-                    SELECT e.*,
-                    c.cur_nombre,
-                    p.pro_nombre_1, p.pro_apellido_pat
+                    sql_info = """SELECT e.*, c.cur_nombre
                     FROM Estudiantes e
-                    LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
-                    LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID 
-                    WHERE e.lvl_curso = ?"""
+                    LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID WHERE e.lvl_curso = ?"""
                     cursor.execute(sql_info, lvl_curso)
                     return cursor.fetchall()
                 else:
-                    sql_info = """
-                    SELECT e.*,
-                    c.cur_nombre,
-                    p.pro_nombre_1, p.pro_apellido_pat
+                    # Se une Estudiantes con Curso para obtener el nombre del curso.
+                    sql_info = """SELECT e.*, c.cur_nombre
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
-                    LEFT JOIN Profesores p ON e.Pro_nameID = p.pro_nameID"""
+                    """
                     cursor.execute(sql_info)
                     return cursor.fetchall()
     except pyodbc.Error as ex:

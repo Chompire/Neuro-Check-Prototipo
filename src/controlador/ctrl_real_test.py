@@ -25,6 +25,8 @@ class RealizarTestController(FletController):
         self.view.estudiante_table.rows.clear()
         self.view.next_button.visible = False
         self.selected_es_id = None
+        # Actualizar siempre los datos desde el modelo para reflejar los cambios
+        self.estudiante_data = self.model.leer_estudiantes()
         if estudiantes_a_mostrar is None:
             estudiantes_a_mostrar = self.estudiante_data
 
@@ -47,7 +49,6 @@ class RealizarTestController(FletController):
                     ft.DataCell(ft.Text(estudiante.es_nacimiento.strftime('%Y-%m-%d'))), # Formatear fecha
                     ft.DataCell(ft.Text(estudiante.es_rut)),
                     ft.DataCell(ft.Text(estudiante.cur_nombre)),
-                    ft.DataCell(ft.Text(f"{estudiante.pro_nombre_1} {estudiante.pro_apellido_pat}")),
                 ],
                 data=estudiante,
                 on_select_changed=self.es_row_select,

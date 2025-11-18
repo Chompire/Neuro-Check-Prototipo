@@ -58,6 +58,18 @@ class AppModel(FletModel):
         else:
             return []
 
+    def estudiante_existe_por_rut(self, es_rut: str) -> bool:
+        return db.estudiante_existe_por_rut(es_rut)
+
+    def crear_estudiante(self, datos: tuple) -> bool:
+        return db.estudianteCREATE(datos)
+
+    def actualizar_estudiante(self, es_nameID: int, datos: dict):
+        return db.estudianteUPDATE(es_nameID, datos)
+
+    def eliminar_estudiante(self, es_nameID: int):
+        return db.estudianteDELETE(es_nameID)
+
 
     def cargar_test_incompletos(self, test_status: int | None = None):
         datos = db.testREAD(test_status=test_status)

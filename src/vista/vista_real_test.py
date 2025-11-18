@@ -45,7 +45,6 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                         ft.DataColumn(ft.Text("Nacimiento")),
                         ft.DataColumn(ft.Text("RUT")),
                         ft.DataColumn(ft.Text("Curso")),
-                        ft.DataColumn(ft.Text("Profesor Jefe")),
                     ],
                     rows=[] # Inicializamos las filas vacías
         )

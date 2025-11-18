@@ -34,12 +34,12 @@ class PerfilDocenteController(FletController):
             ft.DataCell(ft.Text("N/A")),
         ])
         self.view.info_table.rows.append(row)
-        self.cargar_cursos_pie(doc_info.pro_nameID)
+
         if doc_info.pro_cargo == 1:
-            
+            self.cargar_cursos_pie(doc_info.pro_nameID)
             self.view.graficos_container.visible = True
         else:
-            self.view.cursos_designados_table.rows.clear()
+            self.cargar_cursos_pie(doc_info.pro_nameID) # Ahora esto mostrará los cursos para el docente
             self.view.graficos_container.visible = False
 
         self.page.update()

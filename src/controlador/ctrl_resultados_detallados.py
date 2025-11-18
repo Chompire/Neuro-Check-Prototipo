@@ -157,7 +157,7 @@ class ResultadosDetalladosController(FletController):
 
         profesor_emisor = self.model.leer_profesor_por_id(test_full[2])
 
-        nombre_completo_Es = f"{estudiante.es_nombre_1} {estudiante.es_nombre_2 or ''} {estudiante.es_apellido_pat} {estudiante.es_apellido_mat}".replace("  ", " ").strip()
+        nombre_completo_Es = f"{estudiante.es_nombre_1} {estudiante.es_apellido_pat} {estudiante.es_apellido_mat}".replace("  ", " ").strip()
         profesor_emisor_nombre = f"{profesor_emisor.pro_nombre_1} {profesor_emisor.pro_nombre_2 or ''} {profesor_emisor.pro_apellido_pat} {profesor_emisor.pro_apellido_mat}".replace("  ", " ").strip()
 
         total_preguntas = len(self.model.leer_preguntas(pre_cat="Atención")) + \

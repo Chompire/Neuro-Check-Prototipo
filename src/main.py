@@ -83,7 +83,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
                 view_title_control,
                 ft.PopupMenuButton(items=popup_items)
             ]),
-        ]   
+        ]
     )
 
 def main(page: ft.Page, model: AppModel):
@@ -213,6 +213,7 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/inicio_profesor"):
             view_title.value = "Inicio Docente"
             inicio_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            # Actualizar el color de fondo dinámicamente
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 inicio_view.content.bgcolor = color_Background_PIE
             else:
@@ -237,6 +238,7 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/realizar_test"):
             view_title.value = "Realizar test"
             rel_test_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            # Actualizar el color de fondo dinámicamente según el rol del usuario
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 rel_test_view.content.bgcolor = color_Background_PIE
             else:
@@ -248,6 +250,7 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/perfil_docente"):
             view_title.value = "Mi Perfil"
             perfil_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 perfil_docente_view.content.bgcolor = color_Background_PIE
             else:
@@ -258,9 +261,7 @@ def main(page: ft.Page, model: AppModel):
         
         elif troute.match("/test/:test_id"):
             view_title.value = "Test"
-            # Esta vista no necesita el rail, la dejamos como está
-            appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
-            test_view.content.appbar = appbar
+            test_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 test_view.content.bgcolor = color_Background_PIE
             else:
@@ -270,9 +271,7 @@ def main(page: ft.Page, model: AppModel):
 
         elif troute.match("/resultados/:test_id"):
             view_title.value = "Resultados del Test"
-            # Esta vista no necesita el rail
-            appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
-            resultados_view.content.appbar = appbar
+            resultados_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             # Actualizar el color de fondo dinámicamente
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 resultados_view.content.bgcolor = color_Background_PIE
@@ -283,9 +282,7 @@ def main(page: ft.Page, model: AppModel):
                     
         elif troute.match("/resultados_detallados/:det_id"):
             view_title.value = "Resultados detallados"
-            # Esta vista no necesita el rail
-            appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
-            resultados_detallados_view.content.appbar = appbar
+            resultados_detallados_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 resultados_detallados_view.content.bgcolor = color_Background_PIE
             else:
@@ -299,18 +296,15 @@ def main(page: ft.Page, model: AppModel):
 
         elif troute.match("/gestion_docente"):
             view_title.value = "Gestión de Docentes"
-            appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
+            modificacion_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             modificacion_docente_controller.load_profesores_to_table()
             modificacion_docente_controller.initialize_view()
             modificacion_docente_controller.load_cursos_to_table()
-            # Esta vista podría tener el rail, pero por ahora la dejamos sin él para simplicidad
-            modificacion_docente_view.content.appbar = appbar #ft.View(route="/gestion_docente", controls=[appbar, ft.Row([rail, modificacion_docente_view.content.controls[1]], expand=True)], bgcolor=color_Background_PIE)
-            current_view = modificacion_docente_view.content #ft.View(route="/gestion_docente", controls=[appbar, ft.Row([rail, modificacion_docente_view.content.controls[1]], expand=True)], bgcolor=color_Background_PIE)
+            current_view = modificacion_docente_view.content
 
         elif troute.match("/export_pdf/:res_det_id"):
             view_title.value = "Exportar PDF"
-            appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
-            export_pdf_view.content.appbar = appbar
+            export_pdf_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             export_pdf_controller.cargar_alumno(int(troute.res_det_id))
             current_view = export_pdf_view.content
 
@@ -349,7 +343,6 @@ def main(page: ft.Page, model: AppModel):
         if current_view:
             page.views.append(current_view)
             current_appbar = current_view.appbar
-            
             if current_appbar and hasattr(current_appbar, 'leading'):
                 is_home_view = page.route in ["/inicio_profesor", "/inicio_pie"]
                 current_appbar.leading.visible = not is_home_view

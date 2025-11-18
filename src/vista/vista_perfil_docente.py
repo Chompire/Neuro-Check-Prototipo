@@ -104,47 +104,71 @@ class PerfilDocenteView(FletView):
         )
         
         self.graficos_container = ft.Column(
-            visible=False, # Oculto por defecto
+            visible=False,
             controls=[
-                ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
-                ft.Row([ft.Text("Graficos de barras:", size=15, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                
                 ft.Container(
-                    content=ft.Row(
-                        [self.stat_cantidad_cursos_encuestados, self.stat_cantidad_cursos_encuestados_totales],
-                        scroll=ft.ScrollMode.ADAPTIVE
+                    alignment=ft.alignment.center,
+                    content=
+                    ft.Column(
+                        controls=[
+                            ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                ft.Row([ft.Text("Graficos de barras:", size=15, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                            ft.Row(
+                                [self.stat_cantidad_cursos_encuestados, self.stat_cantidad_cursos_encuestados_totales],
+                                scroll=ft.ScrollMode.ADAPTIVE
+                            ),
+                        ]
                     ),
                     padding=5,
                     expand=True
                 ),
                 ft.Container(
-                    content=ft.Row(
-                        [ft.Column([ft.Text("Cursos con mayor cantidad de resultados en IDT alto", weight=ft.FontWeight.BOLD, color="black", size=16), self.cursos_en_rojo]),
-                         ft.Column([ft.Text("Estudiantes con mayor cantidad de test con IDT alto ", weight=ft.FontWeight.BOLD, color="black", size=16), self.estudiantes_rojos])],
-                        scroll=ft.ScrollMode.ADAPTIVE
+                    alignment=ft.alignment.center,
+                    content=ft.Column(
+                        controls=[
+                            ft.Text("Graficos circulares:", size=15, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Row(
+                                spacing=200,
+                                controls=[
+                                    ft.Column([ft.Text("Cursos con mayor cantidad de resultados en IDT alto", weight=ft.FontWeight.BOLD, color="black", size=16), self.cursos_en_rojo]),
+                                    ft.Column([ft.Text("Estudiantes con mayor cantidad de test con IDT alto ", weight=ft.FontWeight.BOLD, color="black", size=16), self.estudiantes_rojos])],
+                                scroll=ft.ScrollMode.ADAPTIVE
+                            )
+                        ]
                     ),
                     padding=5,
                     expand=True
                 )
-            ])
-
+            ]
+        )
         view = ft.View(
             "/mi_perfil",
-            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
+            bgcolor=color_Background_Docente,
             scroll=ft.ScrollMode.AUTO,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mi Perfil", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START), # This line already exists, no change needed.
-                ft.Column(                    
-                controls=[
-                    ft.Row(
-                        controls=[
-                            ft.Column(spacing=5, expand=True, controls=[ # Añadido expand=True aquí
-                                ft.Text("Mis datos:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                                ft.Row([self.info_table], scroll=ft.ScrollMode.AUTO),
-                                ft.Row([self.cursos_designados_table], scroll=ft.ScrollMode.AUTO),
-                                self.graficos_container, # Contenedor de gráficos
-                                ])
-                        ]),
-                ]),            
+                ft.Column(
+                    expand=True,
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                    spacing=15,
+                    controls=[
+                        ft.Row(
+                            alignment=ft.MainAxisAlignment.CENTER,
+                            controls=[
+                                ft.Column(
+                                spacing=15,
+                                controls=[
+                                    ft.Text("Mis datos:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                    self.info_table,
+                                    self.cursos_designados_table,
+                                ]
+                                )]
+                        ),                        
+                        self.graficos_container, # Contenedor de gráficos
+                    ]
+                ),
             ]
         )
         
