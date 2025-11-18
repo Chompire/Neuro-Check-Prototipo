@@ -105,7 +105,8 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                     expand=True,
                     scroll=ft.ScrollMode.AUTO,
                     controls=[ # Esta es la lista de controles para la columna principal
-                        ft.Column(controls=[ # Primera sección: "Seleccionar estudiante"
+                        ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                  controls=[ # Primera sección: "Seleccionar estudiante"
                                    ft.Row(controls=[
                                        ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                        self.next_button]),
@@ -114,7 +115,8 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                                        self.pagination_controls_est,
                                        ]),
                         ft.Divider(color="black"),
-                        ft.Column(controls=[ # Segunda sección: "Terminar test incompleto"
+                        ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+                                  controls=[ # Segunda sección: "Terminar test incompleto"
                                    ft.Row(controls=[
                                        ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                        self.upload_button]),

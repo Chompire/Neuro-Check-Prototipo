@@ -82,6 +82,7 @@ class MisTestsView(FletView):
             controls=[
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mis Tests", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 ft.Column(
+                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=column_controls,
                 )
             ]

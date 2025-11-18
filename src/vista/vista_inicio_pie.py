@@ -82,10 +82,10 @@ class InicioPIEView(FletView):
                                         content=ft.Container(
                                             content=ft.Column([
                                                 ft.ListTile(
-                                                    title=ft.Text("Gestión de Docentes", size=20, weight=ft.FontWeight.BOLD),
-                                                    subtitle=ft.Text("Añadir, editar o eliminar la información de los docentes del sistema.", size=15),
+                                                    title=ft.Text("Gestión", size=20, weight=ft.FontWeight.BOLD),
+                                                    subtitle=ft.Text("Añadir, editar o eliminar la información de los docentes del sistema y alumnos que ya no estan matriculados.", size=15),
                                                 ),
-                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_PIE, on_click=lambda _: controller.page.go("/gestion_docente"))
+                                                ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_PIE, on_click=lambda _: controller.page.go("/gestion"))
                                             ]),
                                             padding=10
                                         )

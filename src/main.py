@@ -112,7 +112,7 @@ def main(page: ft.Page, model: AppModel):
                     page.go("/inicio_profesor")
         elif page.route.startswith("/test/"):
             page.go("/realizar_test")
-        elif page.route == "/gestion_docente":
+        elif page.route == "/gestion":
             page.go("/inicio_pie")
         elif page.route == "/realizar_test":
             if hasattr(model, 'datos_profesor') and model.datos_profesor:
@@ -294,7 +294,7 @@ def main(page: ft.Page, model: AppModel):
             resultados_detallados_controller.cargar_resultados_detallados(int(troute.det_id))
             current_view = resultados_detallados_view.content
 
-        elif troute.match("/gestion_docente"):
+        elif troute.match("/gestion"):
             view_title.value = "Gestión de Docentes"
             modificacion_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             modificacion_docente_controller.load_profesores_to_table()

@@ -141,6 +141,7 @@ class ResultadosDetalladosView(FletView):
                 controls=[
                     ft.Column(
                         scroll=ft.ScrollMode.AUTO,
+                        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                         controls=[
                             ft.Text("Datos del alumno:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                             ft.Row([self.datatable], scroll=ft.ScrollMode.AUTO),
@@ -244,28 +245,28 @@ class ResultadosDetalladosView(FletView):
                 ft.Tab(
                     text="Atención",
                     content=ft.Container(padding=20, content=ft.Column(
-                        [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_atencion])],
+                        [self.result_test_table_atencion],
                         scroll=ft.ScrollMode.AUTO)
                     )
                 ),
                 ft.Tab(
                     text="Memoria",
                     content=ft.Container(padding=20, content=ft.Column(
-                        [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_memoria])],
+                        [self.result_test_table_memoria],
                         scroll=ft.ScrollMode.AUTO)
                     )
                 ),
                 ft.Tab(
                     text="Social",
                     content=ft.Container(padding=20, content=ft.Column(
-                        controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_social])],
+                        controls=[self.result_test_table_social],
                         scroll=ft.ScrollMode.AUTO)
                     )
                 ),
                 ft.Tab(
                     text="Emocional",
                     content=ft.Container(padding=20, content=ft.Column(
-                        controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_emocional])],
+                        controls=[self.result_test_table_emocional],
                         scroll=ft.ScrollMode.AUTO)
                     )
                 ),
