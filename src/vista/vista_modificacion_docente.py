@@ -90,6 +90,9 @@ class ModificacionDocenteView(FletView):
 
         self.cursos_checkbox_group = ft.Container(
             visible=False,
+            height=250,
+            border=ft.border.all(1, ft.Colors.BLACK),
+            border_radius=5, padding=10,
             content=ft.Column(
                 scroll=ft.ScrollMode.AUTO,
                 controls=[ft.Text("Cursos a Cargo:", weight=ft.FontWeight.BOLD, color="black")]
@@ -143,7 +146,6 @@ class ModificacionDocenteView(FletView):
             "Añadir Estudiantes", on_click=controller.add_estudiantes_en_masa,
             bgcolor=color_Docente, color=ft.Colors.WHITE
         )
-
         self.student_search_field = ft.TextField(
             label="Buscar Estudiante por Nombre o RUT",
             on_change=lambda e: controller.search_estudiante(reset_page=True),
@@ -261,4 +263,4 @@ class ModificacionDocenteView(FletView):
             ]
         )
         super().__init__(model, view, controller)
-        self.page = controller.page
+        self.page = controller.page # Guardar referencia a la página

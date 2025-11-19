@@ -137,7 +137,6 @@ def main(page: ft.Page, model: AppModel):
                     page.go("/inicio_pie")
                 else:
                     page.go("/inicio_profesor")
-            
     
     login_controller = LoginController(page, model)
     inicio_controller = InicioController(page, model)
