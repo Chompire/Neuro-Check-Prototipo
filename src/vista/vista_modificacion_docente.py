@@ -40,7 +40,6 @@ class ModificacionDocenteView(FletView):
             ]
         )
 
-        # --- DataTable ---
         self.data_table = ft.DataTable(
             width=1450,
             heading_row_color=color_Docente,
@@ -102,7 +101,6 @@ class ModificacionDocenteView(FletView):
         self.edit_button = ft.IconButton(icon=ft.Icons.EDIT, icon_color=ft.Colors.WHITE, bgcolor="#007bff", visible=False, tooltip="Editar", on_click=lambda e: controller.open_dialog(e, 'edit'))
         self.delete_button = ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.WHITE, bgcolor="#dc3545", visible=False, tooltip="Eliminar", on_click=lambda e: controller.open_dialog(e, 'delete'))
 
-        # --- Course Management UI ---
         self.curso_data_table = ft.DataTable(
             heading_row_color=color_Docente,
             width=1450,
@@ -135,20 +133,17 @@ class ModificacionDocenteView(FletView):
         self.next_button_cursos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_cursos, icon_color=color_Docente)
         self.pagination_controls_cursos = ft.Row([self.prev_button_cursos, self.page_label_cursos, self.next_button_cursos], alignment=ft.MainAxisAlignment.CENTER)
 
-        # --- Student Management UI ---
         self.bulk_student_input = ft.TextField(
             label="Lista de Estudiantes",
             multiline=True,
             min_lines=8,
-            hint_text="Pegue aquí la lista de estudiantes. Un estudiante por línea.\nFormato: Nombres, Apellido Pat, Apellido Mat, RUT, Fecha Nac (YYYY-MM-DD), Sexo, Curso, Año",
+            hint_text="Pegue aquí la lista de estudiantes. Un estudiante por línea.\nFormato: Nombres, Apellido Pat, Apellido Mat, RUT, Fecha Nac (YYYY-MM-DD), Sexo, Curso, Año, Establecimiento",
             color="black", label_style=ft.TextStyle(color="black")
         )
         self.add_student_button = ft.ElevatedButton(
             "Añadir Estudiantes", on_click=controller.add_estudiantes_en_masa,
             bgcolor=color_Docente, color=ft.Colors.WHITE
         )
-
-        # --- Student Deletion UI ---
         self.student_search_field = ft.TextField(
             label="Buscar Estudiante por Nombre o RUT",
             on_change=lambda e: controller.search_estudiante(reset_page=True),
@@ -160,6 +155,7 @@ class ModificacionDocenteView(FletView):
             columns=[
                 ft.DataColumn(ft.Text("Nombre")), ft.DataColumn(ft.Text("Apellidos")),
                 ft.DataColumn(ft.Text("RUT")), ft.DataColumn(ft.Text("Curso")),
+                ft.DataColumn(ft.Text("Establecimiento")),
             ],
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             data_text_style=ft.TextStyle(color="black"),

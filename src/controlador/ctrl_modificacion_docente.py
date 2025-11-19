@@ -117,6 +117,7 @@ class ModificacionDocenteController(FletController):
                         ft.DataCell(ft.Text(f"{est.es_apellido_pat} {est.es_apellido_mat}")),
                         ft.DataCell(ft.Text(est.es_rut)),
                         ft.DataCell(ft.Text(est.cur_nombre)),
+                        ft.DataCell(ft.Text(est.es_establecimiento)),
                     ],
                     data=est, on_select_changed=self.on_student_row_select
                 )
@@ -453,11 +454,11 @@ class ModificacionDocenteController(FletController):
 
         for i, linea in enumerate(lineas):
             try:
-                partes = [p.strip() for p in linea.split(',')]
-                if len(partes) != 8:
-                    errores.append(f"Línea {i+1}: Formato incorrecto (se esperaban 8 campos).")
+                partes = [p.strip() for p in linea.split(',', 8)]
+                if len(partes) != 9:
+                    errores.append(f"Línea {i+1}: Formato incorrecto (se esperaban 9 campos).")
                     continue
-                nombres_full, apellido_pat, apellido_mat, rut, fecha_str, sexo_str, curso_str, año_str = partes
+                nombres_full, apellido_pat, apellido_mat, rut, fecha_str, sexo_str, curso_str, año_str, establecimiento = partes
 
                 if not self.validar_rut(rut):
                     errores.append(f"Línea {i+1}: RUT '{rut}' no válido.")
@@ -479,7 +480,7 @@ class ModificacionDocenteController(FletController):
                     errores.append(f"Línea {i+1}: Curso '{curso_str}' del año '{año_str}' no encontrado.")
                     continue
 
-                datos_estudiante = (nombres_full, apellido_pat, apellido_mat, rut, fecha_nacimiento, sexo_valor, curso_id)
+                datos_estudiante = (nombres_full, apellido_pat, apellido_mat, rut, fecha_nacimiento, sexo_valor, curso_id, establecimiento)
                 
                 if self.model.crear_estudiante(datos_estudiante):
                     agregados_count += 1

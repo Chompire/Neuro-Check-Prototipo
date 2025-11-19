@@ -125,7 +125,7 @@ class ResultadosDetalladosController(FletController):
                 if i < len(respuestas_usuario):
                     respuesta = respuestas_usuario[i].lower()
                     respuesta_texto = "Sí" if respuesta == 'si' else "No"
-                    color_respuesta = ft.Colors.RED if respuesta == 'si' else ft.Colors.GREEN
+
                     
                 
                 tabla_destino.rows.append(

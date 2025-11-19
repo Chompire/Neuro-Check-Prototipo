@@ -163,10 +163,10 @@ def estudianteCREATE(datos_estudiante: tuple):
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 sql_add = """INSERT INTO Estudiantes(es_nombre_1,
-                es_apellido_pat, es_apellido_mat,
-                es_rut, es_nacimiento, es_sexo,
-                lvl_curso)
-                VALUES(?,?,?,?,?,?,?);"""
+                                es_apellido_pat, es_apellido_mat,
+                                es_rut, es_nacimiento, es_sexo,
+                                lvl_curso, es_establecimiento)
+                                VALUES(?,?,?,?,?,?,?,?);"""
                 cursor.execute(sql_add, datos_estudiante)
                 cnxn.commit()
                 return True
@@ -221,13 +221,13 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 if es_nameID is not None:
-                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state
+                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state, e.es_establecimiento
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID WHERE e.es_nameID = ?"""
                     cursor.execute(sql_info, es_nameID)
                     return cursor.fetchone()
                 elif es_rut is not None:
-                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state
+                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state, e.es_establecimiento
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID WHERE e.es_rut = ?"""
                     cursor.execute(sql_info, (es_rut,))
@@ -236,13 +236,13 @@ def estudiantesREAD(es_nameID: int | None = None, es_rut: str | None = None, pro
                     print("estudiantesREAD: La búsqueda por pro_nameID ya no está soportada en Estudiantes.")
                     return []
                 elif lvl_curso is not None:
-                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state
+                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state, e.es_establecimiento
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID WHERE e.lvl_curso = ?"""
                     cursor.execute(sql_info, lvl_curso)
                     return cursor.fetchall()
                 else:
-                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state
+                    sql_info = """SELECT e.*, c.cur_nombre, c.cur_state, e.es_establecimiento
                     FROM Estudiantes e
                     LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
                     """

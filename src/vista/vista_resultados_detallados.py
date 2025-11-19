@@ -78,6 +78,7 @@ class ResultadosDetalladosView(FletView):
             rows=[]
         )
         self.datatable = ft.DataTable(
+            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
