@@ -123,7 +123,6 @@ class ModificacionDocenteController(FletController):
                 )
             )
         self.page.update()
-
     def on_row_select(self, e):
         selected_prof = e.control.data
         is_currently_selected = e.control.selected
