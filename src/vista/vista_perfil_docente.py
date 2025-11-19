@@ -165,7 +165,7 @@ class PerfilDocenteView(FletView):
                                 ]
                                 )]
                         ),                        
-                        ft.Divider(height=20, color=ft.Colors.BLACK, visible=False),
+                        ft.Divider(height=20, color=ft.Colors.BLACK),
                         self.graficos_container, # Contenedor de gráficos,
                     ]
                 ),
