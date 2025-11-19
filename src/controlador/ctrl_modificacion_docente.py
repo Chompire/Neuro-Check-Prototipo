@@ -155,7 +155,7 @@ class ModificacionDocenteController(FletController):
 
                 for checkbox in self.view.cursos_checkbox_group.content.controls[1:]:
                     if isinstance(checkbox, ft.Checkbox):
-                        checkbox.value = checkbox.label in cursos_asignados_nombres
+                        checkbox.value = checkbox.data in cursos_asignados_nombres
             else:
                 self.view.cursos_checkbox_group.visible = False
 
@@ -289,13 +289,13 @@ class ModificacionDocenteController(FletController):
                 if curso.cur_state and curso.cur_año == current_year
             ]
             
-            nombres_unicos = sorted(list({c.cur_nombre for c in cursos_del_año_actual}))
+            cursos_unicos_año_actual = sorted(list({(c.cur_nombre, c.cur_año) for c in cursos_del_año_actual}))
 
-            for nombre_curso in nombres_unicos:
+            for nombre_curso, año_curso in cursos_unicos_año_actual:
                 self.view.cursos_checkbox_group.content.controls.append(
                     ft.Checkbox(
-                        label=nombre_curso,
-                        data=nombre_curso,
+                        label=f"{nombre_curso} ({año_curso})",
+                        data=nombre_curso, # El dato sigue siendo solo el nombre para la lógica de asignación
                         check_color=ft.Colors.RED,
                         label_style=ft.TextStyle(color="black")
                     )
