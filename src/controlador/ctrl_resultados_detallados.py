@@ -152,7 +152,6 @@ class ResultadosDetalladosController(FletController):
         test_full = self.model.leer_test(resultado.id_test)
         estudiante = self.model.leer_estudiante_por_id(test_full[1])
         
-        # Obtener el profesor jefe a través del curso del estudiante
         prof_jefe_id = self.model.obtener_pie_por_curso(estudiante.lvl_curso)
         profesor_jefe_obj = self.model.leer_profesor_por_id(prof_jefe_id) if prof_jefe_id else None
         profesor_jefe = f"{profesor_jefe_obj.pro_nombre_1} {profesor_jefe_obj.pro_apellido_pat}" if profesor_jefe_obj else "No Asignado"
@@ -161,7 +160,7 @@ class ResultadosDetalladosController(FletController):
 
         nombre_completo_Es = f"{estudiante.es_nombre_1} {estudiante.es_apellido_pat} {estudiante.es_apellido_mat}".replace("  ", " ").strip()
         profesor_emisor_nombre = f"{profesor_emisor.pro_nombre_1} {profesor_emisor.pro_nombre_2 or ''} {profesor_emisor.pro_apellido_pat} {profesor_emisor.pro_apellido_mat}".replace("  ", " ").strip()
-
+        establecimiento = estudiante.es_establecimiento
         total_preguntas = len(self.model.leer_preguntas(pre_cat="Atención")) + \
                              len(self.model.leer_preguntas(pre_cat="Memoria")) + \
                              len(self.model.leer_preguntas(pre_cat="Social")) + \
@@ -215,13 +214,13 @@ class ResultadosDetalladosController(FletController):
         pdf.set_text_color(255, 255, 255)
         pdf.cell(col_width, 8, "Fecha de Nacimiento", 1, 0, 'C',fill=True)
         pdf.cell(col_width, 8, "Curso", 1, 0, 'C',fill=True)
-        pdf.cell(col_width , 8, "Profesor Jefe", 1, 1, 'C',fill=True)
+        pdf.cell(col_width , 8, "Establecimiento", 1, 1, 'C',fill=True)
 
         pdf.set_font("Arial", '', 10)
         pdf.set_text_color(0, 0, 0)
         pdf.cell(col_width, 8, estudiante.es_nacimiento.strftime('%Y-%m-%d'), 1, 0, 'C')
         pdf.cell(col_width, 8, resultado.lvl_curso, 1, 0, 'C')
-        pdf.cell(col_width, 8, profesor_jefe, 1, 1, 'C')
+        pdf.cell(col_width, 8,establecimiento, 1, 1, 'C')
         pdf.ln(2)
 
         # --- Tabla Profesor Emisor (Ajuste por Multi-Cell) ---
@@ -256,7 +255,6 @@ class ResultadosDetalladosController(FletController):
         pdf.cell(col_width * 3, 8, datetime.now().strftime('%Y-%m-%d'), 1, 1, 'C')
         pdf.ln(2)
 
-        # --- Resultados del Test ---
         pdf.set_font("Arial", 'B', 10)
         pdf.cell(0, 10, "Resultados del Test:", 0, 1, 'L')
         
@@ -346,8 +344,11 @@ class ResultadosDetalladosController(FletController):
             pdf.set_font("Arial", '', 10)
             pdf.multi_cell(0, 5, observaciones)
 
-        pdf.cell(0, 10, "______________________", 0, 1, 'R')
-        pdf.cell(0, 10, f"Profesional PIE: {self.model.datos_profesor.pro_nombre_1} {self.model.datos_profesor.pro_apellido_pat}", 0, 1, 'R')
+        
+        pdf.cell(0, 2, "___________________________", 0, 1, 'R')
+        pdf.set_text_color(191, 191, 191)
+        pdf.cell(0, 8, f"{self.model.datos_profesor.pro_nombre_1} {self.model.datos_profesor.pro_apellido_pat}", 0, 1, 'R')
+        pdf.cell(0, 2, f"Profesional del Programa de Integración Escolar", 0, 1, 'R')
         
         # --- Guardar el PDF en la BD ---
         file_name = f"informe_estudiante_{self.current_det_id}.pdf"

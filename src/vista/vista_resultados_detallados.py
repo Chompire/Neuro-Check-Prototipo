@@ -287,6 +287,7 @@ class ResultadosDetalladosView(FletView):
         self.pie_controls_container = ft.Column(
             visible=False, # Oculto por defecto
             controls=[
+                ft.Row([ft.Text("Observaciones del Profesional:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
                 self.observaciones_field,
                 ft.Row([self.generate_pdf_button, self.view_pdf_button, self.update_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
                 self.tabs_control,

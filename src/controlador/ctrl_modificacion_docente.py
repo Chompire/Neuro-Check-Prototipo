@@ -8,7 +8,7 @@ class ModificacionDocenteController(FletController):
         super().__init__(page, model)
         self.selected_prof_id = None
         self.password_define = "neurocheck2025"
-        self.selected_course_id = None
+        self.selected_curso_id = None
         self.online_state = False
         self.numpage_prof = 5
         self.numpage_cursos = 5
@@ -49,7 +49,6 @@ class ModificacionDocenteController(FletController):
                                 ft.DataCell(ft.Text(f"{prof.pro_apellido_pat} {prof.pro_apellido_mat}")),
                                 ft.DataCell(ft.Text(prof.pro_rut)),
                                 ft.DataCell(ft.Text("Profesional PIE" if prof.pro_cargo else "Docente")),
-                                ft.DataCell(ft.Text("N/A")),
                                 ft.DataCell(ft.Text("Habilitado" if prof.pro_state else "Inhabilitado")),
                             ],
                             data=prof,
@@ -60,7 +59,7 @@ class ModificacionDocenteController(FletController):
                     self.page.update()
 
     def load_cursos_to_table(self, id_to_select=None, cursos_a_mostrar=None):
-        self.view.course_data_table.rows.clear()
+        self.view.curso_data_table.rows.clear()
         if cursos_a_mostrar is None:
             cursos_a_mostrar = self.model.leer_cursos()
         if cursos_a_mostrar:
@@ -78,7 +77,7 @@ class ModificacionDocenteController(FletController):
             self.view.next_button_cursos.visible = self.current_page_cursos < total_pages_cursos - 1
 
             for curso in cursos_pagina_actual:
-                self.view.course_data_table.rows.append(
+                self.view.curso_data_table.rows.append(
                     ft.DataRow(
                         cells=[
                             ft.DataCell(ft.Text(curso.cur_nombre)),
@@ -87,7 +86,7 @@ class ModificacionDocenteController(FletController):
                         ],
                         data=curso,
                         selected=True if id_to_select is not None and curso.cur_nameID == id_to_select else False,
-                        on_select_changed=self.on_course_row_select,
+                        on_select_changed=self.on_curso_row_select,
                     )
                 )
         self.page.update()
@@ -149,6 +148,7 @@ class ModificacionDocenteController(FletController):
             if selected_prof.pro_cargo == 1:
                 self.view.cursos_checkbox_group.visible = True
                 cursos_asignados_raw = self.model.leer_cursos_pie(self.selected_prof_id)
+                
                 cursos_asignados_ids = cursos_asignados_raw[0].split(',') if cursos_asignados_raw and cursos_asignados_raw[0] else []
                 for checkbox in self.view.cursos_checkbox_group.content.controls[1:]:
                     checkbox.value = str(checkbox.data) in cursos_asignados_ids if isinstance(checkbox, ft.Checkbox) else checkbox.value
@@ -189,7 +189,7 @@ class ModificacionDocenteController(FletController):
 
     def search_curso(self, reset_page=False):
         if reset_page: self.current_page_cursos = 0
-        search_term = self.view.course_search_field.value.lower()
+        search_term = self.view.curso_search_field.value.lower()
         cursos_filtrados = [curso for curso in self.model.leer_cursos() if search_term in curso.cur_nombre.lower() or search_term in str(curso.cur_año)]
         self.load_cursos_to_table(cursos_a_mostrar=cursos_filtrados)
 
@@ -225,29 +225,29 @@ class ModificacionDocenteController(FletController):
     def clear_student_form_fields(self):
         self.view.bulk_student_input.value = ""
 
-    def on_course_row_select(self, e):
+    def on_curso_row_select(self, e):
         selected_course = e.control.data
         is_currently_selected = e.control.selected
 
-        for row in self.view.course_data_table.rows:
+        for row in self.view.curso_data_table.rows:
             row.selected = False
 
         if not is_currently_selected:
             e.control.selected = True
-            self.view.update_course_button.visible = True
-            self.selected_course_id = selected_course.cur_nameID
+            self.view.update_curso_button.visible = True
+            self.selected_curso_id = selected_course.cur_nameID
 
-            self.view.course_name_field.value = selected_course.cur_nombre
-            self.view.course_year_field.value = str(selected_course.cur_año)
-            self.view.course_state_field.value = "Habilitado" if selected_course.cur_state else "Inhabilitado"
+            self.view.curso_name_field.value = selected_course.cur_nombre
+            self.view.curso_year_field.value = str(selected_course.cur_año)
+            self.view.curso_state_field.value = "Habilitado" if selected_course.cur_state else "Inhabilitado"
         else:
-            for row in self.view.course_data_table.rows:
+            for row in self.view.curso_data_table.rows:
                 row.selected = False
-                self.view.course_name_field.value = ""
-                self.view.course_year_field.value = ""
-                self.view.course_state_field.value = None
-                self.view.update_course_button.visible = False
-                self.selected_course_id = None
+                self.view.curso_name_field.value = ""
+                self.view.curso_year_field.value = ""
+                self.view.curso_state_field.value = None
+                self.view.update_curso_button.visible = False
+                self.selected_curso_id = None
                 
         self.page.update()
     
@@ -381,19 +381,19 @@ class ModificacionDocenteController(FletController):
         self.close_dialog(e, 'edit')
 
     def update_curso(self, e):
-        if self.selected_course_id is None: return
+        if self.selected_curso_id is None: return
 
-        nuevo_estado_str = self.view.course_state_field.value
+        nuevo_estado_str = self.view.curso_state_field.value
         nuevo_estado_val = 1 if nuevo_estado_str == "Habilitado" else 0
 
         # Actualizar el estado del curso actual primero
         datos_actualizados = {"cur_state": nuevo_estado_val}
-        self.model.actualizar_curso(self.selected_course_id, datos_actualizados)
+        self.model.actualizar_curso(self.selected_curso_id, datos_actualizados)
         self.show_feedback("Estado del curso actualizado.", ft.Colors.GREEN)
 
         # Lógica para promover estudiantes si se está inhabilitando el curso
         if nuevo_estado_val == 0:
-            nombre_curso_actual = self.view.course_name_field.value
+            nombre_curso_actual = self.view.curso_name_field.value
 
             # Si el curso es 8° básico, no se promueve a 9°
             if "8" in nombre_curso_actual or "octavo" in nombre_curso_actual.lower():
@@ -404,7 +404,7 @@ class ModificacionDocenteController(FletController):
                     nivel_actual = int(match.group())
                     siguiente_nivel = nivel_actual + 1
                     nombre_siguiente_curso = nombre_curso_actual.replace(str(nivel_actual), str(siguiente_nivel), 1)
-                    año_siguiente = int(self.view.course_year_field.value) + 1
+                    año_siguiente = int(self.view.curso_year_field.value) + 1
                     
                     todos_los_cursos = self.model.leer_cursos()
                     siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_siguiente_curso.lower() and c.cur_año == año_siguiente), None)
@@ -415,14 +415,14 @@ class ModificacionDocenteController(FletController):
                         siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_siguiente_curso.lower() and c.cur_año == año_siguiente), None)
 
                     if siguiente_curso_obj:
-                        estudiantes_a_mover = self.model.leer_estudiantes_por_curso(self.selected_course_id)
+                        estudiantes_a_mover = self.model.leer_estudiantes_por_curso(self.selected_curso_id)
                         for estudiante in estudiantes_a_mover:
                             self.model.actualizar_estudiante(estudiante.es_nameID, {"lvl_curso": siguiente_curso_obj.cur_nameID})
                         self.show_feedback(f"{len(estudiantes_a_mover)} estudiantes movidos a '{nombre_siguiente_curso}'.", ft.Colors.BLUE)
                     else:
                         self.show_feedback(f"Error: No se pudo crear o encontrar el curso '{nombre_siguiente_curso}'.", ft.Colors.RED)
 
-        self.load_cursos_to_table(id_to_select=self.selected_course_id)
+        self.load_cursos_to_table(id_to_select=self.selected_curso_id)
         self.page.update()
 
     def add_estudiantes_en_masa(self, e):
@@ -434,13 +434,12 @@ class ModificacionDocenteController(FletController):
         lineas = texto_completo.strip().split('\n')
         agregados_count = 0
         errores = []
-
-        # Mapa para convertir números escritos a dígitos y normalizar nombres de cursos
+        
         number_map = {
             "primero": "1", "segundo": "2", "tercero": "3", "cuarto": "4",
             "quinto": "5", "sexto": "6", "séptimo": "7", "octavo": "8"
         }
-        def normalize_course_name(name: str) -> str:
+        def normalize_curso_name(name: str) -> str:
             name = name.lower().strip()
             for word, digit in number_map.items():
                 name = name.replace(word, digit)
@@ -448,7 +447,7 @@ class ModificacionDocenteController(FletController):
 
         # Crear mapas para búsqueda rápida de IDs
         cursos_map = {
-            (normalize_course_name(c.cur_nombre), str(c.cur_año)): c.cur_nameID 
+            (normalize_curso_name(c.cur_nombre), str(c.cur_año)): c.cur_nameID 
             for c in self.model.leer_cursos()
         }
 
@@ -458,10 +457,8 @@ class ModificacionDocenteController(FletController):
                 if len(partes) != 8:
                     errores.append(f"Línea {i+1}: Formato incorrecto (se esperaban 8 campos).")
                     continue
-
                 nombres_full, apellido_pat, apellido_mat, rut, fecha_str, sexo_str, curso_str, año_str = partes
 
-                # Validaciones
                 if not self.validar_rut(rut):
                     errores.append(f"Línea {i+1}: RUT '{rut}' no válido.")
                     continue
@@ -470,15 +467,13 @@ class ModificacionDocenteController(FletController):
                     continue
                 
                 try:
-                    # Intenta primero con el formato YYYY-MM-DD
                     fecha_nacimiento = datetime.strptime(fecha_str, '%Y-%m-%d').date()
                 except ValueError:
-                    # Si falla, intenta con el formato DD-MM-YYYY
                     fecha_nacimiento = datetime.strptime(fecha_str, '%d-%m-%Y').date()
                 sexo_valor = 1 if sexo_str.lower() == "masculino" else 0
                 
                 # Normalización robusta del nombre del curso de entrada
-                curso_normalizado = normalize_course_name(curso_str)                
+                curso_normalizado = normalize_curso_name(curso_str)                
                 curso_id = cursos_map.get((curso_normalizado, año_str))
                 if not curso_id:
                     errores.append(f"Línea {i+1}: Curso '{curso_str}' del año '{año_str}' no encontrado.")
@@ -516,13 +511,13 @@ class ModificacionDocenteController(FletController):
                 self.show_feedback("Error al eliminar el estudiante.", ft.Colors.RED)
         self.close_dialog(e, 'delete_student')
 
-    def open_course_dialog(self, e):
+    def open_curso_dialog(self, e):
         self.load_cursos_to_table()
-        self.view.course_dialog.open = True
+        self.view.curso_dialog.open = True
         self.page.update()
 
-    def close_course_dialog(self, e):
-        self.view.course_dialog.open = False
+    def close_curso_dialog(self, e):
+        self.view.curso_dialog.open = False
         self.page.update()
 
     def delete_profesor(self, e):

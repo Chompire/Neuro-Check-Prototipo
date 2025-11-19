@@ -47,7 +47,7 @@ class ModificacionDocenteView(FletView):
             columns=[
                 ft.DataColumn(ft.Text("Nombres")), ft.DataColumn(ft.Text("Apellidos")),
                 ft.DataColumn(ft.Text("RUT")),
-                ft.DataColumn(ft.Text("Cargo")), ft.DataColumn(ft.Text("Curso")),
+                ft.DataColumn(ft.Text("Cargo")),
                 ft.DataColumn(ft.Text("Estado")),
             ],
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
@@ -103,7 +103,7 @@ class ModificacionDocenteView(FletView):
         self.delete_button = ft.IconButton(icon=ft.Icons.DELETE, icon_color=ft.Colors.WHITE, bgcolor="#dc3545", visible=False, tooltip="Eliminar", on_click=lambda e: controller.open_dialog(e, 'delete'))
 
         # --- Course Management UI ---
-        self.course_data_table = ft.DataTable(
+        self.curso_data_table = ft.DataTable(
             heading_row_color=color_Docente,
             width=1450,
             columns=[
@@ -120,15 +120,15 @@ class ModificacionDocenteView(FletView):
             },
             rows=[]
         )
-        self.course_search_field = ft.TextField(
+        self.curso_search_field = ft.TextField(
             label="Buscar Curso por Nombre o Año",
             on_change=lambda e: controller.search_curso(reset_page=True),
             color="black", label_style=ft.TextStyle(color="black")
         )
-        self.course_name_field = ft.TextField(label="Nombre del Curso", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
-        self.course_year_field = ft.TextField(label="Año", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
-        self.course_state_field = ft.Dropdown(label="Estado del Curso", width=300, options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")], color="black", label_style=ft.TextStyle(color="black"))
-        self.update_course_button = ft.ElevatedButton("Actualizar Curso", on_click=controller.update_curso, visible=False, bgcolor=color_Docente, color=ft.Colors.WHITE)
+        self.curso_name_field = ft.TextField(label="Nombre del Curso", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
+        self.curso_year_field = ft.TextField(label="Año", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
+        self.curso_state_field = ft.Dropdown(label="Estado del Curso", width=300, options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")], color="black", label_style=ft.TextStyle(color="black"))
+        self.update_curso_button = ft.ElevatedButton("Actualizar Curso", on_click=controller.update_curso, visible=False, bgcolor=color_Docente, color=ft.Colors.WHITE)
         
         self.prev_button_cursos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_cursos, icon_color=color_Docente)
         self.page_label_cursos = ft.Text("Página 1 de 1", color="black")
@@ -229,15 +229,15 @@ class ModificacionDocenteView(FletView):
                 ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
                     ft.Column([
                         ft.Row(alignment=ft.MainAxisAlignment.START, controls=[ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black")]),
-                        ft.Row([self.course_search_field]),
-                        ft.Row([self.course_data_table], scroll=ft.ScrollMode.AUTO),                        
+                        ft.Row([self.curso_search_field]),
+                        ft.Row([self.curso_data_table], scroll=ft.ScrollMode.AUTO),                        
                     ]),
                 ]),
                 self.pagination_controls_cursos,
                 ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
                     ft.Column([
-                        ft.Row([self.course_name_field, self.course_year_field, self.course_state_field]),
-                        ft.Row([self.update_course_button]),
+                        ft.Row([self.curso_name_field, self.curso_year_field, self.curso_state_field]),
+                        ft.Row([self.update_curso_button]),
                     ]),
                 ]),
                 ft.Divider(height=20),

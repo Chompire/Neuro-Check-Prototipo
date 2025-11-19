@@ -210,7 +210,6 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/inicio_profesor"):
             view_title.value = "Inicio Docente"
             inicio_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
-            # Actualizar el color de fondo dinámicamente
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 inicio_view.content.bgcolor = color_Background_PIE
             else:
@@ -235,7 +234,6 @@ def main(page: ft.Page, model: AppModel):
         elif troute.match("/realizar_test"):
             view_title.value = "Realizar test"
             rel_test_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
-            # Actualizar el color de fondo dinámicamente según el rol del usuario
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 rel_test_view.content.bgcolor = color_Background_PIE
             else:
@@ -286,7 +284,6 @@ def main(page: ft.Page, model: AppModel):
             is_pie = hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1
             resultados_detallados_view.pie_controls_container.visible = is_pie
             resultados_detallados_view.observaciones_field.visible = is_pie
-
             resultados_detallados_controller.cargar_resultados_detallados(int(troute.det_id))
             current_view = resultados_detallados_view.content
 
