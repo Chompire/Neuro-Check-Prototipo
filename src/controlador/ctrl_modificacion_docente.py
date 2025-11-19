@@ -158,6 +158,8 @@ class ModificacionDocenteController(FletController):
                         checkbox.value = checkbox.data in cursos_asignados_nombres
             else:
                 self.view.cursos_checkbox_group.visible = False
+                for checkbox in self.view.cursos_checkbox_group.content.controls[1:]:
+                    if isinstance(checkbox, ft.Checkbox): checkbox.value = False
 
         else:
             self.clear_form_fields()
