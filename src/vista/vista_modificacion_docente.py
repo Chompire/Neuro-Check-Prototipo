@@ -6,7 +6,6 @@ class ModificacionDocenteView(FletView):
     def __init__(self, controller, model):
         self.feedback_snackbar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.Colors.GREEN)
 
-        # --- Dialogs ---
         self.add_dialog = ft.AlertDialog(
             modal=True, title=ft.Text("Confirmar Creación"),
             content=ft.Text("¿Desea agregar este nuevo profesor?"),
@@ -144,6 +143,7 @@ class ModificacionDocenteView(FletView):
             "Añadir Estudiantes", on_click=controller.add_estudiantes_en_masa,
             bgcolor=color_Docente, color=ft.Colors.WHITE
         )
+
         self.student_search_field = ft.TextField(
             label="Buscar Estudiante por Nombre o RUT",
             on_change=lambda e: controller.search_estudiante(reset_page=True),
@@ -261,4 +261,4 @@ class ModificacionDocenteView(FletView):
             ]
         )
         super().__init__(model, view, controller)
-        self.page = controller.page # Guardar referencia a la página
+        self.page = controller.page

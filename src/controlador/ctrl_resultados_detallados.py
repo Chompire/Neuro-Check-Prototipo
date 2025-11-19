@@ -35,15 +35,12 @@ class ResultadosDetalladosController(FletController):
     def cargar_resultados_detallados(self, det_id):
         self.current_det_id = det_id
         
-        # Si el usuario es PIE, puede ver cualquier resultado detallado por su ID.
-        # Si no es PIE, solo puede ver los suyos.
-        if self.model.datos_profesor.pro_cargo == 1: # Es PIE
+        if self.model.datos_profesor.pro_cargo == 1:
             resultados_detallados = self.model.leer_resultados_detallados_by_det_id(det_id=det_id)
-        else: # Es Docente
+        else:
             resultados_detallados = self.model.leer_resultados_detallados_by_det_id(det_id=det_id, pro_id=self.model.datos_profesor.pro_nameID)
 
         if resultados_detallados:
-            # --- Lógica para visibilidad de botones PDF ---
             is_pie = self.model.datos_profesor.pro_cargo == 1
             if is_pie:
                 archivo_buscar = f"informe_estudiante_{det_id}.pdf"
@@ -52,7 +49,6 @@ class ResultadosDetalladosController(FletController):
                 self.view.view_pdf_button.visible = bool(documento_pdf)
                 self.view.update_pdf_button.visible = bool(documento_pdf)
 
-            # Limpiar el campo de observaciones al cargar
             self.view.observaciones_field.value = ""
 
             self.cargar_respuestas(resultados_detallados[0].id_test)
@@ -91,7 +87,6 @@ class ResultadosDetalladosController(FletController):
     def cargar_respuestas(self, test_id: int):
         self.current_test_id = test_id
 
-        # Mapeo de categorías a sus respectivas tablas en la vista
         mapa_tablas = {
             "Atención": self.view.result_test_table_atencion,
             "Memoria": self.view.result_test_table_memoria,
@@ -100,24 +95,19 @@ class ResultadosDetalladosController(FletController):
         }
         
 
-        # Limpiamos todas las tablas antes de llenarlas
         for tabla in mapa_tablas.values():
             tabla.rows.clear()
-        # Obtenemos todas las respuestas guardadas para el test
         respuestas_guardadas = self.model.leer_respuestas(test_id)
 
-        # Iteramos sobre cada categoría para llenar su tabla correspondiente
         for categoria, tabla_destino in mapa_tablas.items():
             preguntas_db = self.model.leer_preguntas(pre_cat=categoria)
             respuestas_usuario = []
 
-            # Buscamos la cadena de respuestas combinada para la categoría actual
             for _, respuesta_combinada, tipo in respuestas_guardadas:
                 if tipo == categoria and respuesta_combinada:
                     respuestas_usuario = respuesta_combinada.split(',')
-                    break # Salimos del bucle una vez que encontramos la categoría
+                    break
 
-            # Llenamos la tabla con las preguntas y respuestas de la categoría
             for i, pregunta_info in enumerate(preguntas_db):
                 pregunta_texto = pregunta_info[1]
                 color_respuesta = ft.Colors.GREY
@@ -142,7 +132,6 @@ class ResultadosDetalladosController(FletController):
             print("Error: No hay un ID de resultado detallado para generar el PDF.")
             return
 
-        # --- Obtener datos para el PDF ---
         resultados = self.model.leer_resultados_detallados_by_det_id(det_id=self.current_det_id)
         if not resultados:
             print("Error al cargar los datos para el PDF.")
@@ -166,14 +155,12 @@ class ResultadosDetalladosController(FletController):
                              len(self.model.leer_preguntas(pre_cat="Social")) + \
                              len(self.model.leer_preguntas(pre_cat="Emocional"))
 
-        # --- Inicialización del PDF ---
         pdf = FPDF()
         pdf.add_page()
         pdf.set_auto_page_break(auto=True, margin=15)
         
         col_width = pdf.w / 3.5 
 
-        # --- Encabezado ---
         pdf.set_font("Arial", 'B', 14)
         pdf.cell(0, 10, "Informe de Derivación - Neuro Check", 0, 1, 'C')
         pdf.ln(2)
@@ -183,7 +170,6 @@ class ResultadosDetalladosController(FletController):
         
         pdf.cell(0, 10, "Datos del estudiante:", 0, 1, 'L')
 
-        # --- Tabla Datos del Estudiante (Ajuste por Multi-Cell) ---
         pdf.set_text_color(255, 255, 255)
         pdf.cell(col_width, 8, "Nombre Completo", 1, 0, 'C',fill=True)
         pdf.cell(col_width, 8, "RUT", 1, 0, 'C',fill=True)
@@ -196,17 +182,15 @@ class ResultadosDetalladosController(FletController):
         y_before_est = pdf.get_y()
         x_before_est = pdf.get_x()
         pdf.set_xy(x_before_est, y_before_est)
-        # Importante: se agrega ln=0 para que la multi_cell solo calcule la altura
         pdf.multi_cell(col_width, cell_height_est / 2, nombre_completo_Es, 1, 'C', 0, 0) 
         y_after_nombre_est = pdf.get_y()
         height_est = y_after_nombre_est - y_before_est
         
-        # Se regresa a la posición Y original para dibujar las celdas laterales con la altura calculada
         pdf.set_xy(x_before_est + col_width, y_before_est)
         pdf.cell(col_width, height_est, estudiante.es_rut, 1, 0, 'C')
         pdf.cell(col_width, height_est, "Masculino" if estudiante.es_sexo == 1 else "Femenino", 1, 1, 'C')
         
-        pdf.set_y(y_after_nombre_est) # Se actualiza Y para el siguiente bloque
+        pdf.set_y(y_after_nombre_est)
 
         pdf.ln(0)
 
@@ -223,7 +207,6 @@ class ResultadosDetalladosController(FletController):
         pdf.cell(col_width, 8,establecimiento, 1, 1, 'C')
         pdf.ln(2)
 
-        # --- Tabla Profesor Emisor (Ajuste por Multi-Cell) ---
         pdf.set_font("Arial", 'B', 10)
         pdf.cell(0, 10, "Profesor emisor del test:", 0, 1, 'L')
         pdf.set_text_color(255, 255, 255)
@@ -279,18 +262,14 @@ class ResultadosDetalladosController(FletController):
         pdf.set_text_color(0, 0, 0)
         cell_height_indicios = 5 
 
-        # *** FUNCIÓN DE DIBUJO DE FILA DINÁMICA - LA SOLUCIÓN REQUERIDA ***
         def draw_dynamic_row(category_name, porcentaje_val, indicios_val):
-            # Usamos el col_width definido fuera de la función
             nonlocal col_width
             
             estimated_min_height = 4 * cell_height_indicios 
             page_break_margin = 15
             
-            # 0. Manejo de Salto de Página antes de empezar la fila
             if pdf.get_y() + estimated_min_height > (pdf.h - page_break_margin):
                  pdf.add_page()
-                 # Redibujar encabezados
                  pdf.set_text_color(255, 255, 255)
                  pdf.set_font("Arial", 'B', 10)
                  pdf.cell(col_width, 8, "Categoría", 1, 0, 'C', fill=True)
@@ -301,38 +280,26 @@ class ResultadosDetalladosController(FletController):
 
             x_start, y_start = pdf.get_x(), pdf.get_y()
             
-            # 1. Dibuja la tercera columna (Indicios) con multi_cell para determinar la altura
             pdf.set_xy(x_start + col_width * 2, y_start) 
-            # El ln=0 es crucial: dibuja la celda y calcula la nueva altura (y_end) sin mover el cursor al margen.
             pdf.multi_cell(col_width, cell_height_indicios, indicios_val, 1, 'L', 0, 0) 
             
             y_end = pdf.get_y()
             row_height = y_end - y_start
             
-            # 2. Vuelve a X=x_start y dibuja las dos primeras columnas con la altura total calculada
             pdf.set_xy(x_start, y_start) 
             pdf.cell(col_width, row_height, category_name, 1, 0, 'C') 
             pdf.cell(col_width, row_height, porcentaje_val, 1, 0, 'C') 
             
-            # 3. Mueve el cursor a la posición inicial (x_start) y la nueva altura (y_end)
-            # ESTE ES EL PASO CRÍTICO: garantiza que la próxima fila comience correctamente.
             pdf.set_xy(x_start, y_end) 
             
-            # Se eliminó la firma y pdf.ln(5) que estaban incorrectamente aquí.
-
 
         draw_dynamic_row("Atención", f"{resultado.det_porcentaje_atencion:.2f}%", self.get_indicios_text(resultado.det_porcentaje_atencion, self.indicios_atencion))
         draw_dynamic_row("Memoria", f"{resultado.det_porcentaje_memoria:.2f}%", self.get_indicios_text(resultado.det_porcentaje_memoria, self.indicios_memoria))
         draw_dynamic_row("Social", f"{resultado.det_porcentaje_social:.2f}%", self.get_indicios_text(resultado.det_porcentaje_social, self.indicios_social))
         draw_dynamic_row("Emocional", f"{resultado.det_porcentaje_emocional:.2f}%", self.get_indicios_text(resultado.det_porcentaje_emocional, self.indicios_emocional))
 
-        pdf.ln(10) # El cursor está ahora en el lugar correcto después de la tabla
+        pdf.ln(10)
 
-        # --- Firma del Profesional (Movido fuera del bucle de la tabla) ---
-        
-
-        # --- Observaciones del Profesional ---
-        # Manejo de salto de página si las observaciones no caben
         observaciones = self.view.observaciones_field.value
         if pdf.get_y() + 20 > (pdf.h - 15) and observaciones:
              pdf.add_page()
@@ -350,21 +317,16 @@ class ResultadosDetalladosController(FletController):
         pdf.cell(0, 8, f"{self.model.datos_profesor.pro_nombre_1} {self.model.datos_profesor.pro_apellido_pat}", 0, 1, 'R')
         pdf.cell(0, 2, f"Profesional del Programa de Integración Escolar", 0, 1, 'R')
         
-        # --- Guardar el PDF en la BD ---
         file_name = f"informe_estudiante_{self.current_det_id}.pdf"
-        pdf_output_bytes = pdf.output(dest="S").encode("latin-1") # Usar latin-1 para bytes
+        pdf_output_bytes = pdf.output(dest="S").encode("latin-1")
 
-        # Verificar si el documento ya existe para actualizarlo en lugar de crearlo
         existing_pdf = self.model.leer_documento_por_nombre(file_name)
         if existing_pdf:
-            # Actualizar el contenido del PDF existente
             success = self.model.actualizar_documento_pdf(existing_pdf.pdf_id, pdf_output_bytes)
         else:
-            # Crear un nuevo registro de PDF
             success = self.model.crear_documento_pdf(file_name, ".pdf", pdf_output_bytes)
 
         if success:
-            # Ocultar el botón de generar y mostrar el de ver PDF
             self.view.generate_pdf_button.visible = False
             self.view.view_pdf_button.visible = True
             self.view.update_pdf_button.visible = True

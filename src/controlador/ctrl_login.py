@@ -35,12 +35,11 @@ class LoginController(FletController):
             return
         body = raw_rut[:-1]
         dv = raw_rut[-1]
-        # Formatear el cuerpo con puntos
         if body:
             reversed_body = body[::-1]
             formatted_reversed_body = ".".join(reversed_body[i:i+3] for i in range(0, len(reversed_body), 3))
             formatted_body = formatted_reversed_body[::-1]
             rut_field.value = f"{formatted_body}-{dv}"
         else:
-            rut_field.value = dv # Si solo hay un caracter, es el inicio del cuerpo
+            rut_field.value = dv
         self.page.update()

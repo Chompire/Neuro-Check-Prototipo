@@ -52,7 +52,7 @@ class NotificacionesController(FletController):
             success = self.model.eliminar_notificaciones(prof_id=prof_id, not_status=1)
             if success:
                 self.view.show_feedback("Notificaciones leídas eliminadas.", ft.Colors.GREEN)
-                self.cargar_notificaciones() # Recargar la lista
+                self.cargar_notificaciones()
             else:
                 self.view.show_feedback("Error al eliminar las notificaciones.", ft.Colors.RED)
             self.page.update()

@@ -16,9 +16,9 @@ class RealizarTestController(FletController):
         if hasattr(self.model, 'datos_profesor') and self.model.datos_profesor:
             self.id_profesor = self.model.datos_profesor.pro_nameID
         else:
-            self.id_profesor = None # Manejar el caso si los datos del profesor no están cargados
-        self.estudiante_data = self.model.leer_estudiantes() # Ahora este método existe
-        self.test_data = self.model.leer_test(pro_ID=self.id_profesor, test_status=0) # Cargar tests incompletos del profesor
+            self.id_profesor = None
+        self.estudiante_data = self.model.leer_estudiantes()
+        self.test_data = self.model.leer_test(pro_ID=self.id_profesor, test_status=0)
         self.selected_test_id = None
         
     def cargar_estudiantes(self, estudiantes_a_mostrar=None):
@@ -26,14 +26,13 @@ class RealizarTestController(FletController):
         self.view.next_button.visible = False
         self.selected_es_id = None
         
-        # Leer estudiantes y filtrar por cursos habilitados (cur_state == 1)
         self.estudiante_data = [est for est in self.model.leer_estudiantes() if est.cur_state == 1]
         if estudiantes_a_mostrar is None:
             estudiantes_a_mostrar = self.estudiante_data
 
         total_items = len(estudiantes_a_mostrar)
         total_pages_est = (total_items + self.numpage_estudiantes - 1) // self.numpage_estudiantes
-        if total_pages_est == 0: total_pages_est = 1 # Evitar página 0 de 0
+        if total_pages_est == 0: total_pages_est = 1
         start_index = self.current_page_est * self.numpage_estudiantes
         end_index = start_index + self.numpage_estudiantes
         estudiantes_pagina_actual = estudiantes_a_mostrar[start_index:end_index]
@@ -47,7 +46,7 @@ class RealizarTestController(FletController):
                 ft.DataRow(cells=[
                     ft.DataCell(ft.Text(estudiante.es_nombre_1)),
                     ft.DataCell(ft.Text(estudiante.es_apellido_pat)),
-                    ft.DataCell(ft.Text(estudiante.es_nacimiento.strftime('%Y-%m-%d'))), # Formatear fecha
+                    ft.DataCell(ft.Text(estudiante.es_nacimiento.strftime('%Y-%m-%d'))),
                     ft.DataCell(ft.Text(estudiante.es_rut)),
                     ft.DataCell(ft.Text(estudiante.cur_nombre)),
                 ],
@@ -163,15 +162,13 @@ class RealizarTestController(FletController):
 
     def est_search(self, reset_page=False):
         if reset_page:
-            self.current_page_est = 0 # Reiniciar a la primera página en una nueva búsqueda
+            self.current_page_est = 0
 
         search_text = self.view.estudiante_search.value.lower() if self.view.estudiante_search.value else ""
         
         if not search_text:
-            # Si no hay búsqueda, cargar todos los estudiantes
             self.cargar_estudiantes()
         else:
-            # Filtrar la lista de estudiantes
             estudiantes_filtrados = []
             for estudiante in self.estudiante_data:
                 nombre_completo = f"{estudiante.es_nombre_1} {estudiante.es_apellido_pat}".lower()
@@ -179,12 +176,11 @@ class RealizarTestController(FletController):
                 curso = estudiante.cur_nombre.lower()
                 if search_text in nombre_completo or search_text in rut or search_text in curso:
                     estudiantes_filtrados.append(estudiante)
-            # Llamar a cargar_estudiantes con la lista filtrada
             self.cargar_estudiantes(estudiantes_filtrados)
 
     def test_search(self, reset_page=False):
         if reset_page:
-            self.current_page_tests = 0 # Reiniciar a la primera página en una nueva búsqueda
+            self.current_page_tests = 0
         search_text = self.view.test_search.value.lower() if self.view.test_search.value else ""
         if not search_text:
             self.cargar_test_incompletos()

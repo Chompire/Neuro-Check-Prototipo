@@ -4,26 +4,26 @@ from flet_mvc import FletView
 from colors import color_Docente, color_Background_Docente, color_Background_PIE
 
 
-class InicioView(FletView):  # Heredamos de BaseView
+class InicioView(FletView):
     def __init__(self, controller, model):
         self.welcome_text = ft.Text(size=30, weight=ft.FontWeight.NORMAL, color="black")
 
         view = ft.View(
             "/inicio_profesor",
             scroll=ft.ScrollMode.AUTO,
-            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
+            bgcolor=color_Background_Docente,
             controls=[
                 ft.ResponsiveRow(
-                    alignment=ft.MainAxisAlignment.CENTER, # Centra el contenido horizontalmente
+                    alignment=ft.MainAxisAlignment.CENTER,
                     controls=[
                         ft.Container(
-                            col={"sm": 12, "md": 10, "lg": 8}, # Define el ancho en diferentes tamaños de pantalla
+                            col={"sm": 12, "md": 10, "lg": 8},
                             content=ft.Column(
                                 expand=True,
                                 scroll=ft.ScrollMode.AUTO,
                                 controls=[
                                     ft.Text("¡Bienvenido/a!", size=50, weight=ft.FontWeight.BOLD, color="black"),
-                                    self.welcome_text, # Usamos el control ya creado
+                                    self.welcome_text,
                                     ft.Text("", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                     ft.Container(
                                         content=ft.Text(
@@ -45,7 +45,6 @@ class InicioView(FletView):  # Heredamos de BaseView
                                                         size=15
                                                     ),
                                                 ),
-                                                # La navegación se debe hacer a través del controlador
                                                 ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_Docente, on_click=lambda _: controller.page.go("/realizar_test"))
                                             ]),
                                             padding=10,

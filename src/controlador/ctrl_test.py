@@ -44,7 +44,6 @@ class TestController(FletController):
             if tipo in mapa_radiogroups:
                 radiogroups = mapa_radiogroups[tipo]
                 if respuesta_combinada:
-                    # Dividimos la cadena de respuestas para obtener las respuestas individuales
                     respuestas_individuales = respuesta_combinada.split(',')
                     for i, respuesta in enumerate(respuestas_individuales):
                         if i < len(radiogroups):
@@ -61,7 +60,7 @@ class TestController(FletController):
             self.page.update()
             return
         
-        test_id = self.current_test_id # Use the stored test_id
+        test_id = self.current_test_id
         respuestas_existentes = self.model.leer_respuestas(test_id)
         
         mapa_radiogroups = {
@@ -73,9 +72,7 @@ class TestController(FletController):
 
         for id_respuesta, _, tipo in respuestas_existentes:
             if tipo in mapa_radiogroups:
-                # Recolectamos las 10 respuestas de los RadioGroups
                 respuestas = [rg.value for rg in mapa_radiogroups[tipo]]
-                # Las unimos en una sola cadena, manejando los valores None
                 respuesta_combinada = ",".join(str(r) for r in respuestas)
                 self.model.actualizar_respuesta(id_respuesta, {"res_respuesta": respuesta_combinada})
                 print(f"Guardada respuesta combinada para la categoría '{tipo}' en la respuesta ID {id_respuesta}")

@@ -118,7 +118,6 @@ def main(page: ft.Page, model: AppModel):
                 else:
                     page.go("/inicio_profesor")
         elif page.route.startswith("/resultados_detallados/"):
-            # Al volver de resultados detallados, ir a mis tests
             page.go("/mis_tests") 
         elif page.route.startswith("/export_pdf/"):
             page.go(f"/resultados_detallados/{export_pdf_controller.res_det_id}")
@@ -200,7 +199,7 @@ def main(page: ft.Page, model: AppModel):
             if model.datos_profesor:
                 if model.datos_profesor.pro_cargo == 1:
                     page.go("/inicio_pie")
-                else: # Es Docente
+                else:
                     page.go("/inicio_profesor")
                 return 
             else:

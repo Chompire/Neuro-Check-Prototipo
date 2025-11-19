@@ -66,7 +66,7 @@ class ModificacionDocenteController(FletController):
             total_items_cursos = len(cursos_a_mostrar)
             total_pages_cursos = (total_items_cursos + self.numpage_cursos - 1) // self.numpage_cursos
             if total_pages_cursos == 0: total_pages_cursos = 1
-            self.total_page_cursos = total_pages_cursos # Actualizar el total de páginas
+            self.total_page_cursos = total_pages_cursos
             
             start_index = self.current_page_cursos * self.numpage_cursos
             end_index = start_index + self.numpage_cursos
@@ -148,11 +148,15 @@ class ModificacionDocenteController(FletController):
             self.view.estado_field.value = "Habilitado" if selected_prof.pro_state else "Inhabilitado"
             if selected_prof.pro_cargo == 1:
                 self.view.cursos_checkbox_group.visible = True
+                todos_los_cursos = self.model.leer_cursos()
                 cursos_asignados_raw = self.model.leer_cursos_pie(self.selected_prof_id)
                 
                 cursos_asignados_ids = cursos_asignados_raw[0].split(',') if cursos_asignados_raw and cursos_asignados_raw[0] else []
+                cursos_asignados_nombres = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in cursos_asignados_ids}
+
                 for checkbox in self.view.cursos_checkbox_group.content.controls[1:]:
-                    checkbox.value = str(checkbox.data) in cursos_asignados_ids if isinstance(checkbox, ft.Checkbox) else checkbox.value
+                    if isinstance(checkbox, ft.Checkbox):
+                        checkbox.value = checkbox.label in cursos_asignados_nombres
             else:
                 self.view.cursos_checkbox_group.visible = False
 
@@ -197,12 +201,12 @@ class ModificacionDocenteController(FletController):
     def next_page_estudiantes(self, e):
         if self.current_page_estudiantes < self.total_page_estudiantes - 1:
             self.current_page_estudiantes += 1
-            self.search_estudiante() # Usar search para mantener el filtro
+            self.search_estudiante()
 
     def prev_page_estudiantes(self, e):
         if self.current_page_estudiantes > 0:
             self.current_page_estudiantes -= 1
-            self.search_estudiante() # Usar search para mantener el filtro
+            self.search_estudiante()
 
     def search_estudiante(self, reset_page=False):
         if reset_page: self.current_page_estudiantes = 0
@@ -276,16 +280,23 @@ class ModificacionDocenteController(FletController):
         self.page.update()
 
     def build_cursos_checkboxes(self, cursos):
+        current_year = datetime.now().year
         if len(self.view.cursos_checkbox_group.content.controls) > 1:
             self.view.cursos_checkbox_group.content.controls = [self.view.cursos_checkbox_group.content.controls[0]]
 
         if cursos:
-            cursos_habilitados = [curso for curso in cursos if curso.cur_state]
-            for curso in cursos_habilitados:
+            cursos_del_año_actual = [
+                curso for curso in cursos 
+                if curso.cur_state and curso.cur_año == current_year
+            ]
+            
+            nombres_unicos = sorted(list({c.cur_nombre for c in cursos_del_año_actual}))
+
+            for nombre_curso in nombres_unicos:
                 self.view.cursos_checkbox_group.content.controls.append(
                     ft.Checkbox(
-                        label=curso.cur_nombre,
-                        data=curso.cur_nameID,
+                        label=nombre_curso,
+                        data=nombre_curso,
                         check_color=ft.Colors.RED,
                         label_style=ft.TextStyle(color="black")
                     )
@@ -332,14 +343,19 @@ class ModificacionDocenteController(FletController):
         )
         success = self.model.crear_profesor(datos_nuevos)
         if success:
-            # Si es PIE, guardar los cursos asignados
             if cargo_valor == 1:
-                new_prof = self.model.leer_profesor_por_rut(rut) # Obtenemos el profesor recién creado para su ID
-                cursos_seleccionados = [
-                    str(cb.data) for cb in self.view.cursos_checkbox_group.content.controls if cb.value
+                todos_los_cursos = self.model.leer_cursos()
+                new_prof = self.model.leer_profesor_por_rut(rut)
+                nombres_cursos_seleccionados = {
+                    cb.data for cb in self.view.cursos_checkbox_group.content.controls 
+                    if isinstance(cb, ft.Checkbox) and cb.value
+                }
+                
+                ids_cursos_a_asignar = [
+                    str(c.cur_nameID) for c in todos_los_cursos 
+                    if c.cur_nombre in nombres_cursos_seleccionados
                 ]
-                cursos_str = ",".join(cursos_seleccionados)
-                self.model.crear_asignacion_pie(new_prof.pro_nameID, cursos_str)
+                self.model.crear_asignacion_pie(new_prof.pro_nameID, ",".join(ids_cursos_a_asignar))
 
             self.show_feedback("Profesor agregado con éxito.", ft.Colors.GREEN)
             self.load_profesores_to_table()
@@ -368,11 +384,17 @@ class ModificacionDocenteController(FletController):
         }
         self.model.actualizar_profesor(self.selected_prof_id, datos_actualizados)
         if cargo_valor == 1:
-            cursos_seleccionados = [
-                str(cb.data) for cb in self.view.cursos_checkbox_group.content.controls if cb.value
+            todos_los_cursos = self.model.leer_cursos()
+            nombres_cursos_seleccionados = {
+                cb.data for cb in self.view.cursos_checkbox_group.content.controls 
+                if isinstance(cb, ft.Checkbox) and cb.value
+            }
+            
+            ids_cursos_a_asignar = [
+                str(c.cur_nameID) for c in todos_los_cursos 
+                if c.cur_nombre in nombres_cursos_seleccionados
             ]
-            cursos_str = ",".join(cursos_seleccionados)
-            self.model.actualizar_asignacion_pie(self.selected_prof_id, cursos_str)
+            self.model.actualizar_asignacion_pie(self.selected_prof_id, ",".join(ids_cursos_a_asignar))
         else:
             self.model.eliminar_asignacion_pie(self.selected_prof_id)
 
@@ -387,16 +409,13 @@ class ModificacionDocenteController(FletController):
         nuevo_estado_str = self.view.curso_state_field.value
         nuevo_estado_val = 1 if nuevo_estado_str == "Habilitado" else 0
 
-        # Actualizar el estado del curso actual primero
         datos_actualizados = {"cur_state": nuevo_estado_val}
         self.model.actualizar_curso(self.selected_curso_id, datos_actualizados)
         self.show_feedback("Estado del curso actualizado.", ft.Colors.GREEN)
 
-        # Lógica para promover estudiantes si se está inhabilitando el curso
         if nuevo_estado_val == 0:
             nombre_curso_actual = self.view.curso_name_field.value
 
-            # Si el curso es 8° básico, no se promueve a 9°
             if "8" in nombre_curso_actual or "octavo" in nombre_curso_actual.lower():
                 self.show_feedback(f"Curso '{nombre_curso_actual}' inhabilitado. No se promueven estudiantes desde 8° básico.", ft.Colors.BLUE)
             else:
@@ -412,7 +431,7 @@ class ModificacionDocenteController(FletController):
 
                     if not siguiente_curso_obj:
                         self.model.crear_curso(nombre_siguiente_curso, año_siguiente)
-                        todos_los_cursos = self.model.leer_cursos() # Recargar para obtener el nuevo ID
+                        todos_los_cursos = self.model.leer_cursos()
                         siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_siguiente_curso.lower() and c.cur_año == año_siguiente), None)
 
                     if siguiente_curso_obj:
@@ -446,7 +465,6 @@ class ModificacionDocenteController(FletController):
                 name = name.replace(word, digit)
             return name.replace(" año", "").replace('°', '').replace('º', '')
 
-        # Crear mapas para búsqueda rápida de IDs
         cursos_map = {
             (normalize_curso_name(c.cur_nombre), str(c.cur_año)): c.cur_nameID 
             for c in self.model.leer_cursos()
@@ -473,7 +491,6 @@ class ModificacionDocenteController(FletController):
                     fecha_nacimiento = datetime.strptime(fecha_str, '%d-%m-%Y').date()
                 sexo_valor = 1 if sexo_str.lower() == "masculino" else 0
                 
-                # Normalización robusta del nombre del curso de entrada
                 curso_normalizado = normalize_curso_name(curso_str)                
                 curso_id = cursos_map.get((curso_normalizado, año_str))
                 if not curso_id:
@@ -493,7 +510,7 @@ class ModificacionDocenteController(FletController):
         if agregados_count > 0:
             self.show_feedback(f"Proceso completado. {agregados_count} estudiantes agregados.", ft.Colors.GREEN)
         if errores:
-            error_msg = f"Se encontraron {len(errores)} errores: " + " | ".join(errores[:3]) # Muestra los primeros 3 errores
+            error_msg = f"Se encontraron {len(errores)} errores: " + " | ".join(errores[:3])
             self.show_feedback(error_msg, ft.Colors.RED)
         if agregados_count > 0 and not errores:
             self.clear_student_form_fields()
@@ -523,7 +540,6 @@ class ModificacionDocenteController(FletController):
 
     def delete_profesor(self, e):
         if self.selected_prof_id:
-            # También eliminar de la tabla Prof_PIE si existe
             self.model.eliminar_asignacion_pie(self.selected_prof_id)
 
             self.model.eliminar_profesor(self.selected_prof_id)
@@ -544,23 +560,19 @@ class ModificacionDocenteController(FletController):
         self.page.update()
 
     def formato_rut(self, e: ft.ControlEvent):
-        """Formatea automáticamente el RUT en el TextField mientras el usuario escribe."""
         rut_field = e.control
-        # Limpiar el RUT de caracteres no deseados
         raw_rut = "".join(filter(lambda char: char.isdigit() or char.upper() == 'K', rut_field.value))
         if not raw_rut:
             return
-        # Separar cuerpo y dígito verificador
         body = raw_rut[:-1]
         dv = raw_rut[-1]
-        # Formatear el cuerpo con puntos
         if body:
             reversed_body = body[::-1]
             formatted_reversed_body = ".".join(reversed_body[i:i+3] for i in range(0, len(reversed_body), 3))
             formatted_body = formatted_reversed_body[::-1]
             rut_field.value = f"{formatted_body}-{dv}"
         else:
-            rut_field.value = dv # Si solo hay un caracter, es el inicio del cuerpo
+            rut_field.value = dv
         self.page.update()
 
     @staticmethod

@@ -1,5 +1,5 @@
 import flet as ft
-from flet_mvc import FletView # Importamos nuestra nueva clase base
+from flet_mvc import FletView
 from colors import color_Background_Docente, color_Docente
 
 class LoginView(FletView):    

@@ -27,7 +27,6 @@ class InicioPIEView(FletView):
                                     ft.Container(
                                         content=ft.Text("¿Qué desea hacer?", size=25, weight=ft.FontWeight.BOLD, color="black"),
                                     ),
-                                    # Card para Realizar Test
                                     ft.Card(
                                         elevation=0, color=color_Docente,
                                         content=ft.Container(
@@ -41,7 +40,6 @@ class InicioPIEView(FletView):
                                             padding=10,
                                         )
                                     ),
-                                    # Card para Perfil
                                     ft.Card(
                                         color=color_Docente,
                                         content=ft.Container(
@@ -76,7 +74,6 @@ class InicioPIEView(FletView):
                                             padding=10
                                         )
                                     ),
-                                    # Card para Modificación de Docentes
                                     ft.Card(
                                         color=color_Docente,
                                         content=ft.Container(

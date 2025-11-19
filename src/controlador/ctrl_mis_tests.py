@@ -24,12 +24,12 @@ class MisTestsController(FletController):
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text("No hay tests completados para mostrar.", text_align=ft.TextAlign.CENTER)),
-                        ft.DataCell(ft.Text("")), # Celda vacía para la columna 2
-                        ft.DataCell(ft.Text("")), # Celda vacía para la columna 3
-                        ft.DataCell(ft.Text("")), # Celda vacía para la columna 4
-                        ft.DataCell(ft.Text("")), # Celda vacía para la columna 5
-                        ft.DataCell(ft.Text("")), # Celda vacía para la columna 6
-                        ft.DataCell(ft.Text("")), # Celda vacía para la columna 7
+                        ft.DataCell(ft.Text("")),
+                        ft.DataCell(ft.Text("")),
+                        ft.DataCell(ft.Text("")),
+                        ft.DataCell(ft.Text("")),
+                        ft.DataCell(ft.Text("")),
+                        ft.DataCell(ft.Text("")),
                     ]
                 )
             )
@@ -64,27 +64,22 @@ class MisTestsController(FletController):
 
     def cargar_test_profesores(self):
         if self.view.test_profesores_table is None:
-            return # Si la tabla no existe en la vista, no hacer nada.
+            return
 
         self.view.test_profesores_table.rows.clear()
         
         test_dat = self.model.leer_test(test_status=1)
         
-        # Obtener los cursos a cargo del profesional PIE actual
         current_pro_id = self.model.datos_profesor.pro_nameID
         curso_dat = self.model.leer_cursos_pie(self.model.datos_profesor.pro_nameID)
         
-        # Si no hay cursos asignados, no hay nada que mostrar.
         if not curso_dat or not curso_dat[0]:
             return
         
-        # Convertir la cadena de IDs de cursos (ej: "1,5,8") en un conjunto de enteros para una búsqueda más eficiente
         cursos_pie_ids = {int(cid) for cid in curso_dat[0].split(',') if cid.isdigit()}
 
         tests_filtrados = []
-        # Filtrar y mostrar los tests
         for test in test_dat:
-            # Condición: El test es de OTRO profesor Y el curso del estudiante está en la lista de cursos del PIE.
             if test.pro_ID != current_pro_id and test.cur_nameID in cursos_pie_ids:
                 tests_filtrados.append(test)
         
@@ -145,7 +140,7 @@ class MisTestsController(FletController):
             e.control.selected = True
             self.selected_test_id = selected_test.test_ID
             print(self.selected_test_id)
-            self.res_det_id = self.model.leer_resultados_detallados(self.selected_test_id) # This returns a list of detailed results for a test_ID
+            self.res_det_id = self.model.leer_resultados_detallados(self.selected_test_id)
           
             self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
         
@@ -159,7 +154,7 @@ class MisTestsController(FletController):
         if selected_test:
             e.control.selected = True
             self.selected_test_id = selected_test.test_ID
-            self.res_det_id = self.model.leer_resultados_detallados(self.selected_test_id) # This returns a list of detailed results for a test_ID
+            self.res_det_id = self.model.leer_resultados_detallados(self.selected_test_id)
           
             self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
         

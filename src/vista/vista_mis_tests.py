@@ -59,7 +59,7 @@ class MisTestsView(FletView):
                 ft.DataColumn(ft.Text("IDT")),
             ],
             rows=[],
-            visible=False # Oculto por defecto
+            visible=False
         )
 
         self.prev_button_otros = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_otros, icon_color=color_Docente)
@@ -67,7 +67,6 @@ class MisTestsView(FletView):
         self.next_button_otros = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_otros, icon_color=color_Docente)
         self.pagination_controls_otros = ft.Row([self.prev_button_otros, self.page_label_otros, self.next_button_otros], alignment=ft.MainAxisAlignment.CENTER, visible=False)
 
-        # Build the column controls conditionally
         column_controls = [
             ft.Row(
                 alignment=ft.MainAxisAlignment.CENTER,
@@ -80,7 +79,6 @@ class MisTestsView(FletView):
             self.pagination_controls_completos,
             ft.Divider(height=20, color=ft.Colors.BLACK),
         ]
-        # Añadir los controles de PIE, que estarán ocultos por defecto
         column_controls.extend([
             ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
                 ft.Column([ 
@@ -93,7 +91,7 @@ class MisTestsView(FletView):
         view = ft.View(
             "/mis_tests",
             scroll=ft.ScrollMode.AUTO,
-            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
+            bgcolor=color_Background_Docente,
             controls=[
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mis Tests", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 ft.Column(

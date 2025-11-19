@@ -37,7 +37,7 @@ class PerfilDocenteController(FletController):
             self.cargar_cursos_pie(doc_info.pro_nameID)
             self.view.graficos_container.visible = True
         else:
-            self.cargar_cursos_pie(doc_info.pro_nameID) # Ahora esto mostrará los cursos para el docente
+            self.cargar_cursos_pie(doc_info.pro_nameID)
             self.view.graficos_container.visible = False
 
         self.page.update()
@@ -91,10 +91,7 @@ class PerfilDocenteController(FletController):
         conteo_por_curso_totales = {}
         cursos_para_totales = cursos_asignados_nombres if profesor.pro_cargo == 1 else conteo_por_curso.keys()
         
-        for curso_nombre in cursos_para_totales:
-            if curso_nombre in conteo_por_curso: # Asegurarse de que el curso tiene datos del profesor para comparar
-                resultados_totales_curso = self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int)
-                conteo_por_curso_totales[curso_nombre] = sum(1 for res in resultados_totales_curso if str(res.cur_año) == current_year_str)
+        for curso_nombre in cursos_para_totales: (conteo_por_curso_totales.update({curso_nombre: sum(1 for res in self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int) if str(res.cur_año) == current_year_str)}) if curso_nombre in conteo_por_curso else None)
         bar_groups1 = []
         axis_labels1 = []
         bar_groups2 = []
@@ -119,7 +116,6 @@ class PerfilDocenteController(FletController):
             ))
 
         conteo_riesgo_alto_por_estudiante = {}
-        # Para el total, consideramos todos los resultados del año actual en los cursos asignados al PIE
         if profesor.pro_cargo == 1:
             for curso_nombre in cursos_asignados_nombres:
                 resultados_totales_curso = self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int)

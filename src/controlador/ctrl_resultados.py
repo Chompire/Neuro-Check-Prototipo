@@ -35,7 +35,6 @@ class ResultadosController(FletController):
         puntaje_social = 0
         total_preguntas_emocional = 0
         puntaje_emocional = 0
-        # Mapa de categorías y sus respuestas guardadas
         mapa_respuestas = {
             "Atención": respuestas_del_test[0][1].split(',') if respuestas_del_test and len(respuestas_del_test) > 0 and respuestas_del_test[0][1] else [],
             "Memoria": respuestas_del_test[1][1].split(',') if respuestas_del_test and len(respuestas_del_test) > 1 and respuestas_del_test[1][1] else [],
@@ -105,7 +104,6 @@ class ResultadosController(FletController):
         self.puntaje = puntaje
         self.porcentaje = (puntaje / total_preguntas) * 100 if total_preguntas > 0 else 0
         
-        # Función auxiliar para generar el texto de indicios
         def get_indicios_text(porcentaje, indicios_base):
             if porcentaje >= 70:
                 return f"Indicios severos de: {indicios_base}"
@@ -113,13 +111,11 @@ class ResultadosController(FletController):
                 return f"Indicios moderados de: {indicios_base}"
             return "Sin indicios."
 
-        # Generar texto de indicios para cada categoría
         indi_text_atencion = get_indicios_text(self.porcentaje_atencion, self.indicios_atencion)
         indi_text_memoria = get_indicios_text(self.porcentaje_memoria, self.indicios_memoria)
         indi_text_social = get_indicios_text(self.porcentaje_social, self.indicios_social)
         indi_text_emocional = get_indicios_text(self.porcentaje_emocional, self.indicios_emocional)
 
-        # Actualizar la vista
         self.view.porcentaje_val.value = f"{self.porcentaje:.2f}%"
         self.view.porcentaje_atencion_val.value = indi_text_atencion
         self.view.porcentaje_memoria_val.value = indi_text_memoria
@@ -130,7 +126,6 @@ class ResultadosController(FletController):
     def guardar_test(self, e):        
         if self.current_test_id is None:             
             self.page.go("/resultados_detallados")
-        # 1. Actualizar estado y fecha del test
         self.model.actualizar_test(self.current_test_id, {
             "test_status": 1,
             "test_fecha_termino": datetime.now()
@@ -156,16 +151,13 @@ class ResultadosController(FletController):
             )
             self.resultados_detallados_id = self.model.crear_resultado_detallado(*detalles_data)
 
-            # --- INICIO: Crear notificación para el rol PIE ---
             try:
-                # Leemos el test para obtener el ID del estudiante
                 test_record = self.model.leer_test(test_ID=self.current_test_id)
-                estudiante_id = test_record[1] # es_ID está en la segunda posición
+                estudiante_id = test_record[1]
                 if self.resultados_detallados_id and estudiante_id:
                     self.model.crear_notificacion_a_pie(estudiante_id, self.resultados_detallados_id)
             except Exception as e:
                 print(f"Error al intentar crear la notificación: {e}")
-            # --- FIN: Crear notificación ---
 
         self.view.save_snackbar.content = ft.Text("Resultados guardados exitosamente.")
         self.view.save_snackbar.open = True

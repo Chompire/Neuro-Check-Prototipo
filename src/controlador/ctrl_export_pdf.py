@@ -15,11 +15,9 @@ class ExportPDFController(FletController):
         self.view.feedback_text.color = "blue"
         self.view.contenedor_pdf.content.controls.clear()
         
-        # Deshabilitar el Anchor y su contenido hasta que el PDF esté listo
         self.view.download_button.disabled = True
         self.page.update()
 
-        # 1. Buscar el PDF en la BD
         file_name_to_find = f"informe_estudiante_{res_det_id}.pdf"
         pdf_document = self.model.leer_documento_por_nombre(file_name_to_find)
 
@@ -29,19 +27,15 @@ class ExportPDFController(FletController):
             self.page.update()
             return
 
-        # 2. Guardar los bytes del PDF
         self.pdf_bytes = pdf_document.pdf_contenido
 
-        # Habilitar el botón de descarga ahora que tenemos los datos del PDF
         self.view.download_button.disabled = False
 
-        # 5. Renderizar el PDF para visualización en la página
         self.view.contenedor_pdf.content.controls.clear()
         try:
             doc = fitz.open(stream=self.pdf_bytes, filetype="pdf")
             for page_num in range(doc.page_count):
                 page = doc.load_page(page_num)
-                # Aumentamos la resolución para mejor calidad
                 pix = page.get_pixmap(matrix=fitz.Matrix(2, 2))
                 img_bytes = pix.tobytes(output="png")
                 img_base64 = base64.b64encode(img_bytes).decode("utf-8")
