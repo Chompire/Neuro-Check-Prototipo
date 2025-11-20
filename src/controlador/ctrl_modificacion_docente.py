@@ -457,7 +457,7 @@ class ModificacionDocenteController(FletController):
         errores = []
         
         number_map = {
-            "primero": "1", "segundo": "2", "tercero": "3", "cuarto": "4",
+            "primer": "1", "segundo": "2", "tercer": "3", "cuarto": "4",
             "quinto": "5", "sexto": "6", "séptimo": "7", "octavo": "8"
         }
         def normalize_curso_name(name: str) -> str:
@@ -478,10 +478,6 @@ class ModificacionDocenteController(FletController):
                     errores.append(f"Línea {i+1}: Formato incorrecto (se esperaban 9 campos).")
                     continue
                 nombres_full, apellido_pat, apellido_mat, rut, fecha_str, sexo_str, curso_str, año_str, establecimiento = partes
-
-                if not self.validar_rut(rut):
-                    errores.append(f"Línea {i+1}: RUT '{rut}' no válido.")
-                    continue
                 if self.model.estudiante_existe_por_rut(rut):
                     errores.append(f"Línea {i+1}: RUT '{rut}' ya existe.")
                     continue
