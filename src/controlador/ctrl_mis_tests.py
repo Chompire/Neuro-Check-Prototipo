@@ -24,7 +24,7 @@ class MisTestsController(FletController):
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text("No hay tests completados para mostrar.", text_align=ft.TextAlign.CENTER)),
-                        *[ft.DataCell(ft.Text("")) for _ in range(6)] # Añadir 6 celdas vacías
+                        *[ft.DataCell(ft.Text("")) for _ in range(6)]
                     ]
                 )
             )
