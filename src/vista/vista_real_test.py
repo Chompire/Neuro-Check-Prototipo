@@ -16,6 +16,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
         self.next_button_est = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_est,icon_color=color_Docente)
         self.pagination_controls_est = ft.Row([self.prev_button_est, self.page_label_est, self.next_button_est], alignment=ft.MainAxisAlignment.CENTER)
         self.estudiante_search = ft.TextField(bgcolor=color_Docente,
+            expand=True,
             prefix_icon=ft.Icons.SEARCH,
             label="Buscar estudiante",
             on_change=lambda e: controller.est_search(reset_page=True),
@@ -23,12 +24,13 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
         self.eliminar_button = ft.ElevatedButton("Eliminar Test",width=150,height=40, icon=ft.Icons.DELETE, bgcolor=ft.Colors.RED, color=ft.Colors.WHITE,on_click=controller.eliminar_test, visible=False)
         
         self.test_search = ft.TextField(bgcolor=color_Docente,
+            expand=True,
             prefix_icon=ft.Icons.SEARCH,
             label="Buscar estudiante",
             on_change=lambda e: controller.test_search(reset_page=True),
             )
         self.estudiante_table = ft.DataTable(
-            width=1450,
+            
             border=ft.border.all(2, ft.Colors.BLACK),
             bgcolor="white",
             heading_row_color= color_Docente,        
@@ -48,11 +50,11 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                         ft.DataColumn(ft.Text("RUT")),
                         ft.DataColumn(ft.Text("Curso")),
                     ],
-                    rows=[] # Inicializamos las filas vacías
+                    rows=[]
         )
         
         self.test_incompletos =ft.DataTable(
-            width=1450,
+                
                 heading_row_color= color_Docente,
                 heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
                 bgcolor="white",
@@ -104,36 +106,33 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
             [                
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START), # This line already exists, no change needed.
                 self.feedback_snackbar,
-                ft.Column(
+                ft.ResponsiveRow(
                     expand=True,
-                    scroll=ft.ScrollMode.AUTO,
                     controls=[
-                        ft.Row(alignment=ft.MainAxisAlignment.CENTER,
-                               controls=[
-                        ft.Column(
-                                  controls=[ 
-                                   ft.Row(alignment=ft.MainAxisAlignment.START,
-                                          controls=[ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                                       ]),
-                                       ft.Row(controls=[self.estudiante_search, self.next_button], expand=True),
-                                       ft.Row([self.estudiante_table], scroll=ft.ScrollMode.AUTO),
-                                       
-                                       ]),
-                                       
-                        ]),
-                        ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.pagination_controls_est]),
-                        ft.Divider(color="black"),
-                        ft.Row(alignment=ft.MainAxisAlignment.CENTER,
-                               controls=[
-                            ft.Column(
+                        ft.Container(
+                            col={"sm": 12, "lg": 6},
+                            content=ft.Column(
+                                expand=True,
                                 controls=[
-                                        ft.Row([ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                                        ]),
-                                        ft.Row(controls=[self.test_search,self.upload_button, self.eliminar_button], expand=True),
-                                        ft.Row([self.test_incompletos])]),      
-                            ]),
-                            ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.pagination_controls_test]),
-                            
+                                    ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                    ft.Row(controls=[self.estudiante_search, self.next_button]),
+                                    ft.Row([self.estudiante_table], scroll=ft.ScrollMode.AUTO, expand=True),
+                                    self.pagination_controls_est,
+                                ]
+                            )
+                        ),
+                        ft.Container(
+                            col={"sm": 12, "lg": 6},
+                            content=ft.Column(
+                                expand=True,
+                                controls=[
+                                    ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                    ft.Row(controls=[self.test_search, self.upload_button, self.eliminar_button]),
+                                    ft.Row([self.test_incompletos], scroll=ft.ScrollMode.AUTO, expand=True),
+                                    self.pagination_controls_test,
+                                ]
+                            )
+                        )
                     ]
                 )
             ]

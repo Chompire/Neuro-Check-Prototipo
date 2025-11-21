@@ -5,7 +5,6 @@ from colors import color_Background_Docente,color_Docente
 class MisTestsView(FletView):
     def __init__(self, controller, model):
         self.test_completos_table = ft.DataTable(
-            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
@@ -36,7 +35,6 @@ class MisTestsView(FletView):
 
         self.tests_profesores_title = ft.Text("Tests de otros profesores:", size=20, weight=ft.FontWeight.BOLD, color="black", visible=False)
         self.test_profesores_table = ft.DataTable(
-            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
@@ -67,36 +65,27 @@ class MisTestsView(FletView):
         self.next_button_otros = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_otros, icon_color=color_Docente)
         self.pagination_controls_otros = ft.Row([self.prev_button_otros, self.page_label_otros, self.next_button_otros], alignment=ft.MainAxisAlignment.CENTER, visible=False)
 
-        column_controls = [
-            ft.Row(
-                alignment=ft.MainAxisAlignment.CENTER,
-                controls=[
-                ft.Column([
-                    ft.Row([ft.Text("Mis tests:", size=20, weight=ft.FontWeight.BOLD, color="black")]),
-                    ft.Row([self.test_completos_table], scroll=ft.ScrollMode.AUTO),
-                ]),
-            ]),
-            self.pagination_controls_completos,
-            ft.Divider(height=20, color=ft.Colors.BLACK),
-        ]
-        column_controls.extend([
-            ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
-                ft.Column([ 
-                    self.tests_profesores_title,
-                    ft.Row([self.test_profesores_table],scroll=ft.ScrollMode.AUTO),
-                ])
-            ]),
-            self.pagination_controls_otros])
-
         view = ft.View(
             "/mis_tests",
             scroll=ft.ScrollMode.AUTO,
             bgcolor=color_Background_Docente,
             controls=[
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mis Tests", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
-                ft.Column(
-                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-                    controls=column_controls,
+                ft.ResponsiveRow(
+                    controls=[
+                        ft.Container(
+                            col={"sm": 12},
+                            content=ft.Column([
+                                ft.Text("Mis tests:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Row([self.test_completos_table], scroll=ft.ScrollMode.AUTO, expand=True),
+                                self.pagination_controls_completos,
+                                ft.Divider(height=20, color=ft.Colors.BLACK),
+                                self.tests_profesores_title,
+                                ft.Row([self.test_profesores_table], scroll=ft.ScrollMode.AUTO, expand=True),
+                                self.pagination_controls_otros,
+                            ], expand=True)
+                        )
+                    ]
                 )
             ]
         )

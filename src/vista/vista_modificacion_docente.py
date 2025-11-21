@@ -40,7 +40,7 @@ class ModificacionDocenteView(FletView):
         )
 
         self.data_table = ft.DataTable(
-            width=1450,
+            
             heading_row_color=color_Docente,
             columns=[
                 ft.DataColumn(ft.Text("Nombres")), ft.DataColumn(ft.Text("Apellidos")),
@@ -105,7 +105,7 @@ class ModificacionDocenteView(FletView):
 
         self.curso_data_table = ft.DataTable(
             heading_row_color=color_Docente,
-            width=1450,
+            
             columns=[
                 ft.DataColumn(ft.Text("Nombre Curso")), ft.DataColumn(ft.Text("Año")), ft.DataColumn(ft.Text("Estado")),
             ],
@@ -152,7 +152,7 @@ class ModificacionDocenteView(FletView):
             color="black", label_style=ft.TextStyle(color="black")
         )
         self.student_data_table = ft.DataTable(
-            width=1450,
+            
             heading_row_color=color_Docente,
             columns=[
                 ft.DataColumn(ft.Text("Nombre")), ft.DataColumn(ft.Text("Apellidos")),
@@ -186,20 +186,26 @@ class ModificacionDocenteView(FletView):
             controls=[
                 
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Gestión de Docentes", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
-                ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
-                    ft.Column([
-                        ft.Row(alignment=ft.MainAxisAlignment.START, controls=[ft.Text("Añadir / Editar Docente:", size=20, weight=ft.FontWeight.BOLD, color="black")]),
-                        ft.Row([self.profesor_search_field]),
-                        ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO),                        
-                        
-                    ]),
-                ]),
-                ft.Row(controls=[self.pagination_controls_pro], alignment=ft.MainAxisAlignment.CENTER),
                 ft.ResponsiveRow(
-                    vertical_alignment=ft.CrossAxisAlignment.CENTER,
+                    alignment=ft.MainAxisAlignment.CENTER,
                     controls=[
-                            ft.Column(
-                                col={"sm": 12, "md": 8},
+                        ft.Container(
+                            col={"sm": 12, "md": 10, "lg": 12},
+                            content=ft.Column([
+                                ft.Text("Añadir / Editar Docente:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                self.profesor_search_field,
+                                ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO, expand=True),
+                                self.pagination_controls_pro,
+                            ])
+                        )
+                    ]
+                ),
+                ft.ResponsiveRow(
+                    vertical_alignment=ft.CrossAxisAlignment.START,
+                    controls=[
+                        ft.Container(
+                            col={"sm": 12, "md": 8},
+                            content=ft.Column(
                                 controls=[
                                     ft.ResponsiveRow(controls=[
                                         ft.Container(content=self.nombre1, col={"sm": 12, "md": 6}),
@@ -209,7 +215,6 @@ class ModificacionDocenteView(FletView):
                                         ft.Container(content=self.nombre3, col={"sm": 12, "md": 6}),
                                         ft.Container(content=self.apellido_pat, col={"sm": 12, "md": 6}),
                                     ]),
-                                    
                                     ft.ResponsiveRow(controls=[
                                         ft.Container(content=self.apellido_mat, col={"sm": 12, "md": 6}),
                                         ft.Container(content=self.rut_field, col={"sm": 12, "md": 6}),
@@ -217,48 +222,66 @@ class ModificacionDocenteView(FletView):
                                         ft.Container(content=self.estado_field, col={"sm": 12, "md": 6}),
                                     ]),
                                 ]
-                        
+                            )
                         ),
                         ft.Container(content=self.cursos_checkbox_group, col={"sm": 12, "md": 4}),
                     ]
                 ),
-                ft.Row([self.add_button, self.edit_button, self.delete_button]),
-                ft.Divider(height=20),
-                ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
-                    ft.Column([
-                        ft.Row(alignment=ft.MainAxisAlignment.START, controls=[ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black")]),
-                        ft.Row([self.curso_search_field]),
-                        ft.Row([self.curso_data_table], scroll=ft.ScrollMode.AUTO),                        
-                    ]),
-                ]),
-                self.pagination_controls_cursos,
-                ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
-                    ft.Column([
-                        ft.Row([self.curso_name_field, self.curso_year_field, self.curso_state_field]),
-                        ft.Row([self.update_curso_button]),
-                    ]),
-                ]),
-                ft.Divider(height=20),
-                ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
-                ft.Column([
-                    ft.Text("Añadir Estudiante", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                    ft.ResponsiveRow(controls=[
-                        ft.Container(content=self.bulk_student_input, col={"sm": 12},border=ft.border.all(1, ft.Colors.BLACK), padding=5)
-                    ]),
-                    ft.Row([self.add_student_button]),
-                ]),
-            ]),
-                ft.Divider(height=20),
-                ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[
-                    ft.Column([
-                        ft.Text("Eliminar Estudiante", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                        ft.Row([self.student_search_field]),
-                        ft.Row([self.student_data_table], scroll=ft.ScrollMode.AUTO),
-                        
-                    ]),
-                ]),
-                ft.Row([self.pagination_controls_estudiantes], alignment=ft.MainAxisAlignment.CENTER),
-                ft.Row([self.delete_student_button]),
+                ft.Row([self.add_button, self.edit_button, self.delete_button], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Divider(height=20, color="black"),
+                ft.ResponsiveRow(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[
+                        ft.Container(
+                            col={"sm": 12, "md": 10, "lg": 12},
+                            content=ft.Column([
+                                ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                self.curso_search_field,
+                                ft.Row([self.curso_data_table], scroll=ft.ScrollMode.AUTO, expand=True),
+                                self.pagination_controls_cursos,
+                            ])
+                        )
+                    ]
+                ),
+                ft.ResponsiveRow(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[
+                        ft.Container(content=self.curso_name_field, col={"sm": 12, "md": 4}),
+                        ft.Container(content=self.curso_year_field, col={"sm": 12, "md": 4}),
+                        ft.Container(content=self.curso_state_field, col={"sm": 12, "md": 4}),
+                    ]
+                ),
+                ft.Row([self.update_curso_button], alignment=ft.MainAxisAlignment.CENTER),
+                ft.Divider(height=20, color="black"),
+                ft.ResponsiveRow(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[
+                        ft.Container(
+                            col={"sm": 12, "md": 10, "lg": 8},
+                            content=ft.Column([
+                                ft.Text("Añadir Estudiante", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                self.bulk_student_input,
+                                ft.Row([self.add_student_button], alignment=ft.MainAxisAlignment.CENTER),
+                            ])
+                        )
+                    ]
+                ),
+                ft.Divider(height=20, color="black"),
+                ft.ResponsiveRow(
+                    alignment=ft.MainAxisAlignment.CENTER,
+                    controls=[
+                        ft.Container(
+                            col={"sm": 12, "md": 10, "lg": 12},
+                            content=ft.Column([
+                                ft.Text("Eliminar Estudiante", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                self.student_search_field,
+                                ft.Row([self.student_data_table], scroll=ft.ScrollMode.AUTO, expand=True),
+                                self.pagination_controls_estudiantes,
+                            ])
+                        )
+                    ]
+                ),
+                ft.Row([self.delete_student_button], alignment=ft.MainAxisAlignment.CENTER),
                 self.feedback_snackbar, self.add_dialog, self.edit_dialog, self.delete_dialog, self.delete_student_dialog,
             ]
         )

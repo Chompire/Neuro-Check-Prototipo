@@ -12,7 +12,7 @@ class NotificacionesView(FletView):
             "/notificaciones",
             controls=[
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Notificaciones", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
-                self.feedback_snackbar,
+                
                 ft.Column(
                     expand=True,
                     controls=[
@@ -21,7 +21,7 @@ class NotificacionesView(FletView):
                                 ft.Text("Bandeja de Notificaciones", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                 ft.IconButton(
                                     icon=ft.Icons.DELETE_SWEEP,
-                                    icon_color=ft.Colors.RED_400,
+                                    icon_color=color_Docente,
                                     tooltip="Eliminar notificaciones leídas",
                                     on_click=controller.eliminar_leidas,
                                 )
@@ -29,11 +29,11 @@ class NotificacionesView(FletView):
                             alignment=ft.MainAxisAlignment.CENTER,
                             vertical_alignment=ft.CrossAxisAlignment.CENTER
                         ),
-                        ft.Divider(),
                         self.notification_list,
                     ],
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER
-                )
+                ),
+                self.feedback_snackbar,
             ],
             bgcolor=color_Background_PIE,
         )

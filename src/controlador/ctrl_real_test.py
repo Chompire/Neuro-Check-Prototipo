@@ -22,8 +22,8 @@ class RealizarTestController(FletController):
         self.selected_test_id = None
         
     def cargar_estudiantes(self, estudiantes_a_mostrar=None):
-        self.view.estudiante_table.rows.clear()
         self.view.next_button.visible = False
+        new_rows = []
         self.selected_es_id = None
         
         self.estudiante_data = [est for est in self.model.leer_estudiantes() if est.cur_state == 1]
@@ -39,10 +39,9 @@ class RealizarTestController(FletController):
         self.view.page_label_est.value = f"Página {self.current_page_est + 1} de {total_pages_est}"
         self.view.prev_button_est.disabled = self.current_page_est == 0
         self.view.next_button_est.disabled = self.current_page_est >= total_pages_est - 1
-        self.page.update()
         
         for estudiante in estudiantes_pagina_actual:
-            self.view.estudiante_table.rows.append(
+            new_rows.append(
                 ft.DataRow(cells=[
                     ft.DataCell(ft.Text(estudiante.es_nombre_1)),
                     ft.DataCell(ft.Text(estudiante.es_apellido_pat)),
@@ -54,34 +53,32 @@ class RealizarTestController(FletController):
                 on_select_changed=self.es_row_select,
             )
             )
+        self.view.estudiante_table.rows = new_rows
         self.page.update()
 
     def es_row_select(self, e):
-        selected_es_id = None
         selected_es= e.control.data
         is_currently_selected = e.control.selected
+
         for row in self.view.estudiante_table.rows:
             row.selected = False
+
         if not is_currently_selected:
             e.control.selected = True
             self.view.next_button.visible = True
             self.selected_es_id = selected_es[0]
         else:
-            for row in self.view.estudiante_table.rows:
-                row.selected = False
-                if selected_es_id is not None:
-                    self.view.next_button.visible = False
-                for row in self.view.estudiante_table.rows:
-                    row.selected = False
-                    self.view.next_button.visible = False
+            self.selected_es_id = None
+            self.view.next_button.visible = False
         self.page.update()
     
     def test_row_select(self, e):
-        selected_test_id = None
         selected_test= e.control.data
         is_currently_selected = e.control.selected
+
         for row in self.view.test_incompletos.rows:
             row.selected = False
+
         if not is_currently_selected:
             e.control.selected = True
             self.view.upload_button.visible = True            
@@ -89,21 +86,15 @@ class RealizarTestController(FletController):
             self.selected_test_id = selected_test.test_ID
             print(self.selected_test_id)
         else:
-            for row in self.view.test_incompletos.rows:
-                row.selected = False
-                if selected_test_id  is not None:
-                    self.view.upload_button.visible = False
-                    self.view.eliminar_button.visible = False
-                for row in self.view.test_incompletos.rows:
-                    row.selected = False
-                    self.view.upload_button.visible = False
-                    self.view.eliminar_button.visible = False
+            self.selected_test_id = None
+            self.view.upload_button.visible = False
+            self.view.eliminar_button.visible = False
         self.page.update()
 
     def cargar_test_incompletos(self, test_a_mostrar=None):
         test_a_mostrar = db.testREAD(test_status=0)
-        self.view.test_incompletos.rows.clear()
         self.view.upload_button.visible = False
+        new_rows = []
         self.selected_test_id = None
        
         total_items = len(test_a_mostrar)
@@ -114,10 +105,9 @@ class RealizarTestController(FletController):
         self.view.page_label_test.value = f"Página {self.current_page_tests + 1} de {total_pages}"
         self.view.prev_button_test.disabled = self.current_page_tests == 0
         self.view.next_button_test.disabled = self.current_page_tests >= total_pages - 1
-        self.page.update()
         if test_a_mostrar:
             for test in test_pagina_actual:
-                self.view.test_incompletos.rows.append(
+                new_rows.append(
                     ft.DataRow(cells=[
                         ft.DataCell(ft.Text(test.es_nombre_1)),
                         ft.DataCell(ft.Text(test.es_apellido_pat)),
@@ -130,8 +120,8 @@ class RealizarTestController(FletController):
                     data=test,
                     on_select_changed=self.test_row_select,)
                 )
-                self.page.update()
-
+        self.view.test_incompletos.rows = new_rows
+        self.page.update()
     
     def next_page_test(self, e):
         lista_test_incompletos = db.testREAD(test_status=0)

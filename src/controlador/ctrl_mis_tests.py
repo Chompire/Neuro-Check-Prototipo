@@ -14,22 +14,17 @@ class MisTestsController(FletController):
         self.total_pages_otros = 1
 
     def cargar_tests_completados(self):
-        self.view.test_completos_table.rows.clear()
+        new_rows = []
         pro_id = self.model.datos_profesor.pro_nameID
         test_dat = self.model.leer_test(pro_ID=pro_id, test_status=1)
         total_items = len(test_dat)
 
         if not test_dat:
-            self.view.test_completos_table.rows.append(
+            new_rows.append(
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text("No hay tests completados para mostrar.", text_align=ft.TextAlign.CENTER)),
-                        ft.DataCell(ft.Text("")),
-                        ft.DataCell(ft.Text("")),
-                        ft.DataCell(ft.Text("")),
-                        ft.DataCell(ft.Text("")),
-                        ft.DataCell(ft.Text("")),
-                        ft.DataCell(ft.Text("")),
+                        *[ft.DataCell(ft.Text("")) for _ in range(6)] # Añadir 6 celdas vacías
                     ]
                 )
             )
@@ -45,7 +40,7 @@ class MisTestsController(FletController):
             self.view.prev_button_completos.visible = self.current_page_completos > 0
             self.view.next_button_completos.visible = self.current_page_completos < total_pages - 1
             for test in tests_pagina_actual:
-                self.view.test_completos_table.rows.append(
+                new_rows.append(
                     ft.DataRow(cells=[
                         ft.DataCell(ft.Text(test.es_nombre_1)),
                         ft.DataCell(ft.Text(test.es_apellido_pat)),
@@ -53,23 +48,22 @@ class MisTestsController(FletController):
                         ft.DataCell(ft.Text(test.cur_nombre)),
                         ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A")),
                         ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A")),
-                        ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if test.det_porcentaje <= 39 else ft.Colors.YELLOW if test.det_porcentaje <= 69 else ft.Colors.RED)),
+                        ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if (test.det_porcentaje or 0) <= 39 else ft.Colors.YELLOW if (test.det_porcentaje or 0) <= 69 else ft.Colors.RED)),
                         
                     ],
                     data = test,
                     on_select_changed=self.test_completos_row_select,
                     )
                 )
+        self.view.test_completos_table.rows = new_rows
         self.page.update()
 
     def cargar_test_profesores(self):
         if self.view.test_profesores_table is None:
             return
 
-        self.view.test_profesores_table.rows.clear()
-        
+        new_rows = []
         test_dat = self.model.leer_test(test_status=1)
-        
         current_pro_id = self.model.datos_profesor.pro_nameID
         curso_dat = self.model.leer_cursos_pie(self.model.datos_profesor.pro_nameID)
         
@@ -91,8 +85,8 @@ class MisTestsController(FletController):
             end_index = start_index + self.numpage_otros
             tests_pagina_actual = tests_filtrados[start_index:end_index]
 
-            for test in tests_pagina_actual:
-                self.view.test_profesores_table.rows.append(
+            for test in tests_pagina_actual:                
+                new_rows.append(
                     ft.DataRow(
                         cells=[
                             ft.DataCell(ft.Text(test.es_nombre_1)),
@@ -102,12 +96,23 @@ class MisTestsController(FletController):
                             ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A")),
                             ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A")),
                             ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}")),
-                            ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if test.det_porcentaje <= 39 else ft.Colors.YELLOW if test.det_porcentaje <= 69 else ft.Colors.RED)),
+                            ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if (test.det_porcentaje or 0) <= 39 else ft.Colors.YELLOW if (test.det_porcentaje or 0) <= 69 else ft.Colors.RED)),
                         ],
                         data=test,
                         on_select_changed=self.test_profesores_row_select,
                     )
                 )
+        else:
+            new_rows.append(
+                ft.DataRow(
+                    cells=[
+                        ft.DataCell(ft.Text("No hay tests de otros profesores para mostrar.", text_align=ft.TextAlign.CENTER)),
+                        *[ft.DataCell(ft.Text("")) for _ in range(7)] # Añadir 7 celdas vacías
+                    ]
+                )
+            )
+
+        self.view.test_profesores_table.rows = new_rows
         self.page.update()
 
     def next_page_completos(self, e):
@@ -141,10 +146,12 @@ class MisTestsController(FletController):
             self.selected_test_id = selected_test.test_ID
             print(self.selected_test_id)
             self.res_det_id = self.model.leer_resultados_detallados(self.selected_test_id)
-          
-            self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
-        
-
+            
+            if self.res_det_id:
+                self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
+            else:
+                print(f"Error: No se encontraron resultados detallados para el test ID {self.selected_test_id}")
+                # Opcional: Mostrar un mensaje al usuario en la UI
         self.page.update()
     def test_completos_row_select(self, e):
         selected_test = e.control.data
@@ -155,8 +162,10 @@ class MisTestsController(FletController):
             e.control.selected = True
             self.selected_test_id = selected_test.test_ID
             self.res_det_id = self.model.leer_resultados_detallados(self.selected_test_id)
-          
-            self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
-        
-
+            
+            if self.res_det_id:
+                self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
+            else:
+                print(f"Error: No se encontraron resultados detallados para el test ID {self.selected_test_id}")
+                # Opcional: Mostrar un mensaje al usuario en la UI
         self.page.update()

@@ -78,7 +78,6 @@ class ResultadosDetalladosView(FletView):
             rows=[]
         )
         self.datatable = ft.DataTable(
-            width=1450,
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
             bgcolor="white",
@@ -159,20 +158,20 @@ class ResultadosDetalladosView(FletView):
                     ft.Container(content=self.porcentaje_control, col={"sm": 12, "md": 6}),
                 ]
             ),
-            ft.Row(
+            ft.ResponsiveRow(
                 alignment=ft.MainAxisAlignment.CENTER,
                 vertical_alignment=ft.CrossAxisAlignment.CENTER,
                 controls=[
-                    ft.Column(
-                        scroll=ft.ScrollMode.AUTO,
-                        controls=[
-                            ft.Text("Posibles indicios de riesgo:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                            ft.Container(
+                    ft.Container(
+                        col={"sm": 12, "md": 10, "lg": 8},
+                        content=ft.Column(
+                            controls=[
+                                ft.Text("Posibles indicios de riesgo:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Container(
                                 alignment=ft.alignment.center_left,
                                 border=ft.border.all(1, ft.Colors.BLACK),
                                 bgcolor=ft.Colors.WHITE,
                                 padding=10,
-                                width=1000,
                                 content=ft.ExpansionPanelList(
                                     expand_icon_color=ft.Colors.BLACK,
                                     elevation=8,
@@ -213,8 +212,9 @@ class ResultadosDetalladosView(FletView):
                                     ]
                                 )
                             )
-                        ]
-                    )                    
+                            ]
+                        )
+                    )
                 ]
             ),
         ]
@@ -235,46 +235,6 @@ class ResultadosDetalladosView(FletView):
             on_click=controller.generar_y_navegar_pdf, visible=False
         )
         
-        self.tabs_control = ft.Tabs(
-            indicator_color=color_Docente, divider_color=ft.Colors.TRANSPARENT,
-            unselected_label_color=ft.Colors.BLACK, label_color=color_Docente,
-            overlay_color={
-                ft.ControlState.HOVERED: ft.Colors.with_opacity(0.6, color_Docente),
-                ft.ControlState.SELECTED: ft.Colors.with_opacity(0.5, color_Docente),
-            },
-            selected_index=0, animation_duration=300,
-            tabs=[
-                ft.Tab(
-                    text="Atención",
-                    content=ft.Container(padding=20, content=ft.Column(
-                        [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_atencion])],
-                        scroll=ft.ScrollMode.AUTO)
-                    )
-                ),
-                ft.Tab(
-                    text="Memoria",
-                    content=ft.Container(padding=20, content=ft.Column(
-                        [ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_memoria])],
-                        scroll=ft.ScrollMode.AUTO)
-                    )
-                ),
-                ft.Tab(
-                    text="Social",
-                    content=ft.Container(padding=20, content=ft.Column(
-                        controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_social])],
-                        scroll=ft.ScrollMode.AUTO)
-                    )
-                ),
-                ft.Tab(
-                    text="Emocional",
-                    content=ft.Container(padding=20, content=ft.Column(
-                        controls=[ft.Row(alignment=ft.MainAxisAlignment.CENTER, controls=[self.result_test_table_emocional])],
-                        scroll=ft.ScrollMode.AUTO)
-                    )
-                ),
-            ]
-        )
-        
         self.observaciones_field = ft.TextField(
             label="Observaciones del Profesional",
             multiline=True,
@@ -287,12 +247,29 @@ class ResultadosDetalladosView(FletView):
 
         self.pie_controls_container = ft.Column(
             visible=False, # Oculto por defecto
+            expand=True,
             controls=[
                 ft.Row([ft.Text("Observaciones del Profesional:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
                 self.observaciones_field,
                 ft.Row([self.generate_pdf_button, self.view_pdf_button, self.update_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-                self.tabs_control,
-                
+                ft.Divider(height=20, color="black"),
+                ft.Text("Respuestas por Categoría:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                ft.Column(
+                    scroll=ft.ScrollMode.AUTO,
+                    controls=[
+                        ft.Text("Atención", size=18, weight=ft.FontWeight.BOLD),
+                        ft.Row([self.result_test_table_atencion], scroll=ft.ScrollMode.AUTO),
+                        ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
+                        ft.Text("Memoria", size=18, weight=ft.FontWeight.BOLD),
+                        ft.Row([self.result_test_table_memoria], scroll=ft.ScrollMode.AUTO),
+                        ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
+                        ft.Text("Social", size=18, weight=ft.FontWeight.BOLD),
+                        ft.Row([self.result_test_table_social], scroll=ft.ScrollMode.AUTO),
+                        ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
+                        ft.Text("Emocional", size=18, weight=ft.FontWeight.BOLD),
+                        ft.Row([self.result_test_table_emocional], scroll=ft.ScrollMode.AUTO),
+                    ]
+                )
             ]
         )
         main_column_controls.append(self.pie_controls_container)
@@ -305,6 +282,7 @@ class ResultadosDetalladosView(FletView):
                 self.feedback_snackbar,
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mis Tests >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Resultados Detallados", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 ft.Column(
+                    expand=True,
                     controls=main_column_controls
                 ),
             ]

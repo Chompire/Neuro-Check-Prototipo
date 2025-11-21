@@ -287,7 +287,7 @@ def main(page: ft.Page, model: AppModel):
             current_view = resultados_detallados_view.content
 
         elif troute.match("/gestion"):
-            view_title.value = "Gestión de Docentes"
+            view_title.value = "Gestión"
             modificacion_docente_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             modificacion_docente_controller.load_profesores_to_table()
             modificacion_docente_controller.initialize_view()
