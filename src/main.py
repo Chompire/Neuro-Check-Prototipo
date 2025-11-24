@@ -219,7 +219,7 @@ def main(page: ft.Page, model: AppModel):
             current_view = inicio_view.content
 
         elif troute.match("/inicio_pie"):
-            view_title.value = "Inicio PIE"            
+            view_title.value = "Inicio PIE"
             inicio_pie_view.content.appbar = create_appbar(page, view_title, view_pop, model, logout, route_change)
             if hasattr(model, 'datos_profesor') and model.datos_profesor and model.datos_profesor.pro_cargo == 1:
                 inicio_pie_view.content.bgcolor = color_Background_PIE

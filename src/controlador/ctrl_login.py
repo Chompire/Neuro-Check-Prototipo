@@ -10,9 +10,9 @@ class LoginController(FletController):
         profesor_cargado = self.model.cargar_profesor(rut, password)
         if profesor_cargado:
             prof_id = self.model.datos_profesor.pro_nameID
-            self.model.actualizar_profesor(prof_id, {"pro_online_state": 1})
-            self.page.client_storage.set("profesor_id", prof_id)
+            self.model.actualizar_profesor(prof_id, {"pro_online_state": 1})            
             if leer_profesor.pro_state == 1:
+                self.page.client_storage.set("profesor_id", prof_id)
                 if self.model.datos_profesor.pro_cargo == 1:
                     self.page.go("/inicio_pie")
                 else:

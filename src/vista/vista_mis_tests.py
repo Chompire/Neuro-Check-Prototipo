@@ -59,7 +59,6 @@ class MisTestsView(FletView):
             rows=[],
             visible=False
         )
-
         self.prev_button_otros = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_otros, icon_color=color_Docente)
         self.page_label_otros = ft.Text("Página 1 de 1", color="black")
         self.next_button_otros = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_otros, icon_color=color_Docente)

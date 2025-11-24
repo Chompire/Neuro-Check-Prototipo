@@ -109,6 +109,9 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                 ft.ResponsiveRow(
                     expand=True,
                     controls=[
+                       ft.Column(
+                            expand=True,
+                            controls=[
                         ft.Container(
                             col={"sm": 12, "lg": 6},
                             content=ft.Column(
@@ -133,6 +136,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                                 ]
                             )
                         )
+                            ])
                     ]
                 )
             ]
