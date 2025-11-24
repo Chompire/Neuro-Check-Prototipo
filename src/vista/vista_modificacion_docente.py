@@ -129,7 +129,6 @@ class ModificacionDocenteView(FletView):
         self.curso_year_field = ft.TextField(label="Año", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
         self.curso_state_field = ft.Dropdown(label="Estado del Curso", width=300, options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")], color="black", label_style=ft.TextStyle(color="black"))
         self.update_curso_button = ft.ElevatedButton("Actualizar Curso", on_click=controller.update_curso, visible=False, bgcolor=color_Docente, color=ft.Colors.WHITE)
-        
         self.prev_button_cursos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_cursos, icon_color=color_Docente)
         self.page_label_cursos = ft.Text("Página 1 de 1", color="black")
         self.next_button_cursos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_cursos, icon_color=color_Docente)
