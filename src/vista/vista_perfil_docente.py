@@ -92,12 +92,9 @@ class PerfilDocenteView(FletView):
                         controls=[
                             ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
                             ft.Row([ft.Text("Graficos de barras:", size=15, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
-                            ft.ResponsiveRow(
-                                controls=[
-                                    ft.Container(content=self.stat_cantidad_cursos_encuestados, col={"sm": 12, "lg": 6}),
-                                    ft.Container(content=self.stat_cantidad_cursos_encuestados_totales, col={"sm": 12, "lg": 6}),
-                                ]
-                            )
+                            ft.ResponsiveRow(controls=[
+                                ft.Container(content=self.stat_cantidad_cursos_encuestados_totales, col={"sm": 12, "lg": 6}),
+                            ])
                         ]
                     ),
                     padding=5
@@ -140,6 +137,11 @@ class PerfilDocenteView(FletView):
                                         ft.Text("Mis datos:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                         ft.Row([self.info_table], scroll=ft.ScrollMode.AUTO, expand=True),
                                     ]
+                                ),
+                                ft.Container(
+                                    alignment=ft.alignment.center,
+                                    content=ft.Column([ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START), self.stat_cantidad_cursos_encuestados]),
+                                    padding=5
                                 ),
                                 ft.Divider(height=20, color=ft.Colors.BLACK),
                                 self.graficos_container, # Contenedor de gráficos,
