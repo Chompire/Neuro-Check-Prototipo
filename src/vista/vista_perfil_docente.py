@@ -21,7 +21,6 @@ class PerfilDocenteView(FletView):
         )
         self.mis_tests_view = None # Placeholder for the new view
         
-        
         self.stat_cantidad_cursos_encuestados = ft.BarChart(
             bar_groups=[],
             border=ft.border.all(1, ft.Colors.GREY_400),
@@ -140,7 +139,6 @@ class PerfilDocenteView(FletView):
                                     controls=[
                                         ft.Text("Mis datos:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                         ft.Row([self.info_table], scroll=ft.ScrollMode.AUTO, expand=True),
-                                        
                                     ]
                                 ),
                                 ft.Divider(height=20, color=ft.Colors.BLACK),
