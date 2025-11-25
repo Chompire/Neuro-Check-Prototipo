@@ -2,4 +2,6 @@ flet
 flet-mvc
 fpdf2
 mysql-connector-python
+pyodbc
+pandas
 fitz
