@@ -2,7 +2,6 @@ flet
 flet-mvc
 fpdf2
 mysql-connector-python
-
-192.168.10.221
-
-netstat -ano | findstr ":8080"
+pyodbc
+pandas
+fitz
