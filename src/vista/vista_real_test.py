@@ -15,7 +15,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
         self.page_label_est = ft.Text("Página 1 de 1", color="black")
         self.next_button_est = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_est,icon_color=color_Docente)
         self.pagination_controls_est = ft.Row([self.prev_button_est, self.page_label_est, self.next_button_est], alignment=ft.MainAxisAlignment.CENTER)
-        self.estudiante_search = ft.TextField(bgcolor=color_Docente,
+        self.estudiante_search = ft.TextField(bgcolor="white",
             expand=True,
             prefix_icon=ft.Icons.SEARCH,
             label="Buscar estudiante",
@@ -23,7 +23,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
             )
         self.eliminar_button = ft.ElevatedButton("Eliminar Test",width=150,height=40, icon=ft.Icons.DELETE, bgcolor=ft.Colors.RED, color=ft.Colors.WHITE,on_click=controller.eliminar_test, visible=False)
         
-        self.test_search = ft.TextField(bgcolor=color_Docente,
+        self.test_search = ft.TextField(bgcolor="white",
             expand=True,
             prefix_icon=ft.Icons.SEARCH,
             label="Buscar estudiante",
@@ -119,8 +119,9 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                                 controls=[
                                     ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                     ft.Row(controls=[self.estudiante_search, self.next_button]),
+                                    ft.Column(spacing=15, horizontal_alignment=ft.CrossAxisAlignment.CENTER, controls=[
                                     ft.Row([self.estudiante_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
-                                    self.pagination_controls_est,
+                                    self.pagination_controls_est,])
                                 ]
                             )
                         ),
@@ -131,8 +132,9 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                                 controls=[
                                     ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                     ft.Row(controls=[self.test_search, self.upload_button, self.eliminar_button]),
+                                    ft.Column(spacing=15, horizontal_alignment=ft.CrossAxisAlignment.CENTER, controls=[
                                     ft.Row([self.test_incompletos], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
-                                    self.pagination_controls_test,
+                                    self.pagination_controls_test,])
                                 ]
                             )
                         )

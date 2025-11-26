@@ -4,6 +4,18 @@ from colors import color_Background_Docente,color_Docente
 
 class MisTestsView(FletView):
     def __init__(self, controller, model):
+        self.search_completos_field = ft.TextField(bgcolor="white",
+            label="Buscar en mis tests (Nombre, Apellido o RUT del estudiante)",
+            on_change=lambda e: controller.search_completos(reset_page=True),
+            color="black", label_style=ft.TextStyle(color="black")
+        )
+        self.search_otros_field = ft.TextField(bgcolor="white",
+            label="Buscar en tests de otros (Nombre, Apellido o RUT del estudiante)",
+            on_change=lambda e: controller.search_otros(reset_page=True),
+            color="black", label_style=ft.TextStyle(color="black"),
+            visible=False
+        )
+
         self.test_completos_table = ft.DataTable(
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
@@ -76,12 +88,16 @@ class MisTestsView(FletView):
                             col={"sm": 12},
                             content=ft.Column([
                                 ft.Text("Mis tests:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                self.search_completos_field,
+                                ft.Column(spacing=15, horizontal_alignment=ft.CrossAxisAlignment.CENTER, controls=[
                                 ft.Row([self.test_completos_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
-                                self.pagination_controls_completos,
+                                self.pagination_controls_completos,]),
                                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                                 self.tests_profesores_title,
+                                self.search_otros_field,
+                                ft.Column(spacing=15, horizontal_alignment=ft.CrossAxisAlignment.CENTER, controls=[
                                 ft.Row([self.test_profesores_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
-                                self.pagination_controls_otros,
+                                self.pagination_controls_otros,])
                             ], expand=True)
                         )
                     ]

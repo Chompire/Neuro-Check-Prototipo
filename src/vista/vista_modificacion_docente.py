@@ -60,6 +60,7 @@ class ModificacionDocenteView(FletView):
             rows=[]
         )
         self.profesor_search_field = ft.TextField(
+            bgcolor="white",
             label="Buscar Profesor por Nombre o RUT",
             on_change=lambda e: controller.search_profesor(reset_page=True),
             color="black", label_style=ft.TextStyle(color="black")
@@ -69,12 +70,12 @@ class ModificacionDocenteView(FletView):
         self.next_button_pro = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_pro,icon_color=color_Docente)
         self.pagination_controls_pro = ft.Row([self.prev_button_pro, self.page_label_pro, self.next_button_pro], alignment=ft.MainAxisAlignment.CENTER)
 
-        self.nombre1 = ft.TextField(label="Primer nombre", color="black", label_style=ft.TextStyle(color="black"))
-        self.nombre2 = ft.TextField(label="Segundo nombre", color="black", label_style=ft.TextStyle(color="black"))
-        self.nombre3 = ft.TextField(label="Tercer nombre", color="black", label_style=ft.TextStyle(color="black"))
-        self.apellido_pat = ft.TextField(label="Apellido paterno", color="black", label_style=ft.TextStyle(color="black"))
-        self.apellido_mat = ft.TextField(label="Apellido materno", color="black", label_style=ft.TextStyle(color="black"))
-        self.rut_field = ft.TextField(label="RUT", width=300, color="black", on_change=controller.formato_rut, label_style=ft.TextStyle(color="black"))
+        self.nombre1 = ft.TextField(bgcolor="white",label="Primer nombre", color="black", label_style=ft.TextStyle(color="black"))
+        self.nombre2 = ft.TextField(bgcolor="white",label="Segundo nombre", color="black", label_style=ft.TextStyle(color="black"))
+        self.nombre3 = ft.TextField(bgcolor="white",label="Tercer nombre", color="black", label_style=ft.TextStyle(color="black"))
+        self.apellido_pat = ft.TextField(bgcolor="white",label="Apellido paterno", color="black", label_style=ft.TextStyle(color="black"))
+        self.apellido_mat = ft.TextField(bgcolor="white",label="Apellido materno", color="black", label_style=ft.TextStyle(color="black"))
+        self.rut_field = ft.TextField(bgcolor="white",label="RUT", width=300, color="black", on_change=controller.formato_rut, label_style=ft.TextStyle(color="black"))
         self.cargo_field = ft.Dropdown(
             label="Cargo", width=500,
             options=[ft.dropdown.Option("Profesional PIE"), ft.dropdown.Option("Docente")],
@@ -120,13 +121,13 @@ class ModificacionDocenteView(FletView):
             },
             rows=[]
         )
-        self.curso_search_field = ft.TextField(
+        self.curso_search_field = ft.TextField(bgcolor="white",
             label="Buscar Curso por Nombre o Año",
             on_change=lambda e: controller.search_curso(reset_page=True),
             color="black", label_style=ft.TextStyle(color="black")
         )
-        self.curso_name_field = ft.TextField(label="Nombre del Curso", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
-        self.curso_year_field = ft.TextField(label="Año", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
+        self.curso_name_field = ft.TextField(bgcolor="white",label="Nombre del Curso", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
+        self.curso_year_field = ft.TextField(bgcolor="white",label="Año", read_only=True, color="black", label_style=ft.TextStyle(color="black"))
         self.curso_state_field = ft.Dropdown(label="Estado del Curso", width=300, options=[ft.dropdown.Option("Habilitado"), ft.dropdown.Option("Inhabilitado")], color="black", label_style=ft.TextStyle(color="black"))
         self.update_curso_button = ft.ElevatedButton("Actualizar Curso", on_click=controller.update_curso, visible=False, bgcolor=color_Docente, color=ft.Colors.WHITE)
         self.prev_button_cursos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_cursos, icon_color=color_Docente)
@@ -134,7 +135,7 @@ class ModificacionDocenteView(FletView):
         self.next_button_cursos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_cursos, icon_color=color_Docente)
         self.pagination_controls_cursos = ft.Row([self.prev_button_cursos, self.page_label_cursos, self.next_button_cursos], alignment=ft.MainAxisAlignment.CENTER)
 
-        self.bulk_student_input = ft.TextField(
+        self.bulk_student_input = ft.TextField(bgcolor="white",
             label="Lista de Estudiantes",
             multiline=True,
             min_lines=8,
@@ -145,7 +146,7 @@ class ModificacionDocenteView(FletView):
             "Añadir Estudiantes", on_click=controller.add_estudiantes_en_masa,
             bgcolor=color_Docente, color=ft.Colors.WHITE
         )
-        self.student_search_field = ft.TextField(
+        self.student_search_field = ft.TextField(bgcolor="white",
             label="Buscar Estudiante por Nombre o RUT",
             on_change=lambda e: controller.search_estudiante(reset_page=True),
             color="black", label_style=ft.TextStyle(color="black")
