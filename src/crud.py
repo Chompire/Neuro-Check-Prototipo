@@ -320,7 +320,7 @@ def testREAD(test_ID: int | None = None , test_status: int | None = None, pro_ID
                             LEFT JOIN Profesores p ON t.pro_ID = p.pro_nameID
                             LEFT JOIN Curso c ON e.lvl_curso = c.cur_nameID
                             LEFT JOIN Resultados_detallados rd ON t.test_ID = rd.id_test
-                            WHERE t.pro_ID = ? AND t.test_status = 1""" # Solo tests completados (status=1)
+                            WHERE t.pro_ID = ? AND t.test_status = 1""" 
                     cursor.execute(sql_info, pro_ID)
                     return cursor.fetchall()
     except pyodbc.Error as ex:
