@@ -88,7 +88,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
 def create_footer():
     return ft.Container(
         content=ft.Row(
-            [ft.Text("© 2024 Neuro Check. Desarrollado por Benjamín Saavedra.", color=ft.colors.with_opacity(0.6, "black"), size=12)],
+            [ft.Text("© 2025 Neuro Check. Desarrollado por Benjamín Saavedra.", color=ft.colors.with_opacity(0.6, "black"), size=12)],
             alignment=ft.MainAxisAlignment.CENTER
         ),
         padding=ft.padding.only(top=10, bottom=5),
