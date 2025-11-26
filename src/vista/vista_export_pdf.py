@@ -54,7 +54,7 @@ class ExportPDFView(FletView):
                                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                             ),
                             self.feedback_text,
-                            ft.Divider(),
+                            ft.Divider(visible=False),
                             self.contenedor_pdf, 
                         ],
                         horizontal_alignment=ft.CrossAxisAlignment.CENTER,

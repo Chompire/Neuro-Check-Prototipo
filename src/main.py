@@ -186,13 +186,16 @@ def main(page: ft.Page, model: AppModel):
         page.views.clear() 
         current_view = None
         troute = ft.TemplateRoute(page.route)
-        if not model.datos_profesor:
-            profesor_id = page.client_storage.get("profesor_id")
-            if profesor_id:
-                print(f"Restaurando sesión para el profesor ID: {profesor_id}")
-                model.cargar_profesor_por_id(profesor_id)
-
-        if not model.datos_profesor and not troute.match("/"):
+        profesor_id_storage = page.client_storage.get("profesor_id")
+        
+        if profesor_id_storage:
+            if not model.datos_profesor or model.datos_profesor.pro_nameID != profesor_id_storage:
+                print(f"Restaurando sesión para el profesor ID: {profesor_id_storage}")
+                if model.cargar_profesor_por_id(profesor_id_storage):
+                    model.actualizar_profesor(profesor_id_storage, {"pro_online_state": 1})
+        else:
+            model.datos_profesor = None
+        if not model.datos_profesor and page.route != "/":
              page.go("/")
              return
 
@@ -355,12 +358,10 @@ if __name__ == "__main__":
     APP_NAME = "neurocheck"
     
     def main_standalone(page: ft.Page):
-        model = AppModel()
-        main(page, model)
+            model = AppModel()
+            main(page, model)
         
     assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "assets"))
-
-    
     zeroconf = Zeroconf()
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
