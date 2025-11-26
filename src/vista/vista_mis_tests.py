@@ -76,11 +76,11 @@ class MisTestsView(FletView):
                             col={"sm": 12},
                             content=ft.Column([
                                 ft.Text("Mis tests:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                                ft.Row([self.test_completos_table], scroll=ft.ScrollMode.AUTO, expand=True),
+                                ft.Row([self.test_completos_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
                                 self.pagination_controls_completos,
-                                ft.Divider(height=20, color=ft.Colors.BLACK),
+                                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                                 self.tests_profesores_title,
-                                ft.Row([self.test_profesores_table], scroll=ft.ScrollMode.AUTO, expand=True),
+                                ft.Row([self.test_profesores_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
                                 self.pagination_controls_otros,
                             ], expand=True)
                         )

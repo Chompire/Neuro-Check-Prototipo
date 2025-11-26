@@ -37,8 +37,10 @@ class PerfilDocenteController(FletController):
 
         if doc_info.pro_cargo == 1:
             self.view.graficos_container.visible = True
+            self.view.graficos_docente.visible = False
         else:
             self.view.graficos_container.visible = False
+            self.view.graficos_docente.visible = True
 
         self.page.update()
 

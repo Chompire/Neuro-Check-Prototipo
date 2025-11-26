@@ -145,7 +145,7 @@ class ResultadosDetalladosView(FletView):
                         scroll=ft.ScrollMode.AUTO,
                         controls=[
                             ft.Text("Datos del alumno:", size=20, weight=ft.FontWeight.BOLD, color="black"),
-                            ft.Row([self.datatable], scroll=ft.ScrollMode.AUTO),
+                            ft.Row([self.datatable], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                         ]
                     )                    
                 ]
@@ -252,22 +252,22 @@ class ResultadosDetalladosView(FletView):
                 ft.Row([ft.Text("Observaciones del Profesional:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
                 self.observaciones_field,
                 ft.Row([self.generate_pdf_button, self.view_pdf_button, self.update_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
-                ft.Divider(height=20, color="black"),
+                ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
                 ft.Text("Respuestas por Categoría:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                 ft.Column(
                     scroll=ft.ScrollMode.AUTO,
                     controls=[
                         ft.Text("Atención", size=18, weight=ft.FontWeight.BOLD),
-                        ft.Row([self.result_test_table_atencion], scroll=ft.ScrollMode.AUTO),
+                        ft.Row([self.result_test_table_atencion], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                         ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                         ft.Text("Memoria", size=18, weight=ft.FontWeight.BOLD),
-                        ft.Row([self.result_test_table_memoria], scroll=ft.ScrollMode.AUTO),
+                        ft.Row([self.result_test_table_memoria], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                         ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                         ft.Text("Social", size=18, weight=ft.FontWeight.BOLD),
-                        ft.Row([self.result_test_table_social], scroll=ft.ScrollMode.AUTO),
+                        ft.Row([self.result_test_table_social], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                         ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
                         ft.Text("Emocional", size=18, weight=ft.FontWeight.BOLD),
-                        ft.Row([self.result_test_table_emocional], scroll=ft.ScrollMode.AUTO),
+                        ft.Row([self.result_test_table_emocional], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                     ]
                 )
             ]

@@ -186,13 +186,16 @@ def main(page: ft.Page, model: AppModel):
         page.views.clear() 
         current_view = None
         troute = ft.TemplateRoute(page.route)
-        if not model.datos_profesor:
-            profesor_id = page.client_storage.get("profesor_id")
-            if profesor_id:
-                print(f"Restaurando sesión para el profesor ID: {profesor_id}")
-                model.cargar_profesor_por_id(profesor_id)
-
-        if not model.datos_profesor and not troute.match("/"):
+        profesor_id_storage = page.client_storage.get("profesor_id")
+        
+        if profesor_id_storage:
+            if not model.datos_profesor or model.datos_profesor.pro_nameID != profesor_id_storage:
+                print(f"Restaurando sesión para el profesor ID: {profesor_id_storage}")
+                if model.cargar_profesor_por_id(profesor_id_storage):
+                    model.actualizar_profesor(profesor_id_storage, {"pro_online_state": 1})
+        else:
+            model.datos_profesor = None
+        if not model.datos_profesor and page.route != "/":
              page.go("/")
              return
 
@@ -351,34 +354,12 @@ def main(page: ft.Page, model: AppModel):
     page.go("/")
     page.update()
 if __name__ == "__main__":
-    APP_PORT = 8000
+    APP_PORT = 8080
     APP_NAME = "neurocheck"
     
     def main_standalone(page: ft.Page):
-        model = AppModel()
-        main(page, model)
+            model = AppModel()
+            main(page, model)
         
     assets_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "assets"))
-
-    
-    zeroconf = Zeroconf()
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
-        local_ip = s.getsockname()[0]
-        s.close()
-
-        desc = {'path': '/'}
-        info = ServiceInfo(
-            "_http._tcp.local.",
-            f"{APP_NAME}._http._tcp.local.",
-            addresses=[socket.inet_aton(local_ip)],
-            port=APP_PORT,
-            properties=desc,
-            server=f"{APP_NAME}.local.",
-        )
-        zeroconf.register_service(info)
-        ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER, port=APP_PORT, host="0.0.0.0")
-    finally:
-        print(f"Dejando de anunciar el servicio '{APP_NAME}'.")
-        zeroconf.close()
+    ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER, port=APP_PORT, host="localhost")

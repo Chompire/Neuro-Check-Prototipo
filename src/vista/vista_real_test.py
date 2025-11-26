@@ -119,7 +119,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                                 controls=[
                                     ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                     ft.Row(controls=[self.estudiante_search, self.next_button]),
-                                    ft.Row([self.estudiante_table], scroll=ft.ScrollMode.AUTO, expand=True),
+                                    ft.Row([self.estudiante_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
                                     self.pagination_controls_est,
                                 ]
                             )
@@ -131,7 +131,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                                 controls=[
                                     ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
                                     ft.Row(controls=[self.test_search, self.upload_button, self.eliminar_button]),
-                                    ft.Row([self.test_incompletos], scroll=ft.ScrollMode.AUTO, expand=True),
+                                    ft.Row([self.test_incompletos], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
                                     self.pagination_controls_test,
                                 ]
                             )
