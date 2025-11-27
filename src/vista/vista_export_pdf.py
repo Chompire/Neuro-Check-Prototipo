@@ -1,20 +1,17 @@
 import flet as ft
 from flet_mvc import FletView
-# Asumo que estos imports funcionan
 from colors import color_Docente, color_Background_PIE 
 
 class ExportPDFView(FletView):
     def __init__(self, controller, model):
         
-        # Texto para dar feedback al usuario
         self.feedback_text = ft.Text("", size=16, weight=ft.FontWeight.BOLD, color="black", selectable=True)
 
-        # Usamos un IconButton estándar. La lógica de descarga estará en el controlador.
         self.download_button = ft.IconButton(
             icon=ft.Icons.DOWNLOAD,
             tooltip="Descargar PDF",
             on_click=controller.descargar_pdf,
-            disabled=True, # Se habilita cuando el PDF está cargado.
+            disabled=True, 
             icon_color="white",
             bgcolor=color_Docente
         )

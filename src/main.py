@@ -353,7 +353,6 @@ def main(page: ft.Page, model: AppModel):
                 is_home_view = page.route in ["/inicio_profesor", "/inicio_pie"]
                 current_appbar.leading.visible = not is_home_view
             
-            # Lógica para añadir el footer sin duplicarlo
             if current_view and page.route != "/":
                 if not hasattr(current_view, 'has_footer'):
                     original_controls = current_view.controls

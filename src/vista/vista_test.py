@@ -94,10 +94,10 @@ class TestView(FletView):
 
         save_button = ft.ElevatedButton("Guardar respuestas", bgcolor=ft.Colors.RED, color=ft.Colors.WHITE,on_click=controller.guardar_respuestas)
     
-        finalizar_button = ft.ElevatedButton("Finalizar Test",bgcolor=ft.Colors.RED, color=ft.Colors.WHITE, on_click=controller.finalizar_test)  
+        finalizar_button = ft.ElevatedButton("Finalizar Test",bgcolor=ft.Colors.RED, color=ft.Colors.WHITE, on_click=controller.finalizar_test)
         view = ft.View(
             "/test",
-            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
+            bgcolor=color_Background_Docente, 
             controls=[
                 ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Test", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
                 self.error_snack_bar,

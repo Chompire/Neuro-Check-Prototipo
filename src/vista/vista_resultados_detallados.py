@@ -246,7 +246,7 @@ class ResultadosDetalladosView(FletView):
         )
 
         self.pie_controls_container = ft.Column(
-            visible=False, # Oculto por defecto
+            visible=False, 
             expand=True,
             controls=[
                 ft.Row([ft.Text("Observaciones del Profesional:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)], alignment=ft.MainAxisAlignment.START),
@@ -276,7 +276,7 @@ class ResultadosDetalladosView(FletView):
 
         view = ft.View(
             "/resultados_detallado/:det_id",
-            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
+            bgcolor=color_Background_Docente, 
             scroll=ft.ScrollMode.AUTO,
             controls=[
                 self.feedback_snackbar,

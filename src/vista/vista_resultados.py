@@ -33,7 +33,6 @@ class ResultadosView(FletView):
             actions_alignment=ft.MainAxisAlignment.END,
         )
 
-        # --- Botones de acción ---
         guardar_button = ft.IconButton(
             icon=ft.Icons.SAVE, icon_color=ft.Colors.WHITE, bgcolor=ft.Colors.BLUE,
             tooltip="Guardar resultados y finalizar", on_click=controller.guardar_test
@@ -52,7 +51,7 @@ class ResultadosView(FletView):
             bgcolor=color_Background_Docente,
             scroll=ft.ScrollMode.AUTO,
             controls=[
-                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Resultados", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START),
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Test >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Resultados", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START), 
                 self.save_snackbar,
                 self.rework_alert,
                 self.delete_alert,

@@ -1,9 +1,9 @@
 import flet as ft
-from flet_mvc import FletView # Importamos nuestra nueva clase base
+from flet_mvc import FletView 
 from colors import color_Background_Docente,color_Docente,color_Background_PIE
 
 
-class RealizarTestView(FletView):  # Heredamos de BaseView
+class RealizarTestView(FletView):  
     def __init__(self, controller, model):
         self.feedback_snackbar = ft.SnackBar(content=ft.Text(""))
         self.prev_button_test = ft.IconButton(ft.Icons.KEYBOARD_ARROW_LEFT, on_click=controller.prev_page_test,icon_color=color_Docente)
