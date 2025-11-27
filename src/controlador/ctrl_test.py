@@ -4,7 +4,7 @@ import flet as ft
 class TestController(FletController):
     def __init__(self, page, model):
         super().__init__(page, model)
-        self.current_test_id = None # Initialize an attribute to store the test_id
+        self.current_test_id = None
 
     @staticmethod
     def create_radio_groups(count: int):

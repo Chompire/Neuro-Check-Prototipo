@@ -30,8 +30,7 @@ class ResultadosDetalladosController(FletController):
         elif porcentaje >= 40:
             return f"Indicios moderados de: {indicios_base}"
         return "Sin indicios."
-    
-    # ... (cargar_resultados_detallados y cargar_respuestas omitidos por brevedad, se asume que funcionan) ...
+
     def cargar_resultados_detallados(self, det_id):
         self.current_det_id = det_id
         

@@ -122,7 +122,7 @@ class MisTestsController(FletController):
                 ft.DataRow(
                     cells=[
                         ft.DataCell(ft.Text("No hay tests de otros profesores para mostrar.", text_align=ft.TextAlign.CENTER)),
-                        *[ft.DataCell(ft.Text("")) for _ in range(7)] # Añadir 7 celdas vacías
+                        *[ft.DataCell(ft.Text("")) for _ in range(7)]
                     ]
                 )
             )
@@ -197,7 +197,7 @@ class MisTestsController(FletController):
                 self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
             else:
                 print(f"Error: No se encontraron resultados detallados para el test ID {self.selected_test_id}")
-                # Opcional: Mostrar un mensaje al usuario en la UI
+                
         self.page.update()
     def test_completos_row_select(self, e):
         selected_test = e.control.data
@@ -213,5 +213,5 @@ class MisTestsController(FletController):
                 self.page.go(f"/resultados_detallados/{self.res_det_id[0][0]}")
             else:
                 print(f"Error: No se encontraron resultados detallados para el test ID {self.selected_test_id}")
-                # Opcional: Mostrar un mensaje al usuario en la UI
+                
         self.page.update()

@@ -3,13 +3,12 @@ from flet_mvc import FletModel
 import crud as db
 from collections import namedtuple
 
-# Define un namedtuple para contener los detalles combinados del test para un acceso más fácil
 TestDetails = namedtuple('TestDetails', [
     'es_nombre_1', 'es_apellido_pat', 'cur_nombre',
     'pro_nombre_1', 'pro_apellido_pat'
 ])
 
-# Define un namedtuple para los detalles del curso
+
 CursoDetails = namedtuple('CursoDetails', ['cur_nameID', 'cur_nombre', 'cur_año', 'cur_state'])
 
 class AppModel(FletModel):

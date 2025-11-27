@@ -297,7 +297,7 @@ class ModificacionDocenteController(FletController):
                 self.view.cursos_checkbox_group.content.controls.append(
                     ft.Checkbox(
                         label=f"{nombre_curso} ({año_curso})",
-                        data=nombre_curso, # El dato sigue siendo solo el nombre para la lógica de asignación
+                        data=nombre_curso,
                         check_color=ft.Colors.RED,
                         label_style=ft.TextStyle(color="black")
                     )
