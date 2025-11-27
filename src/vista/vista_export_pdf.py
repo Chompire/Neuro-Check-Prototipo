@@ -7,7 +7,7 @@ class ExportPDFView(FletView):
     def __init__(self, controller, model):
         
         # Texto para dar feedback al usuario
-        self.feedback_text = ft.Text("", size=16, weight=ft.FontWeight.BOLD, color="black")
+        self.feedback_text = ft.Text("", size=16, weight=ft.FontWeight.BOLD, color="black", selectable=True)
 
         # Usamos un IconButton estándar. La lógica de descarga estará en el controlador.
         self.download_button = ft.IconButton(
@@ -24,7 +24,7 @@ class ExportPDFView(FletView):
             padding=10,
             expand=True,
             content=ft.Column(
-                controls=[ft.Text("El PDF generado se mostrará aquí.", size=16, color="grey")],
+                controls=[ft.Text("El PDF generado se mostrará aquí.", size=16, color="grey", selectable=True)],
                 horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                 spacing=10,
                 expand=True,
@@ -48,7 +48,7 @@ class ExportPDFView(FletView):
                         [
                             ft.Row(
                                 [
-                                    ft.Text("Informe de Resultados", size=20, weight=ft.FontWeight.BOLD),
+                                    ft.Text("Informe de Resultados", size=20, weight=ft.FontWeight.BOLD, selectable=True),
                                     self.download_button # Usamos el botón de descarga
                                 ], 
                                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN

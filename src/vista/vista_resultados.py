@@ -5,11 +5,11 @@ from colors import color_Background_Docente, color_Docente, color_Background_PIE
 
 class ResultadosView(FletView):
     def __init__(self, controller, model):
-        self.porcentaje_atencion_val= ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
-        self.porcentaje_memoria_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
-        self.porcentaje_social_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
-        self.porcentaje_emocional_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
-        self.porcentaje_val = ft.Text("0%", size=40, weight=ft.FontWeight.BOLD, color="black")
+        self.porcentaje_atencion_val= ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)
+        self.porcentaje_memoria_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)
+        self.porcentaje_social_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)
+        self.porcentaje_emocional_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)
+        self.porcentaje_val = ft.Text("0%", size=40, weight=ft.FontWeight.BOLD, color="black", selectable=True)
         self.save_snackbar = ft.SnackBar(content=ft.Text(""), bgcolor=ft.Colors.GREEN)
 
         self.rework_alert = ft.AlertDialog(
@@ -60,7 +60,7 @@ class ResultadosView(FletView):
                     alignment=ft.MainAxisAlignment.CENTER,
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                     controls=[
-                        ft.Text("IDT", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                        ft.Text("IDT", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                         ft.Container(
                             width=600,
                             alignment=ft.alignment.center,
@@ -73,7 +73,7 @@ class ResultadosView(FletView):
                             controls=[guardar_button, rehacer_button, eliminar_button],
                             alignment=ft.MainAxisAlignment.CENTER
                         ),
-                        ft.Text("Registro de indicios:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                        ft.Text("Registro de indicios:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                         ft.Container(
                             alignment=ft.alignment.center,
                             border=ft.border.all(1, ft.Colors.BLACK),
@@ -82,10 +82,10 @@ class ResultadosView(FletView):
                             content=
                             ft.Column(
                                 controls=[
-                                    ft.Row(wrap=True,controls=[ft.Text("Atención: ", size=20, weight=ft.FontWeight.BOLD, color="black"), self.porcentaje_atencion_val]),
-                                    ft.Row(wrap=True,controls=[ft.Text("Memoria: ", size=20, weight=ft.FontWeight.BOLD, color="black"),self.porcentaje_memoria_val]),
-                                    ft.Row(wrap=True,controls=[ft.Text("Social: ", size=20, weight=ft.FontWeight.BOLD, color="black"),self.porcentaje_social_val]),
-                                    ft.Row(wrap=True,controls=[ft.Text("Emocional: ", size=20, weight=ft.FontWeight.BOLD, color="black"),self.porcentaje_emocional_val])
+                                    ft.Row(wrap=True,controls=[ft.Text("Atención: ", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True), self.porcentaje_atencion_val]),
+                                    ft.Row(wrap=True,controls=[ft.Text("Memoria: ", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),self.porcentaje_memoria_val]),
+                                    ft.Row(wrap=True,controls=[ft.Text("Social: ", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),self.porcentaje_social_val]),
+                                    ft.Row(wrap=True,controls=[ft.Text("Emocional: ", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),self.porcentaje_emocional_val])
                                     ]
                             )
                         ),                        

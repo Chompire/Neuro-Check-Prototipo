@@ -117,7 +117,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                             content=ft.Column(
                                 expand=True,
                                 controls=[
-                                    ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                    ft.Text("Seleccionar estudiante:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                     ft.Row(controls=[self.estudiante_search, self.next_button]),
                                     ft.Column(spacing=15, horizontal_alignment=ft.CrossAxisAlignment.CENTER, controls=[
                                     ft.Row([self.estudiante_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
@@ -130,7 +130,7 @@ class RealizarTestView(FletView):  # Heredamos de BaseView
                             content=ft.Column(
                                 expand=True,
                                 controls=[
-                                    ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                    ft.Text("Terminar test incompleto:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                     ft.Row(controls=[self.test_search, self.upload_button, self.eliminar_button]),
                                     ft.Column(spacing=15, horizontal_alignment=ft.CrossAxisAlignment.CENTER, controls=[
                                     ft.Row([self.test_incompletos], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),

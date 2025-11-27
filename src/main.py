@@ -88,7 +88,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
 def create_footer():
     return ft.Container(
         content=ft.Row(
-            [ft.Text("© 2024 Neuro Check. Desarrollado por Benjamín Saavedra.", color=ft.colors.with_opacity(0.6, "black"), size=12)],
+            [ft.Text("© 2024 Neuro Check. Desarrollado por Benjamín Saavedra.", color=ft.Colors.with_opacity(0.6, "black"), size=12)],
             alignment=ft.MainAxisAlignment.CENTER
         ),
         padding=ft.padding.only(top=10, bottom=5),
@@ -218,8 +218,7 @@ def main(page: ft.Page, model: AppModel):
             else:
                 view_title.value = "Inicio de Sesión"
                 login_view.content.appbar = None
-                current_view = login_view.content
-                current_view.controls[0].controls.append(create_footer())
+                current_view = login_view.content # El footer se maneja al final
         
         elif troute.match("/inicio_profesor"):
             view_title.value = "Inicio Docente"
@@ -354,14 +353,16 @@ def main(page: ft.Page, model: AppModel):
                 is_home_view = page.route in ["/inicio_profesor", "/inicio_pie"]
                 current_appbar.leading.visible = not is_home_view
             
-            # Añadir el footer a todas las vistas excepto al login (que se maneja por separado)
-            if page.route != "/":
-                original_controls = current_view.controls
-                current_view.controls = [
-                    ft.Column(controls=original_controls, expand=True, scroll=current_view.scroll),
-                    create_footer()
-                ]
-                current_view.scroll = None # El scroll ahora lo maneja la columna interna
+            # Lógica para añadir el footer sin duplicarlo
+            if current_view and page.route != "/":
+                if not hasattr(current_view, 'has_footer'):
+                    original_controls = current_view.controls
+                    current_view.controls = [
+                        ft.Column(controls=original_controls, expand=True, scroll=current_view.scroll),
+                        create_footer()
+                    ]
+                    current_view.scroll = None
+                    current_view.has_footer = True
         page.update()
 
     def on_resize(e):
@@ -372,6 +373,7 @@ def main(page: ft.Page, model: AppModel):
     page.on_resize = on_resize
     page.go("/")
     page.update()
+    
 if __name__ == "__main__":
     APP_PORT = 8000
     APP_NAME = "neurocheck"

@@ -19,8 +19,11 @@ class TestController(FletController):
     @staticmethod
     def crear_contenido_tab(respuestas, radiogroups):
             controles = []
-            for i, respuesta in enumerate(respuestas):
-                controles.append(ft.Text(respuesta, size=20, weight=ft.FontWeight.BOLD, color="black"))
+            for i, (pregunta_text_widget) in enumerate(respuestas):
+                pregunta_text_widget.size = 20
+                pregunta_text_widget.weight = ft.FontWeight.BOLD
+                pregunta_text_widget.color = "black"
+                controles.append(pregunta_text_widget)
                 controles.append(radiogroups[i])
             return ft.Column(controls=controles, spacing=10, scroll=ft.ScrollMode.AUTO)
     

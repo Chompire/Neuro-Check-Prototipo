@@ -5,15 +5,15 @@ from colors import color_Docente, color_Background_Docente, color_Background_PIE
 class ResultadosDetalladosView(FletView):
     def __init__(self, controller, model):
         self.puntaje_val = ft.Text("N/A", size=50, weight=ft.FontWeight.BOLD, color="white")
-        self.porcentaje_val = ft.Text("0%", size=50, weight=ft.FontWeight.BOLD, color="white")
-        self.porcentaje_atencion_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
-        self.porcentaje_memoria_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
-        self.porcentaje_social_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
-        self.porcentaje_emocional_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black")
-        self.indicios_atencion_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD)
-        self.indicios_memoria_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD)
-        self.indicios_social_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD)
-        self.indicios_emocional_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD)
+        self.porcentaje_val = ft.Text("0%", size=50, weight=ft.FontWeight.BOLD, color="white", selectable=True)
+        self.porcentaje_atencion_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)
+        self.porcentaje_memoria_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)
+        self.porcentaje_social_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)
+        self.porcentaje_emocional_val = ft.Text("0%", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)
+        self.indicios_atencion_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD, selectable=True)
+        self.indicios_memoria_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD, selectable=True)
+        self.indicios_social_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD, selectable=True)
+        self.indicios_emocional_val = ft.Text("", size=15, color="black", weight=ft.FontWeight.BOLD, selectable=True)
         self.feedback_snackbar = ft.SnackBar(content=ft.Text(""))
 
         
@@ -96,7 +96,7 @@ class ResultadosDetalladosView(FletView):
         self.puntaje_control = ft.Container(
         content=ft.Column(
             [
-                ft.Text("Puntaje", weight=ft.FontWeight.BOLD, size=20,color="white"),
+                ft.Text("Puntaje", weight=ft.FontWeight.BOLD, size=20,color="white", selectable=True),
                 self.puntaje_val
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -117,7 +117,7 @@ class ResultadosDetalladosView(FletView):
         self.porcentaje_control = ft.Container(
         content=ft.Column(
             [
-                ft.Text("IDT", weight=ft.FontWeight.BOLD, size=20,color="white"),
+                ft.Text("IDT", weight=ft.FontWeight.BOLD, size=20,color="white", selectable=True),
                 self.porcentaje_val
             ],
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -144,7 +144,7 @@ class ResultadosDetalladosView(FletView):
                     ft.Column(
                         scroll=ft.ScrollMode.AUTO,
                         controls=[
-                            ft.Text("Datos del alumno:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Text("Datos del alumno:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                             ft.Row([self.datatable], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                         ]
                     )                    
@@ -166,7 +166,7 @@ class ResultadosDetalladosView(FletView):
                         col={"sm": 12, "md": 10, "lg": 8},
                         content=ft.Column(
                             controls=[
-                                ft.Text("Posibles indicios de riesgo:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text("Posibles indicios de riesgo:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                 ft.Container(
                                 alignment=ft.alignment.center_left,
                                 border=ft.border.all(1, ft.Colors.BLACK),
@@ -249,24 +249,24 @@ class ResultadosDetalladosView(FletView):
             visible=False, # Oculto por defecto
             expand=True,
             controls=[
-                ft.Row([ft.Text("Observaciones del Profesional:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                ft.Row([ft.Text("Observaciones del Profesional:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)], alignment=ft.MainAxisAlignment.START),
                 self.observaciones_field,
                 ft.Row([self.generate_pdf_button, self.view_pdf_button, self.update_pdf_button], alignment=ft.MainAxisAlignment.CENTER, spacing=20),
                 ft.Divider(height=20, color=ft.Colors.TRANSPARENT),
-                ft.Text("Respuestas por Categoría:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                ft.Text("Respuestas por Categoría:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                 ft.Column(
                     scroll=ft.ScrollMode.AUTO,
                     controls=[
-                        ft.Text("Atención", size=18, weight=ft.FontWeight.BOLD),
+                        ft.Text("Atención", size=18, weight=ft.FontWeight.BOLD, selectable=True),
                         ft.Row([self.result_test_table_atencion], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                         ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
-                        ft.Text("Memoria", size=18, weight=ft.FontWeight.BOLD),
+                        ft.Text("Memoria", size=18, weight=ft.FontWeight.BOLD, selectable=True),
                         ft.Row([self.result_test_table_memoria], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                         ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
-                        ft.Text("Social", size=18, weight=ft.FontWeight.BOLD),
+                        ft.Text("Social", size=18, weight=ft.FontWeight.BOLD, selectable=True),
                         ft.Row([self.result_test_table_social], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                         ft.Divider(height=10, color=ft.Colors.TRANSPARENT),
-                        ft.Text("Emocional", size=18, weight=ft.FontWeight.BOLD),
+                        ft.Text("Emocional", size=18, weight=ft.FontWeight.BOLD, selectable=True),
                         ft.Row([self.result_test_table_emocional], scroll=ft.ScrollMode.AUTO, alignment=ft.MainAxisAlignment.CENTER),
                     ]
                 )

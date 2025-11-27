@@ -18,7 +18,7 @@ class NotificacionesView(FletView):
                     controls=[
                         ft.Row(
                             [
-                                ft.Text("Bandeja de Notificaciones", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text("Bandeja de Notificaciones", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                 ft.IconButton(
                                     icon=ft.Icons.DELETE_SWEEP,
                                     icon_color=color_Docente,

@@ -89,7 +89,7 @@ class PerfilDocenteView(FletView):
                     alignment=ft.alignment.center,
                     content=ft.Column(
                         controls=[
-                            ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
+                            ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)], alignment=ft.MainAxisAlignment.START),
                             ft.ResponsiveRow(
                                 controls=[
                                     ft.Container(content=self.stat_cantidad_cursos_encuestados, col={"sm": 12, "lg": 6}),
@@ -108,8 +108,8 @@ class PerfilDocenteView(FletView):
                     alignment=ft.alignment.center,
                     content=ft.Column(
                         controls=[
-                            ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black")], alignment=ft.MainAxisAlignment.START),
-                            ft.Text("Graficos de barras:", size=15, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Row([ft.Text("Graficos:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True)], alignment=ft.MainAxisAlignment.START),
+                            ft.Text("Graficos de barras:", size=15, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                             ft.ResponsiveRow(
                                 controls=[
                                     ft.Container(content=self.stat_cantidad_cursos_encuestados_totales, col={"sm": 12, "lg": 6}),
@@ -124,11 +124,11 @@ class PerfilDocenteView(FletView):
                     alignment=ft.alignment.center,
                     content=ft.Column(
                         controls=[
-                            ft.Text("Graficos circulares:", size=15, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Text("Graficos circulares:", size=15, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                             ft.ResponsiveRow(
                                 controls=[
-                                    ft.Container(col={"sm": 12, "lg": 6}, content=ft.Column([ft.Text("Cursos con mayor cantidad de resultados en IDT alto", weight=ft.FontWeight.BOLD, color="black", size=16, text_align=ft.TextAlign.CENTER), self.cursos_en_rojo], horizontal_alignment=ft.CrossAxisAlignment.CENTER)),
-                                    ft.Container(col={"sm": 12, "lg": 6}, content=ft.Column([ft.Text("Estudiantes con mayor cantidad de test con IDT alto ", weight=ft.FontWeight.BOLD, color="black", size=16, text_align=ft.TextAlign.CENTER), self.estudiantes_rojos], horizontal_alignment=ft.CrossAxisAlignment.CENTER))
+                                    ft.Container(col={"sm": 12, "lg": 6}, content=ft.Column([ft.Text("Cursos con mayor cantidad de resultados en IDT alto", weight=ft.FontWeight.BOLD, color="black", size=16, text_align=ft.TextAlign.CENTER, selectable=True), self.cursos_en_rojo], horizontal_alignment=ft.CrossAxisAlignment.CENTER)),
+                                    ft.Container(col={"sm": 12, "lg": 6}, content=ft.Column([ft.Text("Estudiantes con mayor cantidad de test con IDT alto ", weight=ft.FontWeight.BOLD, color="black", size=16, text_align=ft.TextAlign.CENTER, selectable=True), self.estudiantes_rojos], horizontal_alignment=ft.CrossAxisAlignment.CENTER))
                                 ]
                             )
                         ]
@@ -155,7 +155,7 @@ class PerfilDocenteView(FletView):
                                 ft.Column(
                                     spacing=15,
                                     controls=[
-                                        ft.Text("Mis datos:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                        ft.Text("Mis datos:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                         ft.Row([self.info_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
                                     ]
                                 ),

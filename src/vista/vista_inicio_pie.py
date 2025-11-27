@@ -4,7 +4,7 @@ from colors import color_Docente, color_Background_PIE
 
 class InicioPIEView(FletView):
     def __init__(self, controller, model):
-        self.welcome_text = ft.Text(size=30, weight=ft.FontWeight.NORMAL, color="black")
+        self.welcome_text = ft.Text(size=30, weight=ft.FontWeight.NORMAL, color="black", selectable=True)
 
         view = ft.View(
             "/inicio_pie",
@@ -21,19 +21,19 @@ class InicioPIEView(FletView):
                                 expand=True,
                                 scroll=ft.ScrollMode.AUTO,
                                 controls=[
-                                    ft.Text("¡Bienvenido/a, Profesional PIE!", size=40, weight=ft.FontWeight.BOLD, color="black"),
+                                    ft.Text("¡Bienvenido/a, Profesional PIE!", size=40, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                     self.welcome_text,
-                                    ft.Text("", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                    ft.Text("", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                     ft.Container(
-                                        content=ft.Text("¿Qué desea hacer?", size=25, weight=ft.FontWeight.BOLD, color="black"),
+                                        content=ft.Text("¿Qué desea hacer?", size=25, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                     ),
                                     ft.Card(
                                         elevation=0, color=color_Docente,
                                         content=ft.Container(
                                             content=ft.Column([
                                                 ft.ListTile(
-                                                    title=ft.Text("Realizar test", size=20, weight=ft.FontWeight.BOLD),
-                                                    subtitle=ft.Text("Acceder a la selección de estudiantes para iniciar o reanudar un test.", size=15),
+                                                    title=ft.Text("Realizar test", size=20, weight=ft.FontWeight.BOLD, selectable=True),
+                                                    subtitle=ft.Text("Acceder a la selección de estudiantes para iniciar o reanudar un test.", size=15, selectable=True),
                                                 ),
                                                 ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_PIE, on_click=lambda _: controller.page.go("/realizar_test"))
                                             ]),
@@ -45,8 +45,8 @@ class InicioPIEView(FletView):
                                         content=ft.Container(
                                             content=ft.Column([
                                                 ft.ListTile(
-                                                    title=ft.Text("Mi Perfil", size=20, weight=ft.FontWeight.BOLD),
-                                                    subtitle=ft.Text("Ver tu información personal y los resultados de los tests finalizados.", size=15),
+                                                    title=ft.Text("Mi Perfil", size=20, weight=ft.FontWeight.BOLD, selectable=True),
+                                                    subtitle=ft.Text("Ver tu información personal y los resultados de los tests finalizados.", size=15, selectable=True),
                                                 ),
                                                 ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_PIE, on_click=lambda _: controller.page.go("/perfil_docente"))
                                             ]),
@@ -58,10 +58,11 @@ class InicioPIEView(FletView):
                                         content=ft.Container(
                                             content=ft.Column([
                                                 ft.ListTile(
-                                                    title=ft.Text("Mis tests", size=20, weight=ft.FontWeight.BOLD),
+                                                    title=ft.Text("Mis tests", size=20, weight=ft.FontWeight.BOLD, selectable=True),
                                                     subtitle=ft.Text(
                                                         "Revisa los resultados de los tests que has finalizado.",
-                                                        size=15
+                                                        size=15,
+                                                        selectable=True
                                                     ),
                                                 ),
                                                 ft.ElevatedButton(
@@ -79,8 +80,8 @@ class InicioPIEView(FletView):
                                         content=ft.Container(
                                             content=ft.Column([
                                                 ft.ListTile(
-                                                    title=ft.Text("Gestión", size=20, weight=ft.FontWeight.BOLD),
-                                                    subtitle=ft.Text("Añadir, editar o eliminar la información de los docentes del sistema y alumnos que ya no estan matriculados.", size=15),
+                                                    title=ft.Text("Gestión", size=20, weight=ft.FontWeight.BOLD, selectable=True),
+                                                    subtitle=ft.Text("Añadir, editar o eliminar la información de los docentes del sistema y alumnos que ya no estan matriculados.", size=15, selectable=True),
                                                 ),
                                                 ft.ElevatedButton(text="Entrar", color="black", bgcolor=color_Background_PIE, on_click=lambda _: controller.page.go("/gestion"))
                                             ]),

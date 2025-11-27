@@ -44,8 +44,7 @@ class MisTestsView(FletView):
         self.page_label_completos = ft.Text("Página 1 de 1", color="black")
         self.next_button_completos = ft.IconButton(ft.Icons.KEYBOARD_ARROW_RIGHT, on_click=controller.next_page_completos, icon_color=color_Docente)
         self.pagination_controls_completos = ft.Row([self.prev_button_completos, self.page_label_completos, self.next_button_completos], alignment=ft.MainAxisAlignment.CENTER)
-
-        self.tests_profesores_title = ft.Text("Tests de otros profesores:", size=20, weight=ft.FontWeight.BOLD, color="black", visible=False)
+        self.tests_profesores_title = ft.Text("Tests de otros profesores:", size=20, weight=ft.FontWeight.BOLD, color="black", visible=False, selectable=True)
         self.test_profesores_table = ft.DataTable(
             heading_row_color=color_Docente,
             heading_text_style=ft.TextStyle(color="white", weight=ft.FontWeight.BOLD),
@@ -87,7 +86,7 @@ class MisTestsView(FletView):
                         ft.Container(
                             col={"sm": 12},
                             content=ft.Column([
-                                ft.Text("Mis tests:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text("Mis tests:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                 self.search_completos_field,
                                 ft.Column(spacing=15, horizontal_alignment=ft.CrossAxisAlignment.CENTER, controls=[
                                 ft.Row([self.test_completos_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),

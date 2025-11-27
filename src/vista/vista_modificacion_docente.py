@@ -191,7 +191,7 @@ class ModificacionDocenteView(FletView):
                         ft.Container(
                             col={"sm": 12},
                             content=ft.Column([
-                                ft.Text("Añadir / Editar Docente:", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text("Añadir / Editar Docente:", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                 self.profesor_search_field,
                                 ft.Column(horizontal_alignment=ft.CrossAxisAlignment.CENTER,spacing=15, controls=[
                                 ft.Row([self.data_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
@@ -235,7 +235,7 @@ class ModificacionDocenteView(FletView):
                         ft.Container(
                             col={"sm": 12, "md": 10, "lg": 12},
                             content=ft.Column([
-                                ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text("Gestión de Cursos", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                 self.curso_search_field,
                                 ft.Column(spacing=15, horizontal_alignment=ft.CrossAxisAlignment.CENTER, controls=[
                                 ft.Row([self.curso_data_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),
@@ -261,7 +261,7 @@ class ModificacionDocenteView(FletView):
                         ft.Container(
                             col={"sm": 12, "md": 10, "lg": 8},
                             content=ft.Column([
-                                ft.Text("Añadir Estudiante", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text("Añadir Estudiante", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                 self.bulk_student_input,
                                 ft.Row([self.add_student_button], alignment=ft.MainAxisAlignment.CENTER),
                             ])
@@ -275,7 +275,7 @@ class ModificacionDocenteView(FletView):
                         ft.Container(
                             col={"sm": 12, "md": 10, "lg": 12},
                             content=ft.Column([ 
-                                ft.Text("Eliminar Estudiante", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                                ft.Text("Eliminar Estudiante", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                                 self.student_search_field,
                                 ft.Column(spacing=15, horizontal_alignment=ft.CrossAxisAlignment.CENTER, controls=[
                                 ft.Row([self.student_data_table], scroll=ft.ScrollMode.AUTO, expand=True, alignment=ft.MainAxisAlignment.CENTER),

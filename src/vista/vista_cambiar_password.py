@@ -25,7 +25,7 @@ class CambiarPasswordView(FletView):
                     bgcolor=ft.Colors.with_opacity(0.5, "white"),
                     content=ft.Column(
                         [
-                            ft.Text("Cambiar contraseña", size=20, weight=ft.FontWeight.BOLD, color="black"),
+                            ft.Text("Cambiar contraseña", size=20, weight=ft.FontWeight.BOLD, color="black", selectable=True),
                             ft.Divider(visible=False),
                             self.nuevo_password,
                             self.confirmar_password,
