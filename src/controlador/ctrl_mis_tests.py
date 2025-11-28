@@ -62,7 +62,6 @@ class MisTestsController(FletController):
                     )
                 )
         self.view.test_completos_table.rows = new_rows
-        self.page.update()
 
     def cargar_test_profesores(self, tests_a_mostrar=None):
         if self.view.test_profesores_table is None:
@@ -128,7 +127,6 @@ class MisTestsController(FletController):
             )
 
         self.view.test_profesores_table.rows = new_rows
-        self.page.update()
 
     def next_page_completos(self, e):
         if self.current_page_completos < self.total_pages_completos - 1:

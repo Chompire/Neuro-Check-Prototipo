@@ -6,12 +6,12 @@ def profesorCREATE(datos_profesor: tuple):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                sql_add = """INSERT INTO Profesores(
-                pro_nombre_1,pro_nombre_2, pro_nombre_3,
+                sql_add = """INSERT INTO Profesores (
+                pro_nombre_1, pro_nombre_2, pro_nombre_3,
                 pro_apellido_pat, pro_apellido_mat,
-                pro_rut, pro_cargo,pro_password,
-                pro_state, pro_nacimiento, pro_online_state)
-                VALUES(?,?,?,?,?,?,?,?,?,?,?);"""
+                pro_rut, pro_cargo, pro_password,
+                pro_state, pro_online_state)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);"""
                 cursor.execute(sql_add, datos_profesor)
                 cnxn.commit()
                 return True  # Retorna True si la operación fue exitosa
@@ -23,17 +23,27 @@ def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
+                base_sql = """
+                    SELECT p.*, ISNULL(t_count.num_encuestas, 0) as num_encuestas
+                    FROM Profesores p
+                    LEFT JOIN (
+                        SELECT pro_ID, COUNT(test_ID) as num_encuestas
+                        FROM Test
+                        WHERE test_status = 1
+                        GROUP BY pro_ID
+                    ) t_count ON p.pro_nameID = t_count.pro_ID
+                """
+
                 if pro_nameID is not None:
-                    # Se elimina la unión con la tabla Curso
-                    sql_info = "SELECT p.* FROM Profesores p WHERE p.pro_nameID = ?"
+                    sql_info = f"{base_sql} WHERE p.pro_nameID = ?"
                     cursor.execute(sql_info, pro_nameID)
                     return cursor.fetchone()
                 elif pro_rut is not None and pro_password is not None:
-                    sql_info = "SELECT p.* FROM Profesores p WHERE p.pro_rut = ? AND pro_password = ?"
+                    sql_info = f"{base_sql} WHERE p.pro_rut = ? AND p.pro_password = ?"
                     cursor.execute(sql_info, pro_rut, pro_password)
                     return cursor.fetchone()
                 elif pro_rut is not None:
-                    sql_info = "SELECT p.* FROM Profesores p WHERE p.pro_rut = ?"
+                    sql_info = f"{base_sql} WHERE p.pro_rut = ?"
                     cursor.execute(sql_info, pro_rut)
                     return cursor.fetchone()
                 elif lvl_curso is not None:
@@ -42,8 +52,7 @@ def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_
                     print("profesorREAD: La búsqueda por lvl_curso ya no está soportada directamente en Profesores.")
                     return []
                 else:
-                    sql_info = "SELECT p.* FROM Profesores p"
-                    cursor.execute(sql_info)
+                    cursor.execute(base_sql)
                     return cursor.fetchall()
     except pyodbc.Error as ex:
         print(f"profesorREAD Error de conexión o consulta: {ex.args[0]}")
@@ -396,13 +405,13 @@ def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = N
                         SELECT rd.*, c.cur_año, c.cur_state FROM Resultados_detallados rd
                         JOIN Test t ON rd.id_test = t.test_ID
                         LEFT JOIN Curso c ON rd.lvl_curso = c.cur_nombre
-                        WHERE t.pro_ID = ?
+                        WHERE t.pro_ID = ? 
                     """
                     params = [pro_ID]
                     if cur_año is not None:
-                        sql_info += " AND YEAR(rd.det_fecha) = ?"
+                        sql_info += " AND c.cur_año = ?"
                         params.append(cur_año)
-                    sql_info += " ORDER BY c.cur_nombre"
+                    
                     cursor.execute(sql_info, params)
                     return cursor.fetchall()
                 elif det_fecha is not None:
