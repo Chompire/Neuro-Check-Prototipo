@@ -363,7 +363,7 @@ def main(page: ft.Page, model: AppModel):
                     current_view.scroll = None
                     current_view.has_footer = True
         page.update()
-
+ 
     def on_resize(e):
         page.update()
 
