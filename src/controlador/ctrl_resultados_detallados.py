@@ -85,7 +85,7 @@ class ResultadosDetalladosController(FletController):
         else:
             # Limpiar la vista si no se encuentran resultados
             self.view.datatable.rows.clear()
-            self.view.datatable.rows.append(ft.DataRow(cells=[ft.DataCell(ft.Text("No se encontraron resultados o no tiene permiso para verlos.", col_span=4, text_align=ft.TextAlign.CENTER))]))
+            self.view.datatable.rows.append(ft.DataRow(cells=[ft.DataCell(ft.Text("No se encontraron resultados o no tiene permiso para verlos.", text_align=ft.TextAlign.CENTER), col_span=4)]))
             self.view.puntaje_val.value = "N/A"
             self.view.porcentaje_val.value = "0%"
 
