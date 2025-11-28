@@ -1,0 +1,15 @@
+ERROR:asyncio:Future exception was never retrieved
+future: <Future finished exception=IndexError('list index out of range')>
+Traceback (most recent call last):
+  File "C:\Users\Informática\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\thread.py", line 86, in run
+    result = ctx.run(self.task)
+  File "C:\Users\Informática\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\thread.py", line 73, in run
+    return fn(*args, **kwargs)
+  File "C:\Users\Informática\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\flet\core\page.py", line 906, in wrapper
+    handler(*args)
+    ~~~~~~~^^^^^^^
+  File "d:\Github\Neuro-Check-Prototipo\src\main.py", line 300, in route_change
+    resultados_detallados_controller.cargar_resultados_detallados(int(troute.det_id))
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "d:\Github\Neuro-Check-Prototipo\src\controlador\ctrl_resultados_detallados.py", line 71, in cargar_resultados_detallados
+    self.view.porcentaje_atencion_val.value = f"{resultados_detallados[0].det_porcentaje_atencion:.2f}%"
