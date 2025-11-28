@@ -88,7 +88,7 @@ def create_appbar(page, view_title_control, back_handler, model, logout_handler,
 def create_footer():
     return ft.Container(
         content=ft.Row(
-            [ft.Text("© 2024 Neuro Check. Desarrollado por Benjamín Saavedra.", color=ft.Colors.with_opacity(0.6, "black"), size=12)],
+            [ft.Text("© 2025 Neuro Check. Desarrollado por Benjamín Saavedra.", color=ft.Colors.with_opacity(0.6, "black"), size=12)],
             alignment=ft.MainAxisAlignment.CENTER
         ),
         padding=ft.padding.only(top=10, bottom=5),
@@ -218,7 +218,7 @@ def main(page: ft.Page, model: AppModel):
             else:
                 view_title.value = "Inicio de Sesión"
                 login_view.content.appbar = None
-                current_view = login_view.content # El footer se maneja al final
+                current_view = login_view.content
         
         elif troute.match("/inicio_profesor"):
             view_title.value = "Inicio Docente"
@@ -325,6 +325,7 @@ def main(page: ft.Page, model: AppModel):
             if model.datos_profesor.pro_cargo == 1:
                 mis_tests_view.tests_profesores_title.visible = True
                 mis_tests_view.test_profesores_table.visible = True
+                mis_tests_view.search_otros_field.visible = True
                 mis_tests_view.pagination_controls_otros.visible = True
                 mis_tests_controller.cargar_test_profesores()
             current_view = mis_tests_view.content

@@ -56,7 +56,6 @@ class ModificacionDocenteController(FletController):
                             on_select_changed=self.on_row_select,
                         )
                     )
-                    self.page.update()
 
     def load_cursos_to_table(self, id_to_select=None, cursos_a_mostrar=None):
         self.view.curso_data_table.rows.clear()
@@ -89,7 +88,6 @@ class ModificacionDocenteController(FletController):
                         on_select_changed=self.on_curso_row_select,
                     )
                 )
-        self.page.update()
 
     def load_estudiantes_to_table(self, estudiantes_a_mostrar=None):
         self.view.student_data_table.rows.clear()
@@ -122,7 +120,6 @@ class ModificacionDocenteController(FletController):
                     data=est, on_select_changed=self.on_student_row_select
                 )
             )
-        self.page.update()
     def on_row_select(self, e):
         selected_prof = e.control.data
         is_currently_selected = e.control.selected
@@ -137,9 +134,7 @@ class ModificacionDocenteController(FletController):
             self.view.add_button.disabled = True
             self.selected_prof_id = selected_prof.pro_nameID
             
-            self.view.nombre1.value = selected_prof.pro_nombre_1 or ""
-            self.view.nombre2.value = selected_prof.pro_nombre_2 or ""
-            self.view.nombre3.value = selected_prof.pro_nombre_3 or ""
+            self.view.nombres.value = f"{selected_prof.pro_nombre_1 or ''} {selected_prof.pro_nombre_2 or ''}".strip()
             self.view.apellido_pat.value = selected_prof.pro_apellido_pat or ""
             self.view.apellido_mat.value = selected_prof.pro_apellido_mat or ""
             self.view.rut_field.value = selected_prof.pro_rut or ""
@@ -216,9 +211,7 @@ class ModificacionDocenteController(FletController):
         self.load_estudiantes_to_table(estudiantes_a_mostrar=estudiantes_filtrados)
 
     def clear_form_fields(self):
-        self.view.nombre1.value = ""
-        self.view.nombre2.value = ""
-        self.view.nombre3.value = ""
+        self.view.nombres.value = ""
         self.view.apellido_pat.value = ""
         self.view.apellido_mat.value = ""
         self.view.rut_field.value = ""
@@ -334,12 +327,15 @@ class ModificacionDocenteController(FletController):
         cargo_valor = 1 if self.view.cargo_field.value == "Profesional PIE" else 0
         estado_valor = 1 if self.view.estado_field.value == "Habilitado" else 0
         
+        nombres = self.view.nombres.value.split()
+        nombre1 = nombres[0] if nombres else ""
+        nombre2 = nombres[1] if len(nombres) > 1 else None
+
         datos_nuevos = (
-            self.view.nombre1.value, self.view.nombre2.value, self.view.nombre3.value,
+            nombre1, nombre2, None,
             self.view.apellido_pat.value, self.view.apellido_mat.value,
-            rut,
-            cargo_valor, self.password_define,
-            estado_valor, None,
+            rut, cargo_valor, self.password_define,
+            estado_valor,
             self.online_state,
         )
         success = self.model.crear_profesor(datos_nuevos)
@@ -377,8 +373,13 @@ class ModificacionDocenteController(FletController):
 
         estado_valor = 1 if self.view.estado_field.value == "Habilitado" else 0
         cargo_valor = 1 if self.view.cargo_field.value == "Profesional PIE" else 0
+
+        nombres = self.view.nombres.value.split()
+        nombre1 = nombres[0] if nombres else ""
+        nombre2 = nombres[1] if len(nombres) > 1 else None
+
         datos_actualizados = {
-            "pro_nombre_1": self.view.nombre1.value, "pro_nombre_2": self.view.nombre2.value, "pro_nombre_3": self.view.nombre3.value,
+            "pro_nombre_1": nombre1, "pro_nombre_2": nombre2, "pro_nombre_3": None,
             "pro_apellido_pat": self.view.apellido_pat.value, "pro_apellido_mat": self.view.apellido_mat.value,
             "pro_rut": self.view.rut_field.value,
             "pro_cargo": cargo_valor, "pro_state": estado_valor,
