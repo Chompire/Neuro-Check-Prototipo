@@ -48,13 +48,13 @@ class MisTestsController(FletController):
             for test in tests_pagina_actual:
                 new_rows.append(
                     ft.DataRow(cells=[
-                        ft.DataCell(ft.Text(test.es_nombre_1)),
-                        ft.DataCell(ft.Text(test.es_apellido_pat)),
-                        ft.DataCell(ft.Text(test.es_rut)),
-                        ft.DataCell(ft.Text(test.cur_nombre)),
-                        ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A")),
-                        ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A")),
-                        ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if (test.det_porcentaje or 0) <= 39 else ft.Colors.YELLOW if (test.det_porcentaje or 0) <= 69 else ft.Colors.RED)),
+                        ft.DataCell(ft.Text(test.es_nombre_1, selectable=True)),
+                        ft.DataCell(ft.Text(test.es_apellido_pat, selectable=True)),
+                        ft.DataCell(ft.Text(test.es_rut, selectable=True)),
+                        ft.DataCell(ft.Text(test.cur_nombre, selectable=True)),
+                        ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A", selectable=True)),
+                        ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A", selectable=True)),
+                        ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if (test.det_porcentaje or 0) <= 39 else ft.Colors.YELLOW if (test.det_porcentaje or 0) <= 69 else ft.Colors.RED, selectable=True)),
                         
                     ],
                     data = test,
@@ -103,14 +103,14 @@ class MisTestsController(FletController):
                 new_rows.append(
                     ft.DataRow(
                         cells=[
-                            ft.DataCell(ft.Text(test.es_nombre_1)),
-                            ft.DataCell(ft.Text(test.es_apellido_pat)),
-                            ft.DataCell(ft.Text(test.es_rut)),
-                            ft.DataCell(ft.Text(test.cur_nombre)),
-                            ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A")),
-                            ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A")),
-                            ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}")),
-                            ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if (test.det_porcentaje or 0) <= 39 else ft.Colors.YELLOW if (test.det_porcentaje or 0) <= 69 else ft.Colors.RED)),
+                            ft.DataCell(ft.Text(test.es_nombre_1, selectable=True)),
+                            ft.DataCell(ft.Text(test.es_apellido_pat, selectable=True)),
+                            ft.DataCell(ft.Text(test.es_rut, selectable=True)),
+                            ft.DataCell(ft.Text(test.cur_nombre, selectable=True)),
+                            ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d') if test.test_fecha_inicio else "N/A", selectable=True)),
+                            ft.DataCell(ft.Text(test.test_fecha_termino.strftime('%Y-%m-%d') if test.test_fecha_termino else "N/A", selectable=True)),
+                            ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}", selectable=True)),
+                            ft.DataCell(ft.Text(f"{test.det_porcentaje or 0}%", color=ft.Colors.GREEN if (test.det_porcentaje or 0) <= 39 else ft.Colors.YELLOW if (test.det_porcentaje or 0) <= 69 else ft.Colors.RED, selectable=True)),
                         ],
                         data=test,
                         on_select_changed=self.test_profesores_row_select,

@@ -43,11 +43,11 @@ class RealizarTestController(FletController):
         for estudiante in estudiantes_pagina_actual:
             new_rows.append(
                 ft.DataRow(cells=[
-                    ft.DataCell(ft.Text(estudiante.es_nombre_1)),
-                    ft.DataCell(ft.Text(estudiante.es_apellido_pat)),
-                    ft.DataCell(ft.Text(estudiante.es_nacimiento.strftime('%Y-%m-%d'))),
-                    ft.DataCell(ft.Text(estudiante.es_rut)),
-                    ft.DataCell(ft.Text(estudiante.cur_nombre)),
+                    ft.DataCell(ft.Text(estudiante.es_nombre_1, selectable=True)),
+                    ft.DataCell(ft.Text(estudiante.es_apellido_pat, selectable=True)),
+                    ft.DataCell(ft.Text(estudiante.es_nacimiento.strftime('%Y-%m-%d'), selectable=True)),
+                    ft.DataCell(ft.Text(estudiante.es_rut, selectable=True)),
+                    ft.DataCell(ft.Text(estudiante.cur_nombre, selectable=True)),
                 ],
                 data=estudiante,
                 on_select_changed=self.es_row_select,
@@ -109,13 +109,13 @@ class RealizarTestController(FletController):
             for test in test_pagina_actual:
                 new_rows.append(
                     ft.DataRow(cells=[
-                        ft.DataCell(ft.Text(test.es_nombre_1)),
-                        ft.DataCell(ft.Text(test.es_apellido_pat)),
-                        ft.DataCell(ft.Text(test.es_rut)),
-                        ft.DataCell(ft.Text(test.cur_nombre)),
-                        ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}")),
-                        ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d'))),
-                        ft.DataCell(ft.Text("Incompleto")),
+                        ft.DataCell(ft.Text(test.es_nombre_1, selectable=True)),
+                        ft.DataCell(ft.Text(test.es_apellido_pat, selectable=True)),
+                        ft.DataCell(ft.Text(test.es_rut, selectable=True)),
+                        ft.DataCell(ft.Text(test.cur_nombre, selectable=True)),
+                        ft.DataCell(ft.Text(f"{test.pro_nombre_1} {test.pro_apellido_pat}", selectable=True)),
+                        ft.DataCell(ft.Text(test.test_fecha_inicio.strftime('%Y-%m-%d'), selectable=True)),
+                        ft.DataCell(ft.Text("Incompleto", selectable=True)),
                     ],
                     data=test,
                     on_select_changed=self.test_row_select,)

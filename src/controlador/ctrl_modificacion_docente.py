@@ -45,11 +45,11 @@ class ModificacionDocenteController(FletController):
                     self.view.data_table.rows.append(
                         ft.DataRow(
                             cells=[
-                                ft.DataCell(ft.Text(f"{prof.pro_nombre_1} {prof.pro_nombre_2 or ''}".strip())),
-                                ft.DataCell(ft.Text(f"{prof.pro_apellido_pat} {prof.pro_apellido_mat}")),
-                                ft.DataCell(ft.Text(prof.pro_rut)),
-                                ft.DataCell(ft.Text("Profesional PIE" if prof.pro_cargo else "Docente")),
-                                ft.DataCell(ft.Text("Habilitado" if prof.pro_state else "Inhabilitado")),
+                                ft.DataCell(ft.Text(f"{prof.pro_nombre_1} {prof.pro_nombre_2 or ''}".strip(), selectable=True)),
+                                ft.DataCell(ft.Text(f"{prof.pro_apellido_pat} {prof.pro_apellido_mat}", selectable=True)),
+                                ft.DataCell(ft.Text(prof.pro_rut, selectable=True)),
+                                ft.DataCell(ft.Text("Profesional PIE" if prof.pro_cargo else "Docente", selectable=True)),
+                                ft.DataCell(ft.Text("Habilitado" if prof.pro_state else "Inhabilitado", selectable=True)),
                             ],
                             data=prof,
                             selected=True if id_to_select is not None and prof.pro_nameID == id_to_select else False,
@@ -80,9 +80,9 @@ class ModificacionDocenteController(FletController):
                 self.view.curso_data_table.rows.append(
                     ft.DataRow(
                         cells=[
-                            ft.DataCell(ft.Text(curso.cur_nombre)),
-                            ft.DataCell(ft.Text(str(curso.cur_año))),
-                            ft.DataCell(ft.Text("Habilitado" if curso.cur_state else "Inhabilitado")),
+                            ft.DataCell(ft.Text(curso.cur_nombre, selectable=True)),
+                            ft.DataCell(ft.Text(str(curso.cur_año), selectable=True)),
+                            ft.DataCell(ft.Text("Habilitado" if curso.cur_state else "Inhabilitado", selectable=True)),
                         ],
                         data=curso,
                         selected=True if id_to_select is not None and curso.cur_nameID == id_to_select else False,
@@ -113,11 +113,11 @@ class ModificacionDocenteController(FletController):
             self.view.student_data_table.rows.append(
                 ft.DataRow(
                     cells=[
-                        ft.DataCell(ft.Text(est.es_nombre_1)),
-                        ft.DataCell(ft.Text(f"{est.es_apellido_pat} {est.es_apellido_mat}")),
-                        ft.DataCell(ft.Text(est.es_rut)),
-                        ft.DataCell(ft.Text(est.cur_nombre)),
-                        ft.DataCell(ft.Text(est.es_establecimiento)),
+                        ft.DataCell(ft.Text(est.es_nombre_1, selectable=True)),
+                        ft.DataCell(ft.Text(f"{est.es_apellido_pat} {est.es_apellido_mat}", selectable=True)),
+                        ft.DataCell(ft.Text(est.es_rut, selectable=True)),
+                        ft.DataCell(ft.Text(est.cur_nombre, selectable=True)),
+                        ft.DataCell(ft.Text(est.es_establecimiento, selectable=True)),
                     ],
                     data=est, on_select_changed=self.on_student_row_select
                 )
@@ -337,10 +337,8 @@ class ModificacionDocenteController(FletController):
         datos_nuevos = (
             self.view.nombre1.value, self.view.nombre2.value, self.view.nombre3.value,
             self.view.apellido_pat.value, self.view.apellido_mat.value,
-            rut,
-            cargo_valor, self.password_define,
-            estado_valor, None,
-            self.online_state,
+            rut, cargo_valor, 
+            self.password_define, estado_valor,
         )
         success = self.model.crear_profesor(datos_nuevos)
         if success:
