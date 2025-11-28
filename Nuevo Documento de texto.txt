@@ -1,3 +1,5 @@
+ERROR:asyncio:Future exception was never retrieved
+future: <Future finished exception=TypeError("Text.__init__() got an unexpected keyword argument 'col_span'")>
 Traceback (most recent call last):
   File "C:\Users\Informática\AppData\Local\Python\pythoncore-3.14-64\Lib\concurrent\futures\thread.py", line 86, in run
     result = ctx.run(self.task)
