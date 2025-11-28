@@ -139,7 +139,7 @@ class ModificacionDocenteView(FletView):
             label="Lista de Estudiantes",
             multiline=True,
             min_lines=8,
-            hint_text="Pegue aquí la lista de estudiantes. Un estudiante por línea.\nFormato: Nombres, Apellido Pat, Apellido Mat, RUT, Fecha Nac (YYYY-MM-DD), Sexo, Curso, Año, Establecimiento",
+            hint_text="Pegue aquí la lista de estudiantes. Un estudiante por línea.\nFormato: Nombres, Apellido Pat, Apellido Mat, RUT, Fecha Nac (YYYY-MM-DD), Sexo, Curso, Año, Establecimiento\n Si quiere agregar nuevos estudiantes para el proximo año debe inabilitar el curso del año actual",
             color="black", label_style=ft.TextStyle(color="black")
         )
         self.add_student_button = ft.ElevatedButton(
