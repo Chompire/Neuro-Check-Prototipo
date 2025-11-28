@@ -63,23 +63,31 @@ class ResultadosDetalladosController(FletController):
                         ]
                     )
                 )
+
             total_preguntas_atencion = len(self.model.leer_preguntas(pre_cat="Atención"))
             total_preguntas_memoria = len(self.model.leer_preguntas(pre_cat="Memoria"))
             total_preguntas_social = len(self.model.leer_preguntas(pre_cat="Social"))
             total_preguntas_emocional = len(self.model.leer_preguntas(pre_cat="Emocional"))
             total_preguntas = total_preguntas_atencion + total_preguntas_memoria + total_preguntas_social + total_preguntas_emocional
-        self.view.porcentaje_atencion_val.value = f"{resultados_detallados[0].det_porcentaje_atencion:.2f}%" 
-        self.view.porcentaje_memoria_val.value = f"{resultados_detallados[0].det_porcentaje_memoria:.2f}%" 
-        self.view.porcentaje_social_val.value = f"{resultados_detallados[0].det_porcentaje_social:.2f}%" 
-        self.view.porcentaje_emocional_val.value = f"{resultados_detallados[0].det_porcentaje_emocional:.2f}%" 
 
-        self.view.indicios_atencion_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_atencion, self.indicios_atencion)
-        self.view.indicios_memoria_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_memoria, self.indicios_memoria)
-        self.view.indicios_social_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_social, self.indicios_social)
-        self.view.indicios_emocional_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_emocional, self.indicios_emocional)
+            self.view.porcentaje_atencion_val.value = f"{resultados_detallados[0].det_porcentaje_atencion:.2f}%" 
+            self.view.porcentaje_memoria_val.value = f"{resultados_detallados[0].det_porcentaje_memoria:.2f}%" 
+            self.view.porcentaje_social_val.value = f"{resultados_detallados[0].det_porcentaje_social:.2f}%" 
+            self.view.porcentaje_emocional_val.value = f"{resultados_detallados[0].det_porcentaje_emocional:.2f}%" 
 
-        self.view.puntaje_val.value = f"{resultados_detallados[0].det_puntaje}/{total_preguntas}"
-        self.view.porcentaje_val.value = f"{resultados_detallados[0].det_porcentaje:.2f}%" 
+            self.view.indicios_atencion_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_atencion, self.indicios_atencion)
+            self.view.indicios_memoria_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_memoria, self.indicios_memoria)
+            self.view.indicios_social_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_social, self.indicios_social)
+            self.view.indicios_emocional_val.value = self.get_indicios_text(resultados_detallados[0].det_porcentaje_emocional, self.indicios_emocional)
+
+            self.view.puntaje_val.value = f"{resultados_detallados[0].det_puntaje}/{total_preguntas}"
+            self.view.porcentaje_val.value = f"{resultados_detallados[0].det_porcentaje:.2f}%" 
+        else:
+            # Limpiar la vista si no se encuentran resultados
+            self.view.datatable.rows.clear()
+            self.view.datatable.rows.append(ft.DataRow(cells=[ft.DataCell(ft.Text("No se encontraron resultados o no tiene permiso para verlos.", col_span=4, text_align=ft.TextAlign.CENTER))]))
+            self.view.puntaje_val.value = "N/A"
+            self.view.porcentaje_val.value = "0%"
 
         self.page.update()
         
