@@ -66,7 +66,7 @@ class PerfilDocenteController(FletController):
                 conteo_por_curso[curso] = conteo_por_curso.get(curso, 0) + 1
 
         conteo_por_curso_totales = {}
-        cursos_para_totales = cursos_asignados_nombres if profesor.pro_cargo == 1 else conteo_por_curso.keys()
+        cursos_para_totales = cursos_asignados_nombres if profesor.pro_cargo == 1 else set(conteo_por_curso.keys())
         
         for curso_nombre in cursos_para_totales: (conteo_por_curso_totales.update({curso_nombre: sum(1 for res in self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int) if str(res.cur_año) == current_year_str)}) if curso_nombre in conteo_por_curso else None)
         bar_groups1 = []
@@ -113,7 +113,14 @@ class PerfilDocenteController(FletController):
                     radius=200,
                 ))
 
-        for i, (curso, conteo) in enumerate(conteo_por_curso.items()):
+        # Corregir el conteo para el gráfico de tests realizados por el profesor
+        tests_realizados_por_profesor = {}
+        for resultado in resultados_detallados_profesional:
+            curso = resultado.lvl_curso
+            if curso in cursos_habilitados:
+                tests_realizados_por_profesor[curso] = tests_realizados_por_profesor.get(curso, 0) + 1
+
+        for i, (curso, conteo) in enumerate(tests_realizados_por_profesor.items()):
             bar_groups1.append(
                 ft.BarChartGroup(
                     x=i,
@@ -123,7 +130,7 @@ class PerfilDocenteController(FletController):
                             to_y=conteo,
                             width=30,
                             color=ft.Colors.BLUE,
-                            tooltip=f"{conteo} encuestas",
+                            tooltip=f"{conteo} test(s) realizado(s)",
                             border_radius=4,
                         ),
                     ],
@@ -145,7 +152,7 @@ class PerfilDocenteController(FletController):
                             to_y=conteo,
                             width=30,
                             color=ft.Colors.GREEN,
-                            tooltip=f"{conteo} encuestas",
+                            tooltip=f"{conteo} test(s) en total",
                             border_radius=4,
                         ),
                     ],
@@ -158,6 +165,13 @@ class PerfilDocenteController(FletController):
                 )
             )
 
+        # Ajustar el eje Y dinámicamente
+        max_y_val1 = max(tests_realizados_por_profesor.values()) if tests_realizados_por_profesor else 5
+        max_y1 = (max_y_val1 // 5 + 1) * 5 if max_y_val1 > 0 else 5
+        self.view.stat_cantidad_cursos_encuestados.max_y = max_y1
+        self.view.stat_cantidad_cursos_encuestados.left_axis.labels = [
+            ft.ChartAxisLabel(value=i, label=ft.Text(str(i), color="black")) for i in range(0, max_y1 + 1, 5)
+        ]
 
         self.view.stat_cantidad_cursos_encuestados.bar_groups = bar_groups1
         self.view.stat_cantidad_cursos_encuestados.bottom_axis.labels = axis_labels1

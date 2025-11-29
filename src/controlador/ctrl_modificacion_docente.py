@@ -61,7 +61,9 @@ class ModificacionDocenteController(FletController):
     def load_cursos_to_table(self, id_to_select=None, cursos_a_mostrar=None):
         self.view.curso_data_table.rows.clear()
         if cursos_a_mostrar is None:
-            cursos_a_mostrar = self.model.leer_cursos()
+            todos_los_cursos = self.model.leer_cursos()
+            cursos_a_mostrar = [curso for curso in todos_los_cursos if curso.cur_state]
+
         if cursos_a_mostrar:
             total_items_cursos = len(cursos_a_mostrar)
             total_pages_cursos = (total_items_cursos + self.numpage_cursos - 1) // self.numpage_cursos
@@ -145,21 +147,17 @@ class ModificacionDocenteController(FletController):
             self.view.rut_field.value = selected_prof.pro_rut or ""
             self.view.cargo_field.value = "Profesional PIE" if selected_prof.pro_cargo else "Docente"
             self.view.estado_field.value = "Habilitado" if selected_prof.pro_state else "Inhabilitado"
-            if selected_prof.pro_cargo == 1:
-                self.view.cursos_checkbox_group.visible = True
-                todos_los_cursos = self.model.leer_cursos()
-                cursos_asignados_raw = self.model.leer_cursos_pie(self.selected_prof_id)
-                
-                cursos_asignados_ids = cursos_asignados_raw[0].split(',') if cursos_asignados_raw and cursos_asignados_raw[0] else []
-                cursos_asignados_nombres = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in cursos_asignados_ids}
+            
+            self.view.cursos_checkbox_group.visible = True
+            cursos_asignados_ids_str = self.model.leer_cursos_pie(self.selected_prof_id)
 
-                for checkbox in self.view.cursos_checkbox_group.content.controls[1:]:
-                    if isinstance(checkbox, ft.Checkbox):
-                        checkbox.value = checkbox.data in cursos_asignados_nombres
-            else:
-                self.view.cursos_checkbox_group.visible = False
-                for checkbox in self.view.cursos_checkbox_group.content.controls[1:]:
-                    if isinstance(checkbox, ft.Checkbox): checkbox.value = False
+            cursos_asignados_ids = []
+            if cursos_asignados_ids_str and cursos_asignados_ids_str.cursos_a_cargo:
+                cursos_asignados_ids = cursos_asignados_ids_str.cursos_a_cargo.split(',')
+
+            for checkbox in self.view.cursos_checkbox_group.content.controls[1:]:
+                if isinstance(checkbox, ft.Checkbox):
+                    checkbox.value = str(checkbox.data) in cursos_asignados_ids
 
         else:
             self.clear_form_fields()
@@ -196,7 +194,11 @@ class ModificacionDocenteController(FletController):
     def search_curso(self, reset_page=False):
         if reset_page: self.current_page_cursos = 0
         search_term = self.view.curso_search_field.value.lower()
-        cursos_filtrados = [curso for curso in self.model.leer_cursos() if search_term in curso.cur_nombre.lower() or search_term in str(curso.cur_año)]
+        todos_los_cursos = self.model.leer_cursos()
+        cursos_filtrados = [
+            curso for curso in todos_los_cursos 
+            if curso.cur_state and (search_term in curso.cur_nombre.lower() or search_term in str(curso.cur_año))
+        ]
         self.load_cursos_to_table(cursos_a_mostrar=cursos_filtrados)
 
     def next_page_estudiantes(self, e):
@@ -224,9 +226,9 @@ class ModificacionDocenteController(FletController):
         self.view.rut_field.value = ""
         self.view.cargo_field.value = None
         self.view.estado_field.value = None
-        self.view.cursos_checkbox_group.visible = False
-        for checkbox in self.view.cursos_checkbox_group.content.controls:
-            checkbox.value = False
+        for control in self.view.cursos_checkbox_group.content.controls:
+            if isinstance(control, ft.Checkbox):
+                control.value = False
 
     def clear_student_form_fields(self):
         self.view.bulk_student_input.value = ""
@@ -281,23 +283,19 @@ class ModificacionDocenteController(FletController):
         self.page.update()
 
     def build_cursos_checkboxes(self, cursos):
-        current_year = datetime.now().year
         if len(self.view.cursos_checkbox_group.content.controls) > 1:
             self.view.cursos_checkbox_group.content.controls = [self.view.cursos_checkbox_group.content.controls[0]]
 
         if cursos:
-            cursos_del_año_actual = [
-                curso for curso in cursos 
-                if curso.cur_state and curso.cur_año == current_year
+            cursos_habilitados = [
+                curso for curso in cursos if curso.cur_state
             ]
-            
-            cursos_unicos_año_actual = sorted(list({(c.cur_nombre, c.cur_año) for c in cursos_del_año_actual}))
 
-            for nombre_curso, año_curso in cursos_unicos_año_actual:
+            for curso in sorted(cursos_habilitados, key=lambda c: (c.cur_año, c.cur_nombre)):
                 self.view.cursos_checkbox_group.content.controls.append(
                     ft.Checkbox(
-                        label=f"{nombre_curso} ({año_curso})",
-                        data=nombre_curso,
+                        label=f"{curso.cur_nombre} ({curso.cur_año})",
+                        data=curso.cur_nameID,
                         check_color=ft.Colors.RED,
                         label_style=ft.TextStyle(color="black")
                     )
@@ -316,10 +314,6 @@ class ModificacionDocenteController(FletController):
         self.view.delete_button.visible = False
         self.view.add_button.disabled = False
         self.selected_prof_id = None
-
-    def toggle_cursos_visibility(self, e):
-        self.view.cursos_checkbox_group.visible = (e.control.value == "Profesional PIE")
-        self.page.update()
 
     def add_profesor(self, e):
         rut = self.view.rut_field.value.strip()
@@ -341,21 +335,17 @@ class ModificacionDocenteController(FletController):
             self.password_define, estado_valor,
         )
         success = self.model.crear_profesor(datos_nuevos)
-        if success:
-            if cargo_valor == 1:
-                todos_los_cursos = self.model.leer_cursos()
-                new_prof = self.model.leer_profesor_por_rut(rut)
-                nombres_cursos_seleccionados = {
-                    cb.data for cb in self.view.cursos_checkbox_group.content.controls 
-                    if isinstance(cb, ft.Checkbox) and cb.value
-                }
-                
-                ids_cursos_a_asignar = [
-                    str(c.cur_nameID) for c in todos_los_cursos 
-                    if c.cur_nombre in nombres_cursos_seleccionados
-                ]
-                self.model.crear_asignacion_pie(new_prof.pro_nameID, ",".join(ids_cursos_a_asignar))
 
+        if success:
+            new_prof = self.model.leer_profesor_por_rut(rut)
+            ids_cursos_seleccionados = [
+                str(cb.data) for cb in self.view.cursos_checkbox_group.content.controls 
+                if isinstance(cb, ft.Checkbox) and cb.value
+            ]
+            
+            if ids_cursos_seleccionados:
+                self.model.crear_asignacion_pie(new_prof.pro_nameID, ",".join(ids_cursos_seleccionados))
+            
             self.show_feedback("Profesor agregado con éxito.", ft.Colors.GREEN)
             self.load_profesores_to_table()
             self.clear_form_fields()
@@ -382,22 +372,13 @@ class ModificacionDocenteController(FletController):
             "pro_cargo": cargo_valor, "pro_state": estado_valor,
         }
         self.model.actualizar_profesor(self.selected_prof_id, datos_actualizados)
-        if cargo_valor == 1:
-            todos_los_cursos = self.model.leer_cursos()
-            nombres_cursos_seleccionados = {
-                cb.data for cb in self.view.cursos_checkbox_group.content.controls 
-                if isinstance(cb, ft.Checkbox) and cb.value
-            }
-            
-            ids_cursos_a_asignar = [
-                str(c.cur_nameID) for c in todos_los_cursos 
-                if c.cur_nombre in nombres_cursos_seleccionados
-            ]
-            self.model.actualizar_asignacion_pie(self.selected_prof_id, ",".join(ids_cursos_a_asignar))
-        else:
-            self.model.eliminar_asignacion_pie(self.selected_prof_id)
 
-
+        ids_cursos_seleccionados = [
+            str(cb.data) for cb in self.view.cursos_checkbox_group.content.controls 
+            if isinstance(cb, ft.Checkbox) and cb.value
+        ]
+        
+        self.model.actualizar_asignacion_pie(self.selected_prof_id, ",".join(ids_cursos_seleccionados))
         self.show_feedback("Profesor actualizado con éxito.", ft.Colors.GREEN)
         self.load_profesores_to_table(id_to_select=self.selected_prof_id)
         self.close_dialog(e, 'edit')
@@ -414,6 +395,15 @@ class ModificacionDocenteController(FletController):
 
         if nuevo_estado_val == 0:
             nombre_curso_actual = self.view.curso_name_field.value
+            año_actual = int(self.view.curso_year_field.value)
+            año_siguiente = año_actual + 1
+            if "1" in nombre_curso_actual or "primer" in nombre_curso_actual.lower():
+                todos_los_cursos = self.model.leer_cursos()
+                primer_basico_siguiente_año_existe = any(
+                    ("1" in c.cur_nombre or "primer" in c.cur_nombre.lower()) and c.cur_año == año_siguiente for c in todos_los_cursos
+                )
+                if not primer_basico_siguiente_año_existe:
+                    self.model.crear_curso(nombre_curso_actual, año_siguiente)
 
             if "8" in nombre_curso_actual or "octavo" in nombre_curso_actual.lower():
                 self.show_feedback(f"Curso '{nombre_curso_actual}' inhabilitado. No se promueven estudiantes desde 8° básico.", ft.Colors.BLUE)
@@ -423,7 +413,6 @@ class ModificacionDocenteController(FletController):
                     nivel_actual = int(match.group())
                     siguiente_nivel = nivel_actual + 1
                     nombre_siguiente_curso = nombre_curso_actual.replace(str(nivel_actual), str(siguiente_nivel), 1)
-                    año_siguiente = int(self.view.curso_year_field.value) + 1
                     
                     todos_los_cursos = self.model.leer_cursos()
                     siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_siguiente_curso.lower() and c.cur_año == año_siguiente), None)

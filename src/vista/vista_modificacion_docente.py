@@ -39,8 +39,7 @@ class ModificacionDocenteView(FletView):
             ]
         )
 
-        self.data_table = ft.DataTable(
-            
+        self.data_table = ft.DataTable(            
             heading_row_color=color_Docente,
             columns=[
                 ft.DataColumn(ft.Text("Nombres")), ft.DataColumn(ft.Text("Apellidos")),
@@ -79,7 +78,7 @@ class ModificacionDocenteView(FletView):
         self.cargo_field = ft.Dropdown(
             label="Cargo", width=500,
             options=[ft.dropdown.Option("Profesional PIE"), ft.dropdown.Option("Docente")],
-            color="black", on_change=controller.toggle_cursos_visibility,
+            color="black",
             label_style=ft.TextStyle(color="black")
         )
         self.estado_field = ft.Dropdown(
@@ -90,7 +89,7 @@ class ModificacionDocenteView(FletView):
         )
 
         self.cursos_checkbox_group = ft.Container(
-            visible=False,
+            visible=True,
             height=250,
             border=ft.border.all(1, ft.Colors.BLACK),
             border_radius=5, padding=10,
