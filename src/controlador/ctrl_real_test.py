@@ -124,31 +124,29 @@ class RealizarTestController(FletController):
         self.page.update()
     
     def next_page_test(self, e):
-        lista_test_incompletos = db.testREAD(test_status=0)
-        total_items = len(lista_test_incompletos)
+        total_items = len(self.test_data)
         total_pages = (total_items + self.numpage_incomplete - 1) // self.numpage_incomplete
         if self.current_page_tests < total_pages - 1:
             self.current_page_tests += 1
-            self.cargar_test_incompletos()
+            self.test_search()
 
     def next_page_est(self, e):
-        lista_estudiantes = db.estudiantesREAD()
-        total_items = len(lista_estudiantes)
+        total_items = len(self.estudiante_data)
         total_pages = (total_items + self.numpage_estudiantes - 1) // self.numpage_estudiantes
         if self.current_page_est < total_pages - 1:
             self.current_page_est += 1
-            self.cargar_estudiantes()
+            self.est_search()
 
 
     def prev_page_test(self, e):
         if self.current_page_tests > 0:
             self.current_page_tests -= 1
-            self.cargar_test_incompletos()
+            self.test_search()
 
     def prev_page_est(self, e):
             if self.current_page_est > 0:
                 self.current_page_est -= 1
-                self.cargar_estudiantes()
+                self.est_search()
 
     def est_search(self, reset_page=False):
         if reset_page:

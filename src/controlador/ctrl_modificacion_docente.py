@@ -344,8 +344,20 @@ class ModificacionDocenteController(FletController):
             ]
             
             if ids_cursos_seleccionados:
-                self.model.crear_asignacion_pie(new_prof.pro_nameID, ",".join(ids_cursos_seleccionados))
-            
+                if cargo_valor == 1:
+                    todos_los_cursos = self.model.leer_cursos()
+                    nombres_seleccionados = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in ids_cursos_seleccionados}
+                    
+                    ids_completos_a_asignar = set(ids_cursos_seleccionados)
+                    
+                    for curso in todos_los_cursos:
+                        if curso.cur_nombre in nombres_seleccionados and not curso.cur_state:
+                            ids_completos_a_asignar.add(str(curso.cur_nameID))
+                    
+                    self.model.crear_asignacion_pie(new_prof.pro_nameID, ",".join(list(ids_completos_a_asignar)))
+                else:
+                    self.model.crear_asignacion_pie(new_prof.pro_nameID, ",".join(ids_cursos_seleccionados))
+
             self.show_feedback("Profesor agregado con éxito.", ft.Colors.GREEN)
             self.load_profesores_to_table()
             self.clear_form_fields()
@@ -378,7 +390,22 @@ class ModificacionDocenteController(FletController):
             if isinstance(cb, ft.Checkbox) and cb.value
         ]
         
-        self.model.actualizar_asignacion_pie(self.selected_prof_id, ",".join(ids_cursos_seleccionados))
+        # Lógica especial para PIE: añadir cursos inhabilitados con el mismo nombre
+        if cargo_valor == 1:
+            todos_los_cursos = self.model.leer_cursos()
+            nombres_seleccionados = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in ids_cursos_seleccionados}
+            
+            ids_completos_a_asignar = set(ids_cursos_seleccionados)
+            
+            for curso in todos_los_cursos:
+                if curso.cur_nombre in nombres_seleccionados and not curso.cur_state:
+                    ids_completos_a_asignar.add(str(curso.cur_nameID))
+            
+            self.model.actualizar_asignacion_pie(self.selected_prof_id, ",".join(list(ids_completos_a_asignar)))
+        else:
+            # Para docentes, solo se actualizan los seleccionados
+            self.model.actualizar_asignacion_pie(self.selected_prof_id, ",".join(ids_cursos_seleccionados))
+
         self.show_feedback("Profesor actualizado con éxito.", ft.Colors.GREEN)
         self.load_profesores_to_table(id_to_select=self.selected_prof_id)
         self.close_dialog(e, 'edit')
