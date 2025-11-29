@@ -17,28 +17,16 @@ class RealizarTestController(FletController):
             self.id_profesor = self.model.datos_profesor.pro_nameID
         else:
             self.id_profesor = None
-        self.estudiante_data = self.model.leer_estudiantes()
-        self.test_data = self.model.leer_test(pro_ID=self.id_profesor, test_status=0)
+        self.estudiante_data = []
+        self.test_data = self.model.leer_test(pro_ID=self.id_profesor, test_status=0) if self.id_profesor else []
         self.selected_test_id = None
         
     def cargar_estudiantes(self, estudiantes_a_mostrar=None):
         self.view.next_button.visible = False
         new_rows = []
         self.selected_es_id = None
-
-        # Obtener los cursos asignados al profesor
-        cursos_asignados_ids = set()
-        if self.id_profesor:
-            cursos_asignados_str = self.model.leer_cursos_pie(self.id_profesor)
-            if cursos_asignados_str and cursos_asignados_str.cursos_a_cargo:
-                cursos_asignados_ids = {int(cid) for cid in cursos_asignados_str.cursos_a_cargo.split(',') if cid.isdigit()}
-
-        # Filtrar estudiantes por cursos asignados y estado del curso
-        todos_los_estudiantes = self.model.leer_estudiantes()
-        self.estudiante_data = [
-            est for est in todos_los_estudiantes 
-            if est.cur_state == 1 and est.lvl_curso in cursos_asignados_ids
-        ]
+        
+        self.estudiante_data = [est for est in self.model.leer_estudiantes() if est.cur_state == 1]
         if estudiantes_a_mostrar is None:
             estudiantes_a_mostrar = self.estudiante_data
 
