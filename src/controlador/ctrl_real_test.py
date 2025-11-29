@@ -25,8 +25,20 @@ class RealizarTestController(FletController):
         self.view.next_button.visible = False
         new_rows = []
         self.selected_es_id = None
-        
-        self.estudiante_data = [est for est in self.model.leer_estudiantes() if est.cur_state == 1]
+
+        # Obtener los cursos asignados al profesor
+        cursos_asignados_ids = set()
+        if self.id_profesor:
+            cursos_asignados_str = self.model.leer_cursos_pie(self.id_profesor)
+            if cursos_asignados_str and cursos_asignados_str.cursos_a_cargo:
+                cursos_asignados_ids = {int(cid) for cid in cursos_asignados_str.cursos_a_cargo.split(',') if cid.isdigit()}
+
+        # Filtrar estudiantes por cursos asignados y estado del curso
+        todos_los_estudiantes = self.model.leer_estudiantes()
+        self.estudiante_data = [
+            est for est in todos_los_estudiantes 
+            if est.cur_state == 1 and est.lvl_curso in cursos_asignados_ids
+        ]
         if estudiantes_a_mostrar is None:
             estudiantes_a_mostrar = self.estudiante_data
 
