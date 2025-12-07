@@ -24,6 +24,7 @@ class ModificacionDocenteController(FletController):
     def initialize_view(self):
         cursos = self.model.leer_cursos()
         self.build_cursos_checkboxes(cursos)
+        self.view.cargo_field.on_change = self.on_cargo_change
         self.load_estudiantes_to_table()
 
     def load_profesores_to_table(self, id_to_select=None, profesores_a_mostrar = None):
@@ -164,6 +165,13 @@ class ModificacionDocenteController(FletController):
             self.reset_selection_state()
         self.page.update()
 
+    def on_cargo_change(self, e):
+        """Muestra u oculta la lista de cursos según el cargo seleccionado."""
+        es_pie = self.view.cargo_field.value == "Profesional PIE"
+        self.view.cursos_checkbox_group.visible = es_pie
+        self.page.update()
+
+
     def next_page_pro(self, e):
         if self.current_page_prof < self.total_page_prof - 1:
             self.current_page_prof += 1
@@ -225,6 +233,7 @@ class ModificacionDocenteController(FletController):
         self.view.apellido_mat.value = ""
         self.view.rut_field.value = ""
         self.view.cargo_field.value = None
+        self.view.cursos_checkbox_group.visible = False
         self.view.estado_field.value = None
         for control in self.view.cursos_checkbox_group.content.controls:
             if isinstance(control, ft.Checkbox):
