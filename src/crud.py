@@ -402,7 +402,7 @@ def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = N
                 elif pro_ID is not None:
                     # Lógica que faltaba: buscar todos los resultados de un profesor.
                     sql_info = """
-                        SELECT rd.*, c.cur_año, c.cur_state FROM Resultados_detallados rd
+                        SELECT rd.*, c.cur_año, c.cur_state, t.pro_ID FROM Resultados_detallados rd
                         JOIN Test t ON rd.id_test = t.test_ID
                         LEFT JOIN Curso c ON rd.lvl_curso = c.cur_nombre
                         WHERE t.pro_ID = ? 
@@ -420,11 +420,16 @@ def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = N
                     return cursor.fetchall()
                 elif lvl_curso is not None:
                     sql_info = """
-                        SELECT rd.*, c.cur_año FROM Resultados_detallados rd
+                        SELECT rd.*, c.cur_año, t.pro_ID FROM Resultados_detallados rd
+                        JOIN Test t ON rd.id_test = t.test_ID
                         LEFT JOIN Curso c ON rd.lvl_curso = c.cur_nombre
                         WHERE rd.lvl_curso = ?
                     """
-                    cursor.execute(sql_info, (lvl_curso,))
+                    params = [lvl_curso]
+                    if cur_año is not None:
+                        sql_info += " AND c.cur_año = ?"
+                        params.append(cur_año)
+                    cursor.execute(sql_info, params)
                     return cursor.fetchall()
                 else:
                     sql_info = "SELECT * FROM Resultados_detallados"
@@ -447,7 +452,7 @@ def preguntasREAD(pre_id: int | None = None, pre_cat: str | None = None):
                 return cursor.fetchall()
     except pyodbc.Error as ex:
         print(f"preguntasREAD Error de conexión o consulta: {ex.args[0]}")
-        return False 
+        return []
 
         
 #-------------------respuestaCRUD
