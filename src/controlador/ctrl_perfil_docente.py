@@ -45,10 +45,8 @@ class PerfilDocenteController(FletController):
         self.page.update()
 
     def cargar_estadisticas_cursos_encuestados(self):   
-        current_year_str = str(datetime.datetime.now().year)
         current_year_int = datetime.datetime.now().year
         profesor = self.model.datos_profesor
-        resultados_detallados_profesional = self.model.leer_resultados_detallados(pro_ID=profesor.pro_nameID, cur_año=current_year_int)
         todos_los_cursos = self.model.leer_cursos()
         cursos_habilitados = {c.cur_nombre for c in todos_los_cursos if c.cur_state == 1}
 
@@ -59,27 +57,35 @@ class PerfilDocenteController(FletController):
                 cursos_asignados_ids = cursos_pie_info.cursos_a_cargo.split(',')
                 cursos_asignados_nombres = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in cursos_asignados_ids and c.cur_state == 1}
 
-        conteo_por_curso = {}
-        for resultado in resultados_detallados_profesional:
-            curso = resultado.lvl_curso
-            if curso in cursos_habilitados:
-                conteo_por_curso[curso] = conteo_por_curso.get(curso, 0) + 1
+        if profesor.pro_cargo == 1: # Profesional PIE
+            # Cargar todos los resultados de los cursos asignados
+            resultados_detallados_profesional = []
+            for curso_nombre in cursos_asignados_nombres:
+                resultados_detallados_profesional.extend(self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int))
+        else: # Docente normal
+            # Cargar solo los resultados del profesor logueado
+            resultados_detallados_profesional = self.model.leer_resultados_detallados(pro_ID=profesor.pro_nameID, cur_año=current_year_int)
 
         conteo_por_curso_totales = {}
-        cursos_para_totales = cursos_asignados_nombres if profesor.pro_cargo == 1 else set(conteo_por_curso.keys())
+        cursos_para_totales = cursos_asignados_nombres if profesor.pro_cargo == 1 else {res.lvl_curso for res in resultados_detallados_profesional}
         
-        for curso_nombre in cursos_para_totales: (conteo_por_curso_totales.update({curso_nombre: sum(1 for res in self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int) if str(res.cur_año) == current_year_str)}) if curso_nombre in conteo_por_curso else None)
+        for curso_nombre in cursos_para_totales:
+            resultados_curso_año = self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int)
+            conteo_por_curso_totales[curso_nombre] = len(resultados_curso_año)
+
         bar_groups1 = []
         axis_labels1 = []
         bar_groups2 = []
         axis_labels2 = []
         conteo_riesgo_alto_por_curso = {}
-        if profesor.pro_cargo == 1 and cursos_asignados_nombres:
-            for curso_nombre in cursos_asignados_nombres:
-                resultados_totales_curso = self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int)
-                conteo_alto_riesgo = sum(1 for res in resultados_totales_curso if res.cur_año == current_year_int and res.det_porcentaje >= 70)
-                if conteo_alto_riesgo > 0:
-                    conteo_riesgo_alto_por_curso[curso_nombre] = conteo_alto_riesgo
+        conteo_riesgo_alto_por_estudiante = {}
+
+        if profesor.pro_cargo == 1:
+            resultados_alto_riesgo = [res for res in resultados_detallados_profesional if res.det_porcentaje >= 70]
+            for res in resultados_alto_riesgo:
+                conteo_riesgo_alto_por_curso[res.lvl_curso] = conteo_riesgo_alto_por_curso.get(res.lvl_curso, 0) + 1
+                nombre_estudiante = f"{res.det_nameES} {res.det_apellidoES}"
+                conteo_riesgo_alto_por_estudiante[nombre_estudiante] = conteo_riesgo_alto_por_estudiante.get(nombre_estudiante, 0) + 1
 
         pie_chart_sections = []
         colors_list = [ft.Colors.RED_700, ft.Colors.ORANGE, ft.Colors.DEEP_ORANGE, ft.Colors.RED_ACCENT]
@@ -92,33 +98,27 @@ class PerfilDocenteController(FletController):
                 radius=200,
             ))
 
-        conteo_riesgo_alto_por_estudiante = {}
-        if profesor.pro_cargo == 1:
-            for curso_nombre in cursos_asignados_nombres:
-                resultados_totales_curso = self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int)
-                for res in resultados_totales_curso:
-                    if res.det_porcentaje >= 70:
-                        nombre_estudiante = f"{res.det_nameES} {res.det_apellidoES}"
-                        conteo_riesgo_alto_por_estudiante[nombre_estudiante] = conteo_riesgo_alto_por_estudiante.get(nombre_estudiante, 0) + 1
-        
         pie_chart_estudiantes_sections = []
-        if profesor.pro_cargo == 1:
-            colors_list_estudiantes = [ft.Colors.BLUE_700, ft.Colors.LIGHT_BLUE, ft.Colors.CYAN, ft.Colors.TEAL]
-            for i, (estudiante, conteo) in enumerate(conteo_riesgo_alto_por_estudiante.items()):
-                pie_chart_estudiantes_sections.append(ft.PieChartSection(
-                    value=conteo,
-                    title=f"{estudiante} ({conteo})",
-                    title_style=ft.TextStyle(size=12, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
-                    color=colors_list_estudiantes[i % len(colors_list_estudiantes)],
-                    radius=200,
-                ))
+        colors_list_estudiantes = [ft.Colors.BLUE_700, ft.Colors.LIGHT_BLUE, ft.Colors.CYAN, ft.Colors.TEAL]
+        for i, (estudiante, conteo) in enumerate(conteo_riesgo_alto_por_estudiante.items()):
+            pie_chart_estudiantes_sections.append(ft.PieChartSection(
+                value=conteo,
+                title=f"{estudiante} ({conteo})",
+                title_style=ft.TextStyle(size=12, weight=ft.FontWeight.BOLD, color=ft.Colors.BLACK),
+                color=colors_list_estudiantes[i % len(colors_list_estudiantes)],
+                radius=200,
+            ))
 
         # Corregir el conteo para el gráfico de tests realizados por el profesor
+        # Este gráfico debe mostrar solo los tests realizados por el usuario actual.
         tests_realizados_por_profesor = {}
         for resultado in resultados_detallados_profesional:
             curso = resultado.lvl_curso
-            if curso in cursos_habilitados:
+            if curso in cursos_habilitados and resultado.pro_ID == profesor.pro_nameID:
                 tests_realizados_por_profesor[curso] = tests_realizados_por_profesor.get(curso, 0) + 1
+
+        # Para el gráfico de "Tests realizados por mí", si es PIE, filtramos por su ID.
+        tests_realizados_por_mi = tests_realizados_por_profesor
 
         for i, (curso, conteo) in enumerate(tests_realizados_por_profesor.items()):
             bar_groups1.append(

@@ -89,7 +89,7 @@ class ModificacionDocenteView(FletView):
         )
 
         self.cursos_checkbox_group = ft.Container(
-            visible=True,
+            visible=False,
             height=250,
             border=ft.border.all(1, ft.Colors.BLACK),
             border_radius=5, padding=10,

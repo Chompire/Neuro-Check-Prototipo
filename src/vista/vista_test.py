@@ -5,53 +5,60 @@ from colors import color_Docente, color_Background_Docente, color_Background_PIE
 class TestView(FletView):
     def __init__(self, controller, model):
         self.error_snack_bar = ft.SnackBar(content = ft.Text(""))
+
+        def get_pregunta_text(pre_id, index):
+            pregunta = controller.model.leer_preguntas(pre_id)
+            if pregunta:
+                return f"{index}. {pregunta[0][1]}"
+            return f"{index}. (Error al cargar pregunta)"
+
         preguntas_atencion = [
-            ft.Text(f"1. {controller.model.leer_preguntas(1)[0][1]}", selectable=True),
-            ft.Text(f"2. {controller.model.leer_preguntas(2)[0][1]}", selectable=True),
-            ft.Text(f"3. {controller.model.leer_preguntas(3)[0][1]}", selectable=True),
-            ft.Text(f"4. {controller.model.leer_preguntas(4)[0][1]}", selectable=True),
-            ft.Text(f"5. {controller.model.leer_preguntas(5)[0][1]}", selectable=True),
-            ft.Text(f"6. {controller.model.leer_preguntas(6)[0][1]}", selectable=True),
-            ft.Text(f"7. {controller.model.leer_preguntas(7)[0][1]}", selectable=True),
-            ft.Text(f"8. {controller.model.leer_preguntas(8)[0][1]}", selectable=True),
-            ft.Text(f"9. {controller.model.leer_preguntas(9)[0][1]}", selectable=True),
-            ft.Text(f"10. {controller.model.leer_preguntas(10)[0][1]}", selectable=True),
+            ft.Text(get_pregunta_text(1, 1), selectable=True),
+            ft.Text(get_pregunta_text(2, 2), selectable=True),
+            ft.Text(get_pregunta_text(3, 3), selectable=True),
+            ft.Text(get_pregunta_text(4, 4), selectable=True),
+            ft.Text(get_pregunta_text(5, 5), selectable=True),
+            ft.Text(get_pregunta_text(6, 6), selectable=True),
+            ft.Text(get_pregunta_text(7, 7), selectable=True),
+            ft.Text(get_pregunta_text(8, 8), selectable=True),
+            ft.Text(get_pregunta_text(9, 9), selectable=True),
+            ft.Text(get_pregunta_text(10, 10), selectable=True),
         ]
         preguntas_memoria = [
-            ft.Text(f"1. {controller.model.leer_preguntas(11)[0][1]}", selectable=True),
-            ft.Text(f"2. {controller.model.leer_preguntas(12)[0][1]}", selectable=True),
-            ft.Text(f"3. {controller.model.leer_preguntas(13)[0][1]}", selectable=True),
-            ft.Text(f"4. {controller.model.leer_preguntas(14)[0][1]}", selectable=True),
-            ft.Text(f"5. {controller.model.leer_preguntas(15)[0][1]}", selectable=True),
-            ft.Text(f"6. {controller.model.leer_preguntas(16)[0][1]}", selectable=True),
-            ft.Text(f"7. {controller.model.leer_preguntas(17)[0][1]}", selectable=True),
-            ft.Text(f"8. {controller.model.leer_preguntas(18)[0][1]}", selectable=True),
-            ft.Text(f"9. {controller.model.leer_preguntas(19)[0][1]}", selectable=True),
-            ft.Text(f"10. {controller.model.leer_preguntas(20)[0][1]}", selectable=True),
+            ft.Text(get_pregunta_text(11, 1), selectable=True),
+            ft.Text(get_pregunta_text(12, 2), selectable=True),
+            ft.Text(get_pregunta_text(13, 3), selectable=True),
+            ft.Text(get_pregunta_text(14, 4), selectable=True),
+            ft.Text(get_pregunta_text(15, 5), selectable=True),
+            ft.Text(get_pregunta_text(16, 6), selectable=True),
+            ft.Text(get_pregunta_text(17, 7), selectable=True),
+            ft.Text(get_pregunta_text(18, 8), selectable=True),
+            ft.Text(get_pregunta_text(19, 9), selectable=True),
+            ft.Text(get_pregunta_text(20, 10), selectable=True),
         ]
         preguntas_social = [
-            ft.Text(f"1. {controller.model.leer_preguntas(21)[0][1]}", selectable=True),
-            ft.Text(f"2. {controller.model.leer_preguntas(22)[0][1]}", selectable=True),
-            ft.Text(f"3. {controller.model.leer_preguntas(23)[0][1]}", selectable=True),
-            ft.Text(f"4. {controller.model.leer_preguntas(24)[0][1]}", selectable=True),
-            ft.Text(f"5. {controller.model.leer_preguntas(25)[0][1]}", selectable=True),
-            ft.Text(f"6. {controller.model.leer_preguntas(26)[0][1]}", selectable=True),
-            ft.Text(f"7. {controller.model.leer_preguntas(27)[0][1]}", selectable=True),
-            ft.Text(f"8. {controller.model.leer_preguntas(28)[0][1]}", selectable=True),
-            ft.Text(f"9. {controller.model.leer_preguntas(29)[0][1]}", selectable=True),
-            ft.Text(f"10. {controller.model.leer_preguntas(30)[0][1]}", selectable=True),
+            ft.Text(get_pregunta_text(21, 1), selectable=True),
+            ft.Text(get_pregunta_text(22, 2), selectable=True),
+            ft.Text(get_pregunta_text(23, 3), selectable=True),
+            ft.Text(get_pregunta_text(24, 4), selectable=True),
+            ft.Text(get_pregunta_text(25, 5), selectable=True),
+            ft.Text(get_pregunta_text(26, 6), selectable=True),
+            ft.Text(get_pregunta_text(27, 7), selectable=True),
+            ft.Text(get_pregunta_text(28, 8), selectable=True),
+            ft.Text(get_pregunta_text(29, 9), selectable=True),
+            ft.Text(get_pregunta_text(30, 10), selectable=True),
         ]
         preguntas_emocional = [
-            ft.Text(f"1. {controller.model.leer_preguntas(31)[0][1]}", selectable=True),
-            ft.Text(f"2. {controller.model.leer_preguntas(32)[0][1]}", selectable=True),
-            ft.Text(f"3. {controller.model.leer_preguntas(33)[0][1]}", selectable=True),
-            ft.Text(f"4. {controller.model.leer_preguntas(34)[0][1]}", selectable=True),
-            ft.Text(f"5. {controller.model.leer_preguntas(35)[0][1]}", selectable=True),
-            ft.Text(f"6. {controller.model.leer_preguntas(36)[0][1]}", selectable=True),
-            ft.Text(f"7. {controller.model.leer_preguntas(37)[0][1]}", selectable=True),
-            ft.Text(f"8. {controller.model.leer_preguntas(38)[0][1]}", selectable=True),
-            ft.Text(f"9. {controller.model.leer_preguntas(39)[0][1]}", selectable=True),
-            ft.Text(f"10. {controller.model.leer_preguntas(40)[0][1]}", selectable=True),
+            ft.Text(get_pregunta_text(31, 1), selectable=True),
+            ft.Text(get_pregunta_text(32, 2), selectable=True),
+            ft.Text(get_pregunta_text(33, 3), selectable=True),
+            ft.Text(get_pregunta_text(34, 4), selectable=True),
+            ft.Text(get_pregunta_text(35, 5), selectable=True),
+            ft.Text(get_pregunta_text(36, 6), selectable=True),
+            ft.Text(get_pregunta_text(37, 7), selectable=True),
+            ft.Text(get_pregunta_text(38, 8), selectable=True),
+            ft.Text(get_pregunta_text(39, 9), selectable=True),
+            ft.Text(get_pregunta_text(40, 10), selectable=True),
         ]
         self.radiogroups_atencion = controller.create_radio_groups(10)
         self.radiogroups_memoria = controller.create_radio_groups(10)

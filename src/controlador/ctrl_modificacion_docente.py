@@ -24,6 +24,7 @@ class ModificacionDocenteController(FletController):
     def initialize_view(self):
         cursos = self.model.leer_cursos()
         self.build_cursos_checkboxes(cursos)
+        self.view.cargo_field.on_change = self.on_cargo_change
         self.load_estudiantes_to_table()
 
     def load_profesores_to_table(self, id_to_select=None, profesores_a_mostrar = None):
@@ -148,7 +149,7 @@ class ModificacionDocenteController(FletController):
             self.view.cargo_field.value = "Profesional PIE" if selected_prof.pro_cargo else "Docente"
             self.view.estado_field.value = "Habilitado" if selected_prof.pro_state else "Inhabilitado"
             
-            self.view.cursos_checkbox_group.visible = True
+            self.view.cursos_checkbox_group.visible = selected_prof.pro_cargo == 1
             cursos_asignados_ids_str = self.model.leer_cursos_pie(self.selected_prof_id)
 
             cursos_asignados_ids = []
@@ -163,6 +164,13 @@ class ModificacionDocenteController(FletController):
             self.clear_form_fields()
             self.reset_selection_state()
         self.page.update()
+
+    def on_cargo_change(self, e):
+        """Muestra u oculta la lista de cursos según el cargo seleccionado."""
+        es_pie = self.view.cargo_field.value == "Profesional PIE"
+        self.view.cursos_checkbox_group.visible = es_pie
+        self.page.update()
+
 
     def next_page_pro(self, e):
         if self.current_page_prof < self.total_page_prof - 1:
@@ -196,7 +204,7 @@ class ModificacionDocenteController(FletController):
         search_term = self.view.curso_search_field.value.lower()
         todos_los_cursos = self.model.leer_cursos()
         cursos_filtrados = [
-            curso for curso in todos_los_cursos 
+            curso for curso in todos_los_cursos
             if curso.cur_state and (search_term in curso.cur_nombre.lower() or search_term in str(curso.cur_año))
         ]
         self.load_cursos_to_table(cursos_a_mostrar=cursos_filtrados)
@@ -225,6 +233,7 @@ class ModificacionDocenteController(FletController):
         self.view.apellido_mat.value = ""
         self.view.rut_field.value = ""
         self.view.cargo_field.value = None
+        self.view.cursos_checkbox_group.visible = False
         self.view.estado_field.value = None
         for control in self.view.cursos_checkbox_group.content.controls:
             if isinstance(control, ft.Checkbox):
@@ -424,17 +433,29 @@ class ModificacionDocenteController(FletController):
             nombre_curso_actual = self.view.curso_name_field.value
             año_actual = int(self.view.curso_year_field.value)
             año_siguiente = año_actual + 1
+
+            # Caso especial para 1er año: se crea un nuevo 1er año para el año siguiente
             if "1" in nombre_curso_actual or "primer" in nombre_curso_actual.lower():
                 todos_los_cursos = self.model.leer_cursos()
-                primer_basico_siguiente_año_existe = any(
-                    ("1" in c.cur_nombre or "primer" in c.cur_nombre.lower()) and c.cur_año == año_siguiente for c in todos_los_cursos
-                )
-                if not primer_basico_siguiente_año_existe:
-                    self.model.crear_curso(nombre_curso_actual, año_siguiente)
+                siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_curso_actual.lower() and c.cur_año == año_siguiente), None)
 
-            if "8" in nombre_curso_actual or "octavo" in nombre_curso_actual.lower():
+                if not siguiente_curso_obj:
+                    self.model.crear_curso(nombre_curso_actual, año_siguiente) # Crear el nuevo 1er básico
+                    # Recargar cursos para obtener el ID del nuevo curso
+                    todos_los_cursos = self.model.leer_cursos()
+                    siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_curso_actual.lower() and c.cur_año == año_siguiente), None)
+
+                if siguiente_curso_obj:
+                    estudiantes_a_mover = self.model.leer_estudiantes_por_curso(self.selected_curso_id)
+                    for estudiante in estudiantes_a_mover:
+                        self.model.actualizar_estudiante(estudiante.es_nameID, {"lvl_curso": siguiente_curso_obj.cur_nameID})
+                    self.show_feedback(f"{len(estudiantes_a_mover)} estudiantes movidos al nuevo curso '{nombre_curso_actual}' del año {año_siguiente}.", ft.Colors.BLUE)
+                else:
+                    self.show_feedback(f"Error: No se pudo crear o encontrar el curso '{nombre_curso_actual}' para el año {año_siguiente}.", ft.Colors.RED)
+
+            elif "8" in nombre_curso_actual or "octavo" in nombre_curso_actual.lower():
                 self.show_feedback(f"Curso '{nombre_curso_actual}' inhabilitado. No se promueven estudiantes desde 8° básico.", ft.Colors.BLUE)
-            else:
+            else: # Lógica para promover a los demás cursos (2do a 7mo)
                 match = re.search(r'\d+', nombre_curso_actual)
                 if match:
                     nivel_actual = int(match.group())
