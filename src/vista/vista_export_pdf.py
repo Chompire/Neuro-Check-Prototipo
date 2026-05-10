@@ -46,7 +46,7 @@ class ExportPDFView(FletView):
                             ft.Row(
                                 [
                                     ft.Text("Informe de Resultados", size=20, weight=ft.FontWeight.BOLD, selectable=True),
-                                    self.download_button # Usamos el botón de descarga
+                                    self.download_button
                                 ], 
                                 alignment=ft.MainAxisAlignment.SPACE_BETWEEN
                             ),

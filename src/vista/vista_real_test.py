@@ -100,11 +100,11 @@ class RealizarTestView(FletView):
         
         view = ft.View(
             "/realizar_test",
-            bgcolor=color_Background_Docente, # Se establecerá un color base, main.py lo corregirá
+            bgcolor=color_Background_Docente,
             scroll=ft.ScrollMode.AUTO,
             controls=
             [                
-                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START), # This line already exists, no change needed.
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Realizar Test", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START), 
                 self.feedback_snackbar,
                 ft.ResponsiveRow(
                     expand=True,

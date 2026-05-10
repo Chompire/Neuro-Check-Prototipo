@@ -11,7 +11,7 @@ class MisTestsView(FletView):
         )
         self.search_otros_field = ft.TextField(bgcolor="white",
             label="Buscar en tests de otros (Nombre, Apellido o RUT del estudiante)",
-            on_change=lambda e: controller.search_otros(reset_page=True), # Corregido para llamar a la función correcta
+            on_change=lambda e: controller.search_otros(reset_page=True), 
             color="black", label_style=ft.TextStyle(color="black"),
             visible=False
         )

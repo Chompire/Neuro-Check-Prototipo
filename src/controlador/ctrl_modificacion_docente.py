@@ -399,7 +399,7 @@ class ModificacionDocenteController(FletController):
             if isinstance(cb, ft.Checkbox) and cb.value
         ]
         
-        # Lógica especial para PIE: añadir cursos inhabilitados con el mismo nombre
+        
         if cargo_valor == 1:
             todos_los_cursos = self.model.leer_cursos()
             nombres_seleccionados = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in ids_cursos_seleccionados}
@@ -412,7 +412,7 @@ class ModificacionDocenteController(FletController):
             
             self.model.actualizar_asignacion_pie(self.selected_prof_id, ",".join(list(ids_completos_a_asignar)))
         else:
-            # Para docentes, solo se actualizan los seleccionados
+        
             self.model.actualizar_asignacion_pie(self.selected_prof_id, ",".join(ids_cursos_seleccionados))
 
         self.show_feedback("Profesor actualizado con éxito.", ft.Colors.GREEN)
@@ -434,14 +434,13 @@ class ModificacionDocenteController(FletController):
             año_actual = int(self.view.curso_year_field.value)
             año_siguiente = año_actual + 1
 
-            # Caso especial para 1er año: se crea un nuevo 1er año para el año siguiente
+           
             if "1" in nombre_curso_actual or "primer" in nombre_curso_actual.lower():
                 todos_los_cursos = self.model.leer_cursos()
                 siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_curso_actual.lower() and c.cur_año == año_siguiente), None)
 
                 if not siguiente_curso_obj:
-                    self.model.crear_curso(nombre_curso_actual, año_siguiente) # Crear el nuevo 1er básico
-                    # Recargar cursos para obtener el ID del nuevo curso
+                    self.model.crear_curso(nombre_curso_actual, año_siguiente) 
                     todos_los_cursos = self.model.leer_cursos()
                     siguiente_curso_obj = next((c for c in todos_los_cursos if c.cur_nombre.lower() == nombre_curso_actual.lower() and c.cur_año == año_siguiente), None)
 
@@ -455,7 +454,7 @@ class ModificacionDocenteController(FletController):
 
             elif "8" in nombre_curso_actual or "octavo" in nombre_curso_actual.lower():
                 self.show_feedback(f"Curso '{nombre_curso_actual}' inhabilitado. No se promueven estudiantes desde 8° básico.", ft.Colors.BLUE)
-            else: # Lógica para promover a los demás cursos (2do a 7mo)
+            else: 
                 match = re.search(r'\d+', nombre_curso_actual)
                 if match:
                     nivel_actual = int(match.group())

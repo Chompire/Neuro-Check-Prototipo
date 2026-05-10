@@ -19,7 +19,7 @@ class PerfilDocenteView(FletView):
                 ft.DataColumn(ft.Text("Numero de encuestas")),
             ],
         )
-        self.mis_tests_view = None # Placeholder for the new view
+        self.mis_tests_view = None
         
         self.stat_cantidad_cursos_encuestados = ft.BarChart(
             bar_groups=[],
@@ -144,7 +144,7 @@ class PerfilDocenteView(FletView):
             scroll=ft.ScrollMode.AUTO,
             horizontal_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
-                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mi Perfil", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START), # This line already exists, no change needed.
+                ft.Row([ft.Text("Inicio >", weight=ft.FontWeight.BOLD, color="black"), ft.Text("Mi Perfil", weight=ft.FontWeight.BOLD, color=color_Docente)], alignment=ft.MainAxisAlignment.START), 
                 ft.ResponsiveRow([
                     ft.Container(
                         col={"sm": 12},

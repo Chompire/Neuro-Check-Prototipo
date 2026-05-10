@@ -14,10 +14,10 @@ def profesorCREATE(datos_profesor: tuple):
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 0);"""
                 cursor.execute(sql_add, datos_profesor)
                 cnxn.commit()
-                return True  # Retorna True si la operación fue exitosa
+                return True 
     except pyodbc.Error as ex:
         print(f"profesorCREATE Error de conexión o consulta: {ex.args[0]}")
-        return False  # Retorna False si ocurrió un error
+        return False
 
 def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_password: str | None = None, lvl_curso: int | None = None):
     try:
@@ -47,8 +47,7 @@ def profesorREAD(pro_nameID: int | None = None, pro_rut: str | None = None, pro_
                     cursor.execute(sql_info, pro_rut)
                     return cursor.fetchone()
                 elif lvl_curso is not None:
-                    # Esta lógica ya no es aplicable al eliminar lvl_curso de Profesores
-                    # Se podría implementar una búsqueda en Prof_PIE si es necesario
+                    
                     print("profesorREAD: La búsqueda por lvl_curso ya no está soportada directamente en Profesores.")
                     return []
                 else:
@@ -62,7 +61,7 @@ def profesorUPDATE(pro_nameID: int, datos_profesor: dict):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                # Asume que datos_profesor es un diccionario con {columna: valor}
+                
                 set_clause = ", ".join([f"{key} = ?" for key in datos_profesor.keys()])
                 sql_update = f"UPDATE Profesores SET {set_clause} WHERE pro_nameID = ?"
                 params = list(datos_profesor.values()) + [pro_nameID]
@@ -83,7 +82,7 @@ def profesorDELETE(pro_nameID: int):
 
 def prof_pie_CREATE(prof_id: int, cursos_a_cargo: str):
     try:
-        with pyodbc.connect(CONNECTION_STRING) as cnxn: # type: ignore
+        with pyodbc.connect(CONNECTION_STRING) as cnxn: 
             with cnxn.cursor() as cursor:
                 sql_add = "INSERT INTO Prof_PIE (prof_ID, cursos_a_cargo) VALUES (?, ?)"
                 cursor.execute(sql_add, prof_id, cursos_a_cargo)
@@ -93,9 +92,9 @@ def prof_pie_CREATE(prof_id: int, cursos_a_cargo: str):
 
 def prof_pie_UPDATE(prof_id: int, cursos_a_cargo: str):
     try:
-        with pyodbc.connect(CONNECTION_STRING) as cnxn: # type: ignore
+        with pyodbc.connect(CONNECTION_STRING) as cnxn: 
             with cnxn.cursor() as cursor:
-                # Intenta actualizar, si no existe, lo crea (UPSERT)
+                
                 sql_update = "UPDATE Prof_PIE SET cursos_a_cargo = ? WHERE prof_ID = ?"
                 cursor.execute(sql_update, cursos_a_cargo, prof_id)
                 if cursor.rowcount == 0:
@@ -107,7 +106,7 @@ def prof_pie_UPDATE(prof_id: int, cursos_a_cargo: str):
 
 def prof_pie_DELETE(prof_id: int):
     try:
-        with pyodbc.connect(CONNECTION_STRING) as cnxn: # type: ignore
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 sql_delete = "DELETE FROM Prof_PIE WHERE prof_ID = ?"
                 cursor.execute(sql_delete, prof_id)
@@ -117,7 +116,7 @@ def prof_pie_DELETE(prof_id: int):
 
 def prof_pie_READ(prof_ID: int):
     try:
-        with pyodbc.connect(CONNECTION_STRING) as cnxn: # type: ignore
+        with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 sql_info = "SELECT cursos_a_cargo FROM Prof_PIE WHERE prof_ID = ?"
                 cursor.execute(sql_info, prof_ID)
@@ -399,8 +398,7 @@ def resultados_detalladosREAD(test_ID: int | None = None, det_ID: int | None = N
                     sql_info = "SELECT * FROM Resultados_detallados WHERE det_id = ?"
                     cursor.execute(sql_info, det_ID)
                     return cursor.fetchall()
-                elif pro_ID is not None:
-                    # Lógica que faltaba: buscar todos los resultados de un profesor.
+                elif pro_ID is not None:                    
                     sql_info = """
                         SELECT rd.*, c.cur_año, c.cur_state, t.pro_ID FROM Resultados_detallados rd
                         JOIN Test t ON rd.id_test = t.test_ID
@@ -475,12 +473,12 @@ def respuestaREAD(ID_test: int | None = None):
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
                 if ID_test is not None:
-                    # Devolvemos el ID para poder usarlo en las actualizaciones
+                    
                     sql_info = "SELECT res_ID, res_respuesta, res_tipo FROM Respuestas WHERE ID_test = ?"
                     cursor.execute(sql_info, ID_test)
                     return cursor.fetchall()
     except pyodbc.Error as ex:
-        return [] # Devolver lista vacía en caso de error
+        return [] 
 def respuestaUPDATE(ID_respuesta: int, respuesta_data: dict):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
@@ -553,7 +551,7 @@ def documentoPDF_READ(pdf_id: int | None = None, pdf_nombre: str | None = None, 
                     sql_info = f"{select_clause} FROM DocumentosPDF WHERE pdf_nombre = ?"
                     cursor.execute(sql_info, pdf_nombre)
                     return cursor.fetchone()
-                else: # Leer lista
+                else: 
                     sql_info = f"{select_clause} FROM DocumentosPDF ORDER BY pdf_fecha DESC"
                     cursor.execute(sql_info)
                     return cursor.fetchall()
@@ -568,7 +566,7 @@ def notificacionCREATE(prof_id_destino: int, mensaje: str, id_resultados_detalla
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                # Asumiendo que la tabla Notificaciones tiene una columna 'id_profesor_pie'
+                
                 sql_add = "INSERT INTO Notificaciones (id_profesor_pie, not_mensaje, not_status, id_resultados_detallados, noti_fecha_creacion) VALUES (?, ?, 0, ?, GETDATE())"
                 cursor.execute(sql_add, prof_id_destino, mensaje, id_resultados_detallados)
                 cnxn.commit()
@@ -582,7 +580,7 @@ def notificacionesREAD(prof_id: int, solo_no_leidas: bool = False):
     try:
         with pyodbc.connect(CONNECTION_STRING) as cnxn:
             with cnxn.cursor() as cursor:
-                # Asumiendo que la tabla Notificaciones tiene una columna 'id_profesor_pie'
+                
                 sql_info = "SELECT noti_ID, not_mensaje, not_status, id_resultados_detallados, noti_fecha_creacion FROM Notificaciones WHERE id_profesor_pie = ?"
                 params = [prof_id]
                 if solo_no_leidas:
@@ -645,7 +643,7 @@ def obtener_pie_por_curso(curso_id: int):
                 cursor.execute(sql_query, curso_id_str)
                 result = cursor.fetchone()
                 if result:
-                    return result.pro_nameID # Retorna el pro_nameID del profesor PIE
+                    return result.pro_nameID
                 return None
     except pyodbc.Error as ex:
         print(f"obtener_pie_por_curso Error: {ex.args[0]}")

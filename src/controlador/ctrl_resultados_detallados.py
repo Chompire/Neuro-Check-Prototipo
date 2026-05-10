@@ -83,7 +83,7 @@ class ResultadosDetalladosController(FletController):
             self.view.puntaje_val.value = f"{resultados_detallados[0].det_puntaje}/{total_preguntas}"
             self.view.porcentaje_val.value = f"{resultados_detallados[0].det_porcentaje:.2f}%" 
         else:
-            # Limpiar la vista si no se encuentran resultados
+           
             self.view.datatable.rows.clear()
             self.view.datatable.rows.append(ft.DataRow(cells=[ft.DataCell(ft.Text("No se encontraron resultados o no tiene permiso para verlos.", text_align=ft.TextAlign.CENTER), col_span=4)]))
             self.view.puntaje_val.value = "N/A"

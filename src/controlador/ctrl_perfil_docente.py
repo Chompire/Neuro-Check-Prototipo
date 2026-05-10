@@ -57,13 +57,13 @@ class PerfilDocenteController(FletController):
                 cursos_asignados_ids = cursos_pie_info.cursos_a_cargo.split(',')
                 cursos_asignados_nombres = {c.cur_nombre for c in todos_los_cursos if str(c.cur_nameID) in cursos_asignados_ids and c.cur_state == 1}
 
-        if profesor.pro_cargo == 1: # Profesional PIE
-            # Cargar todos los resultados de los cursos asignados
+        if profesor.pro_cargo == 1: 
+           
             resultados_detallados_profesional = []
             for curso_nombre in cursos_asignados_nombres:
                 resultados_detallados_profesional.extend(self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int))
-        else: # Docente normal
-            # Cargar solo los resultados del profesor logueado
+        else: 
+            
             resultados_detallados_profesional = self.model.leer_resultados_detallados(pro_ID=profesor.pro_nameID, cur_año=current_year_int)
 
         conteo_por_curso_totales = {}
@@ -109,15 +109,14 @@ class PerfilDocenteController(FletController):
                 radius=200,
             ))
 
-        # Corregir el conteo para el gráfico de tests realizados por el profesor
-        # Este gráfico debe mostrar solo los tests realizados por el usuario actual.
+        
         tests_realizados_por_profesor = {}
         for resultado in resultados_detallados_profesional:
             curso = resultado.lvl_curso
             if curso in cursos_habilitados and resultado.pro_ID == profesor.pro_nameID:
                 tests_realizados_por_profesor[curso] = tests_realizados_por_profesor.get(curso, 0) + 1
 
-        # Para el gráfico de "Tests realizados por mí", si es PIE, filtramos por su ID.
+       
         tests_realizados_por_mi = tests_realizados_por_profesor
 
         for i, (curso, conteo) in enumerate(tests_realizados_por_profesor.items()):
@@ -165,7 +164,7 @@ class PerfilDocenteController(FletController):
                 )
             )
 
-        # Ajustar el eje Y dinámicamente
+        
         max_y_val1 = max(tests_realizados_por_profesor.values()) if tests_realizados_por_profesor else 5
         max_y1 = (max_y_val1 // 5 + 1) * 5 if max_y_val1 > 0 else 5
         self.view.stat_cantidad_cursos_encuestados.max_y = max_y1
