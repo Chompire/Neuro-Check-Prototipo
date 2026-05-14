@@ -66,12 +66,16 @@ class PerfilDocenteController(FletController):
             
             resultados_detallados_profesional = self.model.leer_resultados_detallados(pro_ID=profesor.pro_nameID, cur_año=current_year_int)
 
+        
+        resultados_detallados_profesional = [res for res in resultados_detallados_profesional if res.det_fecha and res.det_fecha.year == current_year_int]
+
         conteo_por_curso_totales = {}
         cursos_para_totales = cursos_asignados_nombres if profesor.pro_cargo == 1 else {res.lvl_curso for res in resultados_detallados_profesional}
         
         for curso_nombre in cursos_para_totales:
             resultados_curso_año = self.model.leer_resultados_detallados(lvl_curso=curso_nombre, cur_año=current_year_int)
-            conteo_por_curso_totales[curso_nombre] = len(resultados_curso_año)
+            
+            conteo_por_curso_totales[curso_nombre] = len([res for res in resultados_curso_año if res.det_fecha and res.det_fecha.year == current_year_int])
 
         bar_groups1 = []
         axis_labels1 = []
@@ -186,8 +190,11 @@ class PerfilDocenteController(FletController):
         if not self.model.datos_profesor:
             return
 
+        current_year_int = datetime.datetime.now().year
         pro_id = self.model.datos_profesor.pro_nameID
         resultados_profesional = self.model.leer_resultados_detallados(pro_ID=pro_id)
+        # Filtramos resultados por el año de finalización actual
+        resultados_profesional = [res for res in resultados_profesional if res.det_fecha and res.det_fecha.year == current_year_int]
 
         conteo_rojos_por_curso = {}
         for resultado in resultados_profesional:

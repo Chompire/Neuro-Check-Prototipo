@@ -375,7 +375,7 @@ def main(page: ft.Page, model: AppModel):
     page.update()
     
 if __name__ == "__main__":
-    APP_PORT = 8000
+    APP_PORT = 80
     APP_NAME = "neurocheck"
     
     def main_standalone(page: ft.Page):
@@ -400,6 +400,8 @@ if __name__ == "__main__":
             server=f"{APP_NAME}.local.",
         )
         zeroconf.register_service(info)
+        
+        
         ft.app(target=main_standalone, assets_dir=assets_path, view=ft.AppView.WEB_BROWSER, port=APP_PORT, host="0.0.0.0")
     finally:
         print(f"Dejando de anunciar el servicio '{APP_NAME}'.")
